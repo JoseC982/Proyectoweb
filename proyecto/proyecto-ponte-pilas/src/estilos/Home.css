@@ -1,0 +1,110 @@
+body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    
+}
+html {
+    width: 100%;
+    height: 100%;
+    
+}
+.home-container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: #c7e0f7;
+  /* padding: 20px; */
+  width: 100%;
+    height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  height: 15%;
+}
+
+.main-content {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+  /* margin-top: 20px; */
+  height: 85%;
+}
+
+.logo {
+  width: 150px;
+  height: auto;
+}
+
+.title {
+  font-size: 2em;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-weight: bold;
+  color: #2e4d77;
+}
+
+.description {
+  /* margin-top: 30px; */
+}
+
+.description h2 {
+  font-size: 1.5em;
+  color: #2e4d77;
+}
+
+.description p {
+  font-size: 1.2em;
+  color: #333;
+}
+
+.user-type {
+    background-color: violet;
+  /* margin-top: 40px; */
+}
+
+.user-type h3 {
+  font-size: 1.5em;
+  color: #2e4d77;
+}
+
+.user-type p {
+  font-size: 1.2em;
+}
+
+.button-admin,
+.button-user {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #2e4d77;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+}
+
+.button-admin:hover,
+.button-user:hover {
+  background-color: #214361;
+}
+
+.footer {
+  margin-top: 40px;
+}
+
+.store-link {
+  margin: 0 15px;
+}
+
+.store-icon {
+  width: 80px;
+  height: auto;
+}
+.header-left{
+    display: flex;
+    flex-direction: row;
+
+}
