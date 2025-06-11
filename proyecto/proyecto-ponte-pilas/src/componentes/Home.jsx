@@ -3,6 +3,9 @@ import '../estilos/Home.css'; // Para los estilos de la página
 import quitologo from '../recursos/quito-logo.png'; // Importa la imagen del logo
 import playstorelogo from '../recursos/gplya-logo.png'; // Importa la imagen del logo
 import App_Store_logo from '../recursos/appstore-logo.png'; // Importa la imagen del logo
+import user_logo from '../recursos/user-logo.png'; // Importa la imagen del logo
+import { Link } from 'react-router-dom';
+
 
 const Home = () => {
   return (
@@ -10,7 +13,7 @@ const Home = () => {
       <header className="header">
         <div className="header-left">
           <img
-            src={quitologo}	
+            src={quitologo}
             alt="Distrito Metropolitano de Quito"
             className="logo"
           />
@@ -18,6 +21,7 @@ const Home = () => {
         </div>
 
         <div className="header-right">
+          <h1 className="title-disponible">Disponible en</h1>
           <a href="https://play.google.com" className="store-link">
             <img
               src={playstorelogo}
@@ -37,23 +41,32 @@ const Home = () => {
 
       <section className="main-content">
         <section className="description">
-        <h2>¿Qué es Ponte once?</h2>
-        <p>
-          Es una aplicación móvil y web que permite una interacción más
-          cercana entre la ciudadanía y los elementos de seguridad de una
-          zona, para dar atención a solicitudes de apoyo ante una emergencia.
-        </p>
+          <h2>¿Qué es Ponte once?</h2>
+          <p>
+            Es una aplicación móvil y web que permite una interacción más
+            cercana entre la ciudadanía y los elementos de seguridad de una
+            zona, para dar atención a solicitudes de apoyo ante una emergencia.
+          </p>
+        </section>
+
+        <section className="user-type">
+          <a>
+            <img
+              src={user_logo}
+              alt="App Store"
+              className="user-logo"
+            />
+          </a>
+          <h3>Bienvenido</h3>
+          <p>Ingresar como:</p>
+          <Link to="/loginAdmin">
+            <button className="button-admin">Administrador</button>
+          </Link>
+          <button className="button-user">Usuario</button>
+        </section>
       </section>
 
-      <section className="user-type">
-        <h3>Bienvenido</h3>
-        <p>Tú eres...</p>
-        <button className="button-admin">Administrador</button>
-        <button className="button-user">Usuario</button>
-      </section>
-      </section>
 
-      
     </div>
   );
 };
