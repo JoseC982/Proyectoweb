@@ -6,34 +6,25 @@ import { useState } from "react";
 import policia from '../recursos/policia-logo.png'; // Importa la imagen del logo
 import user_logo from '../recursos/user-logo.png'; // Importa la imagen del logo
 
-const LoginAdmin = ({ users }) => {
+const CrearCuenta = ({ users }) => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [fecha, setFecha] = useState('');
 
     const handleLogin = () => {
-        if (
-            users &&
-            Array.isArray(users) &&
-            users.some(
-                (u) => u.email === email && u.pass === password
-            )
-        ) {
-            const user = users.find(
-                (u) => u.email === email && u.pass === password
-            );
-            if (user.name === "Admin") {
-                navigate("/homeAdmin");
-            } else if (user.name === "Usuario") {
-                alert("¡Bienvenido (user)!");
-                navigate("/homeUser");
-
-            }
-        } else {
-            alert("No existe el usuario");
+        if (!name.trim() || !email.trim() || !password.trim() || fecha === "") {
+            alert("Campos incompletos");
+            return;
         }
+
+        alert("Usuario Creado Bienvenido");
+        navigate("/loginAdmin");
     };
+
+
 
     const handleLogout = () => {
         // Aquí puedes agregar la lógica de cierre de sesión
@@ -61,6 +52,15 @@ const LoginAdmin = ({ users }) => {
                             className="la-user-logo"
                         />
                         <h1>¡Bienvenido de nuevo!</h1>
+                    </div>
+                    <div className="email-container">
+                        <input
+                            type="text"
+                            placeholder="Nombre"
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            className="input-text"
+                        />
                     </div>
 
                     <div className="email-container">
@@ -92,24 +92,28 @@ const LoginAdmin = ({ users }) => {
                             {showPassword ? "🙈" : "👁️"}
                         </button>
                     </div>
+                    <div className="date-born-container">
+                        <input
+                            type="date"
+                            placeholder="Fecha Nacimiento"
+                            value={fecha}
+                            onChange={e => setFecha(e.target.value)}
+                            className="input-text"
+                        />
+                    </div>
 
                     <div className="button-container">
                         <button className="button" onClick={handleLogin}>
-                            Iniciar sesión
+                            Crear Cuenta
                         </button>
                         <Link to="/home">
                             <button className="button">Volver a Inicio</button>
                         </Link>
-                        <span>
-                            <Link to="/recuperarCuenta">¿Olvidaste tu contraseña?</Link>
-                        </span>
-                        <span>
-                            ¿No tienes una cuenta? <Link to="/crearCuenta">Crear cuenta</Link>
-                        </span>
+
                     </div>
                 </section>
             </div>
         </div>
     );
 }
-export default LoginAdmin;
+export default CrearCuenta;

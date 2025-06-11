@@ -8,20 +8,17 @@ body {
     width: 100%;
     width: 100%;
     height: 100%;
-
-
+    font-family: "Playfair Display", serif;
 }
 #root {
     width: 100%;
     height: 100%;
 }
-
 html {
     width: 100%;
     height: 100%;
 
 }
-
 .login-admin-container {
     display: flex;
     justify-content: center;
@@ -30,20 +27,19 @@ html {
     width: 100%;
     height: 100%;
 }
-.left-side{
+.left-side {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 50%;
     height: 100%;
     background-color: #A0B8EC;
-    
+
 }
 .right-side {
     width: 50%;
     height: 100%;
     color: black
-    
 }
 .la-user-type {
     display: flex;
@@ -55,24 +51,22 @@ html {
     width: 100%;
     height: 100%;
 }
-.user-type h3 {
-  font-size: 2.5em;
-  margin: 0%;
-  color: black
-
+.la-user-type h1 {
+    font-size: 2.5em;
+    margin: 0%;
+    color: black
 }
-
 .user-type p {
-  font-size: 1.2em;
-  color: black
+    font-size: 1.2em;
+    color: black
 }
 
 .la-logo {
-    width: 70%;
+    width: 100%;
     height: automatic;
     object-fit: cover;
 }
-.input-text{
+.input-text {
     width: 90%;
     height: 100%;
     border: solid 1px black;
@@ -85,8 +79,6 @@ html {
     height: 7%;
     display: flex;
     justify-content: space-between;
-    /* margin-top: 5%;
-    margin-bottom: 5%; */
 }
 .la-user-logo {
     display: flex;
@@ -100,28 +92,28 @@ html {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    justify-content: space-between;
     margin-top: 5%;
-    margin-bottom: 5%;
+    font-size: 20px;
 }
-.button{
-  padding: 10px 20px;
-  margin: 10px;
-  background-color: #2e4d77;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.1em;
-  font-family: "Playfair Display", serif;
+.button {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #2e4d77;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-family: "Playfair Display", serif;
 }
-
-.button{
-  background-color: #214361;
+.button {
+    background-color: #214361;
 }
 .email-container {
     width: 60%;
     height: 7%;
-    
+
 }
 .button-container {
     display: flex;

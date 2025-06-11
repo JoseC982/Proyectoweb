@@ -58,11 +58,11 @@ const Home = () => {
             />
           </a>
           <h3>Bienvenido</h3>
-          <p>Ingresar como:</p>
+          {/* <p>Ingresar como:</p> */}
           <Link to="/loginAdmin">
-            <button className="button-admin">Administrador</button>
+            <button className="button-admin">Login</button>
           </Link>
-          <button className="button-user">Usuario</button>
+          {/* <button className="button-user">Usuario</button> */}
         </section>
       </section>
 

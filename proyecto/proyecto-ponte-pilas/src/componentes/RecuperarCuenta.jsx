@@ -6,34 +6,20 @@ import { useState } from "react";
 import policia from '../recursos/policia-logo.png'; // Importa la imagen del logo
 import user_logo from '../recursos/user-logo.png'; // Importa la imagen del logo
 
-const LoginAdmin = ({ users }) => {
+const RecuperarCuenta = ({ users }) => {
     const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
     const handleLogin = () => {
-        if (
-            users &&
-            Array.isArray(users) &&
-            users.some(
-                (u) => u.email === email && u.pass === password
-            )
-        ) {
-            const user = users.find(
-                (u) => u.email === email && u.pass === password
-            );
-            if (user.name === "Admin") {
-                navigate("/homeAdmin");
-            } else if (user.name === "Usuario") {
-                alert("¡Bienvenido (user)!");
-                navigate("/homeUser");
-
-            }
-        } else {
-            alert("No existe el usuario");
+        if (!email.trim()) {
+            alert("Campos incompletos");
+            return;
         }
+
+        alert("Revisa Tu Correo");
+        navigate("/loginAdmin");
     };
+
+
 
     const handleLogout = () => {
         // Aquí puedes agregar la lógica de cierre de sesión
@@ -54,7 +40,6 @@ const LoginAdmin = ({ users }) => {
                 <section className="la-user-type">
                     <div className="la-user-logo-container">
                         <h1>Usuario</h1>
-
                         <img
                             src={user_logo}
                             alt="App Store"
@@ -62,8 +47,8 @@ const LoginAdmin = ({ users }) => {
                         />
                         <h1>¡Bienvenido de nuevo!</h1>
                     </div>
-
                     <div className="email-container">
+                        <span>Escribe tu correo electronico</span>
                         <input
                             type="email"
                             placeholder="Correo electrónico"
@@ -72,44 +57,18 @@ const LoginAdmin = ({ users }) => {
                             className="input-text"
                         />
                     </div>
-
-
-                    <div className="password-container">
-
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Contraseña"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            className="input-text"
-                        />
-                        <button
-                            type="button"
-                            className="eye-button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            tabIndex={-1}
-                        >
-                            {showPassword ? "🙈" : "👁️"}
-                        </button>
-                    </div>
-
                     <div className="button-container">
                         <button className="button" onClick={handleLogin}>
-                            Iniciar sesión
+                            Recuperar Cuenta
                         </button>
                         <Link to="/home">
                             <button className="button">Volver a Inicio</button>
                         </Link>
-                        <span>
-                            <Link to="/recuperarCuenta">¿Olvidaste tu contraseña?</Link>
-                        </span>
-                        <span>
-                            ¿No tienes una cuenta? <Link to="/crearCuenta">Crear cuenta</Link>
-                        </span>
+
                     </div>
                 </section>
             </div>
         </div>
     );
 }
-export default LoginAdmin;
+export default RecuperarCuenta;
