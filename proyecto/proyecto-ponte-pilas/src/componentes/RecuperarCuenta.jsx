@@ -14,12 +14,9 @@ const RecuperarCuenta = ({ users }) => {
             alert("Campos incompletos");
             return;
         }
-
         alert("Revisa Tu Correo");
         navigate("/loginAdmin");
     };
-
-
 
     const handleLogout = () => {
         // Aquí puedes agregar la lógica de cierre de sesión
@@ -64,7 +61,6 @@ const RecuperarCuenta = ({ users }) => {
                         <Link to="/home">
                             <button className="button">Volver a Inicio</button>
                         </Link>
-
                     </div>
                 </section>
             </div>

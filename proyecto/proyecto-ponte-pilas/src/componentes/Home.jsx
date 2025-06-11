@@ -19,7 +19,6 @@ const Home = () => {
           />
           <h1 className="title">Ponte once</h1>
         </div>
-
         <div className="header-right">
           <h1 className="title-disponible">Disponible en</h1>
           <a href="https://play.google.com" className="store-link">
@@ -38,7 +37,6 @@ const Home = () => {
           </a>
         </div>
       </header>
-
       <section className="main-content">
         <section className="description">
           <h2>¿Qué es Ponte once?</h2>
@@ -48,7 +46,6 @@ const Home = () => {
             zona, para dar atención a solicitudes de apoyo ante una emergencia.
           </p>
         </section>
-
         <section className="user-type">
           <a>
             <img
@@ -58,15 +55,11 @@ const Home = () => {
             />
           </a>
           <h3>Bienvenido</h3>
-          {/* <p>Ingresar como:</p> */}
           <Link to="/loginAdmin">
             <button className="button-admin">Login</button>
           </Link>
-          {/* <button className="button-user">Usuario</button> */}
         </section>
       </section>
-
-
     </div>
   );
 };

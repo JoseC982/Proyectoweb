@@ -28,7 +28,6 @@ const LoginAdmin = ({ users }) => {
             } else if (user.name === "Usuario") {
                 alert("¡Bienvenido (user)!");
                 navigate("/homeUser");
-
             }
         } else {
             alert("No existe el usuario");
@@ -62,7 +61,6 @@ const LoginAdmin = ({ users }) => {
                         />
                         <h1>¡Bienvenido de nuevo!</h1>
                     </div>
-
                     <div className="email-container">
                         <input
                             type="email"
@@ -72,8 +70,6 @@ const LoginAdmin = ({ users }) => {
                             className="input-text"
                         />
                     </div>
-
-
                     <div className="password-container">
 
                         <input
@@ -92,7 +88,6 @@ const LoginAdmin = ({ users }) => {
                             {showPassword ? "🙈" : "👁️"}
                         </button>
                     </div>
-
                     <div className="button-container">
                         <button className="button" onClick={handleLogin}>
                             Iniciar sesión

@@ -19,12 +19,9 @@ const CrearCuenta = ({ users }) => {
             alert("Campos incompletos");
             return;
         }
-
         alert("Usuario Creado Bienvenido");
         navigate("/loginAdmin");
     };
-
-
 
     const handleLogout = () => {
         // Aquí puedes agregar la lógica de cierre de sesión
@@ -45,7 +42,6 @@ const CrearCuenta = ({ users }) => {
                 <section className="la-user-type">
                     <div className="la-user-logo-container">
                         <h1>Usuario</h1>
-
                         <img
                             src={user_logo}
                             alt="App Store"
@@ -62,7 +58,6 @@ const CrearCuenta = ({ users }) => {
                             className="input-text"
                         />
                     </div>
-
                     <div className="email-container">
                         <input
                             type="email"
@@ -72,10 +67,7 @@ const CrearCuenta = ({ users }) => {
                             className="input-text"
                         />
                     </div>
-
-
                     <div className="password-container">
-
                         <input
                             type={showPassword ? "text" : "password"}
                             placeholder="Contraseña"
@@ -101,7 +93,6 @@ const CrearCuenta = ({ users }) => {
                             className="input-text"
                         />
                     </div>
-
                     <div className="button-container">
                         <button className="button" onClick={handleLogin}>
                             Crear Cuenta
