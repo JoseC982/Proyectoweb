@@ -1,7 +1,9 @@
 import logo from './logo.svg';
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './componentes/Home';
+import MenuUsuario from './componentes/MenuUsuario';
+import InformacionUsuario from './componentes/InformacionUsuario';
+import VisualizarReportes from './componentes/VisualizarReportes';
 import './App.css';
 import LoginAdmin from './componentes/LoginAdmin';
 import CrearCuenta from "./componentes/CrearCuenta";
