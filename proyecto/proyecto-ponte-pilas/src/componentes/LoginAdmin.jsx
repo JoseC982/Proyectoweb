@@ -27,7 +27,7 @@ const LoginAdmin = ({ users }) => {
                 navigate("/homeAdmin");
             } else if (user.name === "Usuario") {
                 alert("¡Bienvenido (user)!");
-                navigate("/");
+                navigate("/menuUsuario");
             }
         } else {
             alert("No existe el usuario");
@@ -37,7 +37,7 @@ const LoginAdmin = ({ users }) => {
     const handleLogout = () => {
         // Aquí puedes agregar la lógica de cierre de sesión
         // Por ahora, simplemente redirigimos al usuario a la página de inicio
-        navigate("/home");
+        navigate("/");
     }
 
     return (
@@ -93,7 +93,7 @@ const LoginAdmin = ({ users }) => {
                         <button className="button" onClick={handleLogin}>
                             Iniciar sesión
                         </button>
-                        <Link to="/home">
+                        <Link to="/">
                             <button className="button">Volver a Inicio</button>
                         </Link>
                         <span>

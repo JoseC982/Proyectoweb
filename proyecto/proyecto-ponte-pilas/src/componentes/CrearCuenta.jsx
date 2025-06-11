@@ -26,7 +26,7 @@ const CrearCuenta = ({ users }) => {
     const handleLogout = () => {
         // Aquí puedes agregar la lógica de cierre de sesión
         // Por ahora, simplemente redirigimos al usuario a la página de inicio
-        navigate("/home");
+        navigate("/");
     }
 
     return (
@@ -98,7 +98,7 @@ const CrearCuenta = ({ users }) => {
                         <button className="button" onClick={handleLogin}>
                             Crear Cuenta
                         </button>
-                        <Link to="/home">
+                        <Link to="/">
                             <button className="button">Volver a Inicio</button>
                         </Link>
 

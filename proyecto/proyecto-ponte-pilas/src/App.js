@@ -36,12 +36,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MenuUsuario />} />
+        <Route path="/menuUsuario" element={<MenuUsuario />} />
         <Route path="/informacion" element={<InformacionUsuario />} />
         <Route path="/generar-reporte" element={<GenerarReporte />} />
         <Route path="/visualizar-reportes" element={<VisualizarReportes />} />
 
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/loginAdmin" element={<LoginAdmin 
         users={users}
         />} 

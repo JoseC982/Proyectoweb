@@ -21,7 +21,7 @@ const RecuperarCuenta = ({ users }) => {
     const handleLogout = () => {
         // Aquí puedes agregar la lógica de cierre de sesión
         // Por ahora, simplemente redirigimos al usuario a la página de inicio
-        navigate("/home");
+        navigate("/");
     }
 
     return (
@@ -59,7 +59,7 @@ const RecuperarCuenta = ({ users }) => {
                         <button className="button" onClick={handleLogin}>
                             Recuperar Cuenta
                         </button>
-                        <Link to="/home">
+                        <Link to="/">
                             <button className="button">Volver a Inicio</button>
                         </Link>
                     </div>

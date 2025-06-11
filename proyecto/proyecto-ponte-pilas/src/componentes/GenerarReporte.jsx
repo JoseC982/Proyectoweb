@@ -25,7 +25,7 @@ export default function GenerarReporte() {
   // Si no hay reporte seleccionado (por ejemplo, si se accede directamente a la ruta), regresa al menú principal
   if (!reporte) {
     // Redirige al menú principal
-    navigate("/");
+    navigate("/menuUsuario");
     return null;
   }
 
@@ -36,14 +36,14 @@ export default function GenerarReporte() {
     // Después de 1.5 segundos, limpia el mensaje y regresa al menú principal
     setTimeout(() => {
       setMensaje("");
-      navigate("/");
+      navigate("/menuUsuario");
     }, 1500);
   };
 
   // Función que maneja el botón "Cancelar"
   const handleCancelar = () => {
     // Regresa al menú principal sin guardar nada
-    navigate("/");
+    navigate("/menuUsuario");
   };
 
   // Renderizado del componente

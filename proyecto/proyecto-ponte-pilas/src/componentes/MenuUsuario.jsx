@@ -102,7 +102,7 @@ export default function MenuUsuario() {
               {/* Opción para ir a la información del usuario */}
               <button className="menu-opcion" onClick={() => navigate("/informacion")}>Mi cuenta</button>
               {/* Opción para cerrar sesión (a implementar) */}
-              <button className="menu-opcion" onClick={() => navigate("/home")}>Cerrar sesión</button>
+              <button className="menu-opcion" onClick={() => navigate("/")}>Cerrar sesión</button>
             </div>
           )}
         </div>

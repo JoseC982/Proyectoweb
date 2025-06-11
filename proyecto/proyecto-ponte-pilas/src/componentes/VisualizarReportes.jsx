@@ -95,7 +95,7 @@ export default function VisualizarReportes() {
             </div>
             {/* Botón para regresar al menú principal */}
             <div className="botones-reportes">
-              <button className="btn-regresar" onClick={() => navigate("/")}>REGRESAR</button>
+              <button className="btn-regresar" onClick={() => navigate("/menuUsuario")}>REGRESAR</button>
             </div>
           </div>
         </section>

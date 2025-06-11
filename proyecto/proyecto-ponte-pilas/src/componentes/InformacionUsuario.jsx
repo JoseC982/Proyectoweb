@@ -136,7 +136,7 @@ export default function InformacionUsuario() {
           {edit ? "Guardar" : "Editar información"}
         </button>
         {/* Botón para regresar al menú principal */}
-        <button className="btn-regresar" onClick={() => navigate("/")}>
+        <button className="btn-regresar" onClick={() => navigate("/menuUsuario")}>
           REGRESAR
         </button>
       </div>
