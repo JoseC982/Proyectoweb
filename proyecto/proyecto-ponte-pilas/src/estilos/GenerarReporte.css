@@ -1,103 +1,116 @@
 .generar-reporte-container {
-  background: #f8fafd;
-  border: 5px solid #2e2eec;
-  border-radius: 18px;
-  margin: 18px;
-  min-height: 98vh;
-  box-shadow: 0 2px 16px #e3e6f3;
-  position: relative;
-  overflow: hidden;
+  /* Contenedor principal del formulario de reporte */
+  background: #f8fafd;                  /* Fondo claro para todo el contenedor */
+  border: 5px solid #2e2eec;            /* Borde azul grueso */
+  border-radius: 18px;                  /* Bordes redondeados */
+  margin: 18px;                         /* Margen exterior */
+  min-height: 98vh;                     /* Altura mínima casi toda la pantalla */
+  box-shadow: 0 2px 16px #e3e6f3;       /* Sombra suave para dar profundidad */
+  position: relative;                   /* Para posicionar hijos relativos */
+  overflow: hidden;                     /* Oculta desbordes */
 }
 
 .generar-reporte-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 36px 40px 0 40px;
-  min-height: 80vh;
+  /* Contenedor principal de las dos columnas (mapa y formulario) */
+  display: flex;                        /* Usa flexbox para columnas */
+  justify-content: space-between;       /* Espacio entre columnas */
+  align-items: flex-start;              /* Alinea arriba */
+  padding: 36px 40px 0 40px;            /* Espaciado interno */
+  min-height: 80vh;                     /* Altura mínima */
 }
 
 .mapa-section {
-  width: 45%;
+  /* Columna izquierda: sección del mapa */
+  width: 45%;                           /* Ocupa 45% del ancho */
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: center;              /* Centra horizontalmente */
+  align-items: flex-start;              /* Alinea arriba */
 }
 
 .mapa-placeholder {
-  width: 95%;
-  height: 320px;
-  background: #e3e6f3;
-  border: 2px solid #bdbdbd;
-  border-radius: 12px;
-  display: flex;
+  /* Cuadro de mapa (por ahora solo texto) */
+  width: 95%;                           /* Casi todo el ancho de la columna */
+  height: 320px;                        /* Altura fija */
+  background: #e3e6f3;                  /* Fondo gris-azulado */
+  border: 2px solid #bdbdbd;            /* Borde gris claro */
+  border-radius: 12px;                  /* Bordes redondeados */
+  display: flex;                        /* Centra contenido */
   align-items: center;
   justify-content: center;
-  color: #23235b;
-  font-size: 1.3rem;
-  font-weight: 500;
+  color: #23235b;                       /* Texto azul oscuro */
+  font-size: 1.3rem;                    /* Tamaño de fuente grande */
+  font-weight: 500;                     /* Negrita media */
 }
 
 .form-section {
-  width: 50%;
+  /* Columna derecha: formulario */
+  width: 50%;                           /* Ocupa la mitad */
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-end;                /* Alinea a la derecha */
 }
 
 .reporte-info {
+  /* Contenedor de la cabecera del reporte (icono y texto) */
   width: 100%;
-  margin-bottom: 18px;
+  margin-bottom: 18px;                  /* Espacio debajo */
 }
 
 .reporte-tipo {
+  /* Fila con icono y texto del tipo de reporte */
   display: flex;
   align-items: center;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px #e3e6f3;
-  padding: 10px 18px;
-  gap: 16px;
+  background: #fff;                     /* Fondo blanco */
+  border-radius: 12px;                  /* Bordes redondeados */
+  box-shadow: 0 2px 8px #e3e6f3;        /* Sombra suave */
+  padding: 10px 18px;                   /* Espaciado interno */
+  gap: 16px;                            /* Espacio entre icono y texto */
 }
 
 .icono-reporte {
+  /* Imagen del tipo de reporte */
   width: 48px;
   height: 48px;
-  object-fit: contain;
+  object-fit: contain;                  /* Ajusta imagen sin deformar */
 }
 
 .texto-reporte {
+  /* Texto del tipo de reporte */
   font-size: 1.2rem;
   font-weight: bold;
   color: #23235b;
 }
 
 .formulario-reporte {
+  /* Formulario de ingreso de datos */
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 10px;                            /* Espacio entre campos */
 }
 
 .input-descripcion,
 .input-ubicacion {
+  /* Estilo para textarea y input de ubicación */
   width: 100%;
-  border-radius: 16px;
-  border: 2px solid #bdbdbd;
-  padding: 10px 16px;
+  border-radius: 16px;                  /* Bordes redondeados */
+  border: 2px solid #bdbdbd;            /* Borde gris claro */
+  padding: 10px 16px;                   /* Espaciado interno */
   font-size: 1rem;
-  margin-bottom: 8px;
-  background: #fff;
-  color: #23235b;
-  resize: none;
+  margin-bottom: 8px;                   /* Espacio debajo */
+  background: #fff;                     /* Fondo blanco */
+  color: #23235b;                       /* Texto azul oscuro */
+  resize: none;                         /* No permite redimensionar */
 }
 
 .input-descripcion {
+  /* Textarea de descripción: altura mínima mayor */
   min-height: 70px;
 }
 
 .input-hora {
-  width: 40%;
+  /* Input de hora */
+  width: 40%;                           /* Más pequeño */
   border-radius: 16px;
   border: 2px solid #bdbdbd;
   padding: 8px 12px;
@@ -108,13 +121,15 @@
 }
 
 .botones-reporte {
+  /* Contenedor de los botones GENERAR y CANCELAR */
   display: flex;
-  gap: 18px;
+  gap: 18px;                            /* Espacio entre botones */
   margin-top: 10px;
 }
 
 .btn-generar {
-  background: linear-gradient(90deg, #7c4dff 0%, #5ee7df 100%);
+  /* Botón GENERAR */
+  background: linear-gradient(90deg, #7c4dff 0%, #5ee7df 100%); /* De morado a celeste */
   color: #fff;
   font-weight: 600;
   font-size: 1.08rem;
@@ -126,12 +141,14 @@
 }
 
 .btn-generar:hover {
+  /* Efecto hover: invierte el gradiente y eleva el botón */
   background: linear-gradient(90deg, #5ee7df 0%, #7c4dff 100%);
   transform: translateY(-2px) scale(1.03);
 }
 
 .btn-cancelar {
-  background: linear-gradient(90deg, #ff1744 0%, #7c4dff 100%);
+  /* Botón CANCELAR */
+  background: linear-gradient(90deg, #ff1744 0%, #7c4dff 100%); /* De rojo a morado */
   color: #fff;
   font-weight: 600;
   font-size: 1.08rem;
@@ -143,21 +160,23 @@
 }
 
 .btn-cancelar:hover {
+  /* Efecto hover: invierte el gradiente y eleva el botón */
   background: linear-gradient(90deg, #7c4dff 0%, #ff1744 100%);
   transform: translateY(-2px) scale(1.03);
 }
 
 .mensaje-generado {
+  /* Mensaje flotante de confirmación */
   position: fixed;
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: #23235b;
+  background: #23235b;                  /* Fondo azul oscuro */
   color: #fff;
   padding: 12px 28px;
   border-radius: 14px;
   font-size: 1.05rem;
-  z-index: 999;
-  box-shadow: 0 2px 8px #e3e6f3;
-  letter-spacing: 0.5px;
+  z-index: 999;                         /* Encima de todo */
+  box-shadow: 0 2px 8px #e3e6f3;        /* Sombra suave */
+  letter-spacing: 0.5px;                /* Espaciado de letras */
 }

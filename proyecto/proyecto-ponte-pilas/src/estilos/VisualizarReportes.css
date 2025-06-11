@@ -1,153 +1,153 @@
 .visualizar-reportes-container {
-  background: #f8fafd;
-  border: 5px solid #2e2eec;
-  border-radius: 18px;
-  margin: 18px;
-  min-height: 98vh;
-  box-shadow: 0 2px 16px #e3e6f3;
-  position: relative;
-  overflow: hidden;
+  background: #f8fafd;                  /* Fondo claro para todo el contenedor */
+  border: 5px solid #2e2eec;            /* Borde azul grueso */
+  border-radius: 18px;                  /* Bordes redondeados */
+  margin: 18px;                         /* Margen exterior */
+  min-height: 98vh;                     /* Altura mínima casi toda la pantalla */
+  box-shadow: 0 2px 16px #e3e6f3;       /* Sombra suave para dar profundidad */
+  position: relative;                   /* Para posicionar hijos relativos */
+  overflow: hidden;                     /* Oculta desbordes */
 }
 
 .visualizar-reportes-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 36px 40px 0 40px;
-  min-height: 80vh;
+  display: flex;                        /* Usa flexbox para columnas */
+  justify-content: space-between;       /* Espacio entre columnas */
+  align-items: flex-start;              /* Alinea arriba */
+  padding: 36px 40px 0 40px;            /* Espaciado interno */
+  min-height: 80vh;                     /* Altura mínima */
 }
 
 .mapa-section {
-  width: 45%;
+  width: 45%;                           /* Columna izquierda: ocupa 45% del ancho */
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: center;              /* Centra horizontalmente */
+  align-items: flex-start;              /* Alinea arriba */
 }
 
 .mapa-placeholder {
-  width: 95%;
-  height: 320px;
-  background: #e3e6f3;
-  border: 2px solid #bdbdbd;
-  border-radius: 12px;
-  display: flex;
+  width: 95%;                           /* Casi todo el ancho de la columna */
+  height: 320px;                        /* Altura fija */
+  background: #e3e6f3;                  /* Fondo gris-azulado */
+  border: 2px solid #bdbdbd;            /* Borde gris claro */
+  border-radius: 12px;                  /* Bordes redondeados */
+  display: flex;                        /* Centra contenido */
   align-items: center;
   justify-content: center;
-  color: #23235b;
-  font-size: 1.3rem;
-  font-weight: 500;
+  color: #23235b;                       /* Texto azul oscuro */
+  font-size: 1.3rem;                    /* Tamaño de fuente grande */
+  font-weight: 500;                     /* Negrita media */
 }
 
 .info-section {
-  width: 50%;
+  width: 50%;                           /* Columna derecha: ocupa la mitad */
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-end;                /* Alinea a la derecha */
 }
 
 .info-cuadro {
-  width: 100%;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px #e3e6f3;
-  padding: 24px 28px;
+  width: 100%;                          /* Ocupa todo el ancho de la columna */
+  background: #fff;                     /* Fondo blanco */
+  border-radius: 16px;                  /* Bordes redondeados */
+  box-shadow: 0 2px 8px #e3e6f3;        /* Sombra suave */
+  padding: 24px 28px;                   /* Espaciado interno */
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 12px;                            /* Espacio entre elementos */
 }
 
 .info-titulo {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #7c4dff;
-  margin-bottom: 10px;
-  text-align: center;
-  letter-spacing: 0.5px;
+  font-size: 1.1rem;                    /* Tamaño de fuente */
+  font-weight: bold;                    /* Negrita */
+  color: #7c4dff;                       /* Morado */
+  margin-bottom: 10px;                  /* Espacio debajo */
+  text-align: center;                   /* Centrado */
+  letter-spacing: 0.5px;                /* Espaciado entre letras */
 }
 
 .reporte-info {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 10px;                            /* Espacio entre campos */
 }
 
 .reporte-tipo {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 8px;
+  gap: 14px;                            /* Espacio entre icono y texto */
+  margin-bottom: 8px;                   /* Espacio debajo */
 }
 
 .icono-reporte {
-  width: 44px;
+  width: 44px;                          /* Tamaño del icono */
   height: 44px;
-  object-fit: contain;
+  object-fit: contain;                  /* Ajusta imagen sin deformar */
 }
 
 .texto-reporte {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #23235b;
+  font-size: 1.1rem;                    /* Tamaño de texto */
+  font-weight: bold;                    /* Negrita */
+  color: #23235b;                       /* Azul oscuro */
 }
 
 .info-item label {
-  font-weight: 500;
-  color: #23235b;
-  margin-bottom: 2px;
-  display: block;
+  font-weight: 500;                     /* Negrita media */
+  color: #23235b;                       /* Azul oscuro */
+  margin-bottom: 2px;                   /* Espacio debajo */
+  display: block;                       /* Ocupa toda la línea */
 }
 
 .info-dato {
-  background: #f4f7fe;
-  color: #23235b;
-  border-radius: 12px;
-  padding: 8px 16px;
-  font-size: 1rem;
-  margin-bottom: 4px;
-  border: 1.5px solid #e0e4f6;
+  background: #f4f7fe;                  /* Fondo azul muy claro */
+  color: #23235b;                       /* Azul oscuro */
+  border-radius: 12px;                  /* Bordes redondeados */
+  padding: 8px 16px;                    /* Espaciado interno */
+  font-size: 1rem;                      /* Tamaño de texto */
+  margin-bottom: 4px;                   /* Espacio debajo */
+  border: 1.5px solid #e0e4f6;          /* Borde azul claro */
 }
 
 .botones-reportes {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
+  justify-content: flex-end;            /* Botón alineado a la derecha */
+  margin-top: 16px;                     /* Espacio arriba */
 }
 
 .btn-regresar {
-  background: linear-gradient(90deg, #ff1744 0%, #7c4dff 100%);
-  color: #fff;
-  font-weight: 600;
-  font-size: 1.08rem;
-  padding: 10px 28px;
-  border: none;
-  border-radius: 22px;
-  cursor: pointer;
-  transition: background 0.18s, transform 0.18s;
+  background: linear-gradient(90deg, #ff1744 0%, #7c4dff 100%); /* Degradado rojo a morado */
+  color: #fff;                          /* Texto blanco */
+  font-weight: 600;                     /* Negrita */
+  font-size: 1.08rem;                   /* Tamaño de texto */
+  padding: 10px 28px;                   /* Espaciado interno */
+  border: none;                         /* Sin borde */
+  border-radius: 22px;                  /* Bordes redondeados */
+  cursor: pointer;                      /* Cursor de mano */
+  transition: background 0.18s, transform 0.18s; /* Transición suave */
 }
 
 .btn-regresar:hover {
-  background: linear-gradient(90deg, #7c4dff 0%, #ff1744 100%);
-  transform: translateY(-2px) scale(1.03);
+  background: linear-gradient(90deg, #7c4dff 0%, #ff1744 100%); /* Invierte el degradado */
+  transform: translateY(-2px) scale(1.03);                      /* Eleva y agranda el botón */
 }
 
 /* Responsive */
 @media (max-width: 900px) {
   .visualizar-reportes-main {
-    flex-direction: column;
+    flex-direction: column;              /* Columnas apiladas */
     align-items: stretch;
-    padding: 18px 5vw 0 5vw;
+    padding: 18px 5vw 0 5vw;            /* Espaciado interno reducido */
   }
   .mapa-section, .info-section {
-    width: 100%;
+    width: 100%;                        /* Ocupa todo el ancho */
     margin: 0;
     padding: 18px 0;
     align-items: flex-start;
   }
   .mapa-placeholder {
-    width: 100%;
+    width: 100%;                        /* Mapa ocupa todo el ancho */
     min-width: 0;
   }
   .info-cuadro {
-    padding: 18px 10px;
+    padding: 18px 10px;                 /* Espaciado interno reducido */
   }
 }
