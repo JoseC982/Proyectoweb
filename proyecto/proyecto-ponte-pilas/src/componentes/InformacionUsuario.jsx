@@ -37,6 +37,7 @@ export default function InformacionUsuario() {
   return (
     <div className="info-usuario-container">
       {/* Header superior con logo y usuario */}
+      <title>Mi cuenta</title>
       <header className="menu-usuario-header">
         <div className="logo-titulo">
           {/* Logo de la aplicación */}

@@ -33,6 +33,7 @@ export default function VisualizarReportes() {
   return (
     <div className="visualizar-reportes-container">
       {/* Header superior con logo y usuario */}
+      <title>Reportes</title>
       <header className="menu-usuario-header">
         <div className="logo-titulo">
           {/* Logo de la aplicación */}

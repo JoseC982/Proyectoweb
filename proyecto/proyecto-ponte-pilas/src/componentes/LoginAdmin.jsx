@@ -27,7 +27,7 @@ const LoginAdmin = ({ users }) => {
                 navigate("/homeAdmin");
             } else if (user.name === "Usuario") {
                 alert("¡Bienvenido (user)!");
-                navigate("/homeUser");
+                navigate("/");
             }
         } else {
             alert("No existe el usuario");
@@ -42,6 +42,7 @@ const LoginAdmin = ({ users }) => {
 
     return (
         <div className="login-admin-container">
+            <title>Sing in</title>
             <div className="left-side">
                 <img
                     src={policia}

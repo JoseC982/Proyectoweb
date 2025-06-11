@@ -75,6 +75,7 @@ export default function MenuUsuario() {
     return (
     <div className="menu-usuario-container">
       {/* Header superior con logo, nombre de usuario y menú desplegable */}
+      <title>Menu Usuario</title>
       <header className="menu-usuario-header">
         <div className="logo-titulo">
           {/* Logo de la aplicación */}
@@ -101,7 +102,7 @@ export default function MenuUsuario() {
               {/* Opción para ir a la información del usuario */}
               <button className="menu-opcion" onClick={() => navigate("/informacion")}>Mi cuenta</button>
               {/* Opción para cerrar sesión (a implementar) */}
-              <button className="menu-opcion">Cerrar sesión</button>
+              <button className="menu-opcion" onClick={() => navigate("/home")}>Cerrar sesión</button>
             </div>
           )}
         </div>

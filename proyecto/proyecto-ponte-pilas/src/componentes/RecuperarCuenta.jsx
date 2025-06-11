@@ -26,6 +26,7 @@ const RecuperarCuenta = ({ users }) => {
 
     return (
         <div className="login-admin-container">
+            <title>Recuperar Cuenta</title>
             <div className="left-side">
                 <img
                     src={policia}

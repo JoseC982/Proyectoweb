@@ -49,6 +49,7 @@ export default function GenerarReporte() {
   // Renderizado del componente
   return (
     <div className="generar-reporte-container">
+      <title>Generar Reporte</title>
       {/* Header superior con logo y usuario */}
       <header className="menu-usuario-header">
         <div className="logo-titulo">

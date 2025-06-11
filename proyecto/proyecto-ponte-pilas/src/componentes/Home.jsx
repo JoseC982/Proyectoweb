@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 const Home = () => {
   return (
     <div className="home-container">
+      <title>Ponte Once</title>
       <header className="header">
         <div className="header-left">
           <img

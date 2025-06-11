@@ -31,6 +31,7 @@ const CrearCuenta = ({ users }) => {
 
     return (
         <div className="login-admin-container">
+            <title>Registrate</title>
             <div className="left-side">
                 <img
                     src={policia}

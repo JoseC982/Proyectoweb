@@ -4,10 +4,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MenuUsuario from './componentes/MenuUsuario';
 import InformacionUsuario from './componentes/InformacionUsuario';
 import VisualizarReportes from './componentes/VisualizarReportes';
+import GenerarReporte from './componentes/GenerarReporte';
 import './App.css';
 import LoginAdmin from './componentes/LoginAdmin';
 import CrearCuenta from "./componentes/CrearCuenta";
-import RecuperarCuenta from "./componentes/RecuperarCuenta"
+import RecuperarCuenta from "./componentes/RecuperarCuenta";
+import Home from "./componentes/Home";
 
 function App() {
   const [users, setUsers] = useState([
@@ -34,6 +36,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<MenuUsuario />} />
+        <Route path="/informacion" element={<InformacionUsuario />} />
+        <Route path="/generar-reporte" element={<GenerarReporte />} />
+        <Route path="/visualizar-reportes" element={<VisualizarReportes />} />
+
         <Route path="/home" element={<Home />} />
         <Route path="/loginAdmin" element={<LoginAdmin 
         users={users}
