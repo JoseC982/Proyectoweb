@@ -82,6 +82,12 @@ const LoginAdmin = () => {
                         <Link to="/home">
                             <button className="button">Volver a Inicio</button>
                         </Link>
+                        <span>
+                            <Link to="/recuperarContrasena">¿Olvidaste tu contraseña?</Link>
+                        </span>
+                        <span>
+                            ¿No tienes una cuenta? <Link to="/crearUsuario">Crear cuenta</Link>
+                        </span>
                     </div>
                 </section>
             </div>
