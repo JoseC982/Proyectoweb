@@ -156,7 +156,7 @@
 }
 
 .btn-editar,
-.btn-regresar {
+.us-btn-regresar {
   /* Botones de editar y regresar */
   background: linear-gradient(90deg, #7c4dff 0%, #5ee7df 100%);
   color: #fff;
@@ -172,18 +172,18 @@
 }
 
 .btn-editar:hover,
-.btn-regresar:hover {
+.us-btn-regresar:hover {
   /* Efecto hover: invierte el gradiente y eleva el botón */
   background: linear-gradient(90deg, #5ee7df 0%, #7c4dff 100%);
   transform: translateY(-2px) scale(1.03);
 }
 
-.btn-regresar {
+.us-btn-regresar {
   /* Botón regresar: gradiente rojo a morado */
   background: linear-gradient(90deg, #ff1744 0%, #7c4dff 100%);
 }
 
-.btn-regresar:hover {
+.us-btn-regresar:hover {
   /* Hover: gradiente morado a rojo */
   background: linear-gradient(90deg, #7c4dff 0%, #ff1744 100%);
 }

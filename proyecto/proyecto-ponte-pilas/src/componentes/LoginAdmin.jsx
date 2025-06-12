@@ -24,7 +24,7 @@ const LoginAdmin = ({ users }) => {
                 (u) => u.email === email && u.pass === password
             );
             if (user.name === "Admin") {
-                navigate("/homeAdmin");
+                navigate("/menu-administracion");
             } else if (user.name === "Usuario") {
                 alert("¡Bienvenido (user)!");
                 navigate("/menuUsuario");
@@ -34,11 +34,6 @@ const LoginAdmin = ({ users }) => {
         }
     };
 
-    const handleLogout = () => {
-        // Aquí puedes agregar la lógica de cierre de sesión
-        // Por ahora, simplemente redirigimos al usuario a la página de inicio
-        navigate("/");
-    }
 
     return (
         <div className="login-admin-container">

@@ -1,4 +1,7 @@
-.info-usuario-container {
+#root {
+  color: black !important;
+}
+.ad-info-usuario-container {
   /* Contenedor principal de la información del usuario */
   background: #f8fafd;                  /* Fondo claro */
   border: 5px solid #2e2eec;            /* Borde azul grueso */
@@ -13,7 +16,7 @@
   justify-content: flex-start;
 }
 
-.info-usuario-main {
+.ad-info-usuario-main {
   /* Contenedor principal de las dos columnas */
   position: relative;                   /* Necesario para el pseudo-elemento de fondo */
   display: flex;                        /* Flexbox para columnas */
@@ -25,7 +28,7 @@
 }
 
 /* Imagen de fondo opaca usando pseudo-elemento */
-.info-usuario-main::before {
+.ad-info-usuario-main::before {
   content: "";
   position: absolute;
   left: 0;
@@ -40,12 +43,12 @@
 }
 
 /* Asegura que el contenido esté por encima del fondo */
-.info-usuario-main > * {
+.ad-info-usuario-main > * {
   position: relative;
   z-index: 1;
 }
 
-.icono-grande {
+.ad-icono-grande {
   /* Icono grande de usuario */
   display: flex;
   justify-content: center;
@@ -60,13 +63,13 @@
   color: #7c4dff;                       /* Morado */
 }
 
-.info-campos {
+.ad-info-campos {
   /* Contenedor de los campos de entrada */
   width: 100%;
   margin-bottom: 10px;
 }
 
-.info-campos label {
+.ad-info-campos label {
   /* Etiquetas de los campos */
   display: block;
   font-weight: 500;
@@ -76,7 +79,7 @@
   letter-spacing: 0.5px;
 }
 
-.info-input {
+.ad-info-input {
   /* Inputs de texto */
   width: 95%;
   background: #f4f7fe;
@@ -90,12 +93,12 @@
   transition: border 0.2s;
 }
 
-.info-input:focus {
+.ad-info-input:focus {
   /* Borde morado al enfocar */
   border: 1.5px solid #7c4dff;
 }
 
-.info-input:disabled {
+.ad-info-input:disabled {
   /* Apariencia de input deshabilitado */
   background: #f4f7fe;
   color: #23235b;
@@ -103,7 +106,7 @@
   border: 1.5px solid #e0e4f6;
 }
 
-.info-usuario-right {
+.ad-info-usuario-right {
   /* Columna derecha (bio, email, contraseña) */
   width: 50%;
   display: flex;
@@ -112,7 +115,7 @@
   margin-top: 24px;
 }
 
-.bio-label {
+.ad-bio-label {
   /* Etiqueta de la biografía */
   font-weight: 500;
   margin-bottom: 4px;
@@ -121,7 +124,7 @@
   letter-spacing: 0.5px;
 }
 
-.bio-area {
+.ad-bio-area {
   /* Área de texto para la biografía */
   width: 320px;
   height: 110px;
@@ -137,12 +140,12 @@
   transition: border 0.2s;
 }
 
-.bio-area:focus {
+.ad-bio-area:focus {
   /* Borde morado al enfocar */
   border: 1.5px solid #7c4dff;
 }
 
-.bio-area:disabled {
+.ad-bio-area:disabled {
   /* Apariencia de textarea deshabilitada */
   background: #f4f7fe;
   color: #23235b;
@@ -150,10 +153,11 @@
   border: 1.5px solid #e0e4f6;
 }
 
-.info-botones {
+.ad-info-botones {
   /* Contenedor de los botones de acción */
   display: flex;
   justify-content: center;
+  text-align: center;
   gap: 24px;                            /* Espacio entre botones */
   margin: 0 0 28px 0;
   position: absolute;
@@ -164,8 +168,8 @@
   background: transparent;
 }
 
-.btn-editar,
-.btn-regresar {
+.ad-btn-editar,
+.ad-btn-regresar {
   /* Botones de editar y regresar */
   background: linear-gradient(90deg, #7c4dff 0%, #5ee7df 100%);
   color: #fff;
@@ -180,24 +184,24 @@
   outline: none;
 }
 
-.btn-editar:hover,
-.btn-regresar:hover {
+.ad-btn-editar:hover,
+.ad-btn-regresar:hover {
   /* Efecto hover: invierte el gradiente y eleva el botón */
   background: linear-gradient(90deg, #5ee7df 0%, #7c4dff 100%);
   transform: translateY(-2px) scale(1.03);
 }
 
-.btn-regresar {
+.ad-btn-regresar {
   /* Botón regresar: gradiente rojo a morado */
   background: linear-gradient(90deg, #ff1744 0%, #7c4dff 100%);
 }
 
-.btn-regresar:hover {
+.ad-btn-regresar:hover {
   /* Hover: gradiente morado a rojo */
   background: linear-gradient(90deg, #7c4dff 0%, #ff1744 100%);
 }
 
-.mensaje-actualizado {
+.ad-mensaje-actualizado {
   /* Mensaje flotante de confirmación */
   position: fixed;
   top: 24px;
@@ -215,24 +219,24 @@
 
 /* Responsive: adapta a pantallas pequeñas */
 @media (max-width: 900px) {
-  .info-usuario-main {
+  .ad-info-usuario-main {
     flex-direction: column;             /* Columnas apiladas */
     align-items: stretch;
     padding: 18px 5vw 0 5vw;
     background-size: 70vw auto;
   }
-  .info-usuario-left, .info-usuario-right {
+  .ad-info-usuario-left, .info-usuario-right {
     width: 100%;
     margin: 0;
     padding: 18px 0;
     align-items: flex-start;
   }
-  .bio-area {
+  .ad-bio-area {
     width: 100%;
     min-width: 0;
   }
-  .info-botones {
-    position: static;
+  .ad-info-botones {
+    /* position: static; */
     margin: 28px 0 10px 0;
     padding-bottom: 0;
   }

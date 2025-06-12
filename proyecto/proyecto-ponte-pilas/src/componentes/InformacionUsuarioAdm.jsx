@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "../estilos/InformacionUsuarioAdm.css";
 // Importa el hook useNavigate para navegar entre rutas
 import { useNavigate } from "react-router-dom";
-import LogFondo from "../recursos/MenuAdm/LogFondo.png";
+//import LogFondo from "../recursos/MenuAdm/LogFondo.png";
 
 // Componente principal de información del usuario
 export default function InformacionUsuarioAdm() {
@@ -36,31 +36,34 @@ export default function InformacionUsuarioAdm() {
   };
 
   return (
-    <div className="info-usuario-container">
+    <div className="ad-info-usuario-container">
       {/* Header superior con logo y usuario */}
       <title>Mi cuenta</title>
-      <header className="menu-admin-header">
-        <div className="menu-admin-logo">
-          <img src={LogFondo} alt="Logo Quito" className="logo-quito" />
-          <span className="ponte-once">
-            <span className="ponte">¡PONTE</span> <span className="once">ONCE!</span>
+      <header className="menu-usuario-header">
+        <div className="logo-titulo">
+          {/* Logo de la aplicación */}
+          <img src={require("../recursos/menuUser/LogoAlertaContigo.png")} alt="Logo" className="logo-alerta" />
+          <span className="titulo-app">
+            ¡PONTE <span className="once">ONCE!</span>
           </span>
         </div>
-        <div className="menu-admin-user">
-          <span className="icono-engranaje">⚙️</span>
-          <span className="nombre-usuario">César M</span>
+        <div className="usuario-info">
+          {/* Iconos de campana y avatar, y nombre del usuario */}
+          <span className="icono-campana" role="img" aria-label="campana">🔔</span>
+          <span className="usuario-nombre">César M</span>
+          <span className="icono-avatar" role="img" aria-label="avatar">👤</span>
         </div>
       </header>
       {/* Cuerpo principal dividido en dos columnas */}
-      <main className="info-usuario-main">
+      <main className="ad-info-usuario-main">
         {/* Columna izquierda: saludo, avatar y campos de nombre y usuario */}
-        <div className="info-usuario-left">
+        <div className="ad-info-usuario-left">
           <h1>Bienvenido {datos.nombre}</h1>
-          <div className="icono-grande">
+          <div className="ad-icono-grande">
             {/* Icono grande de usuario */}
             <span role="img" aria-label="avatar" style={{fontSize: "5rem"}}>👤</span>
           </div>
-          <div className="info-campos">
+          <div className="ad-info-campos">
             {/* Campo de nombre */}
             <label>Nombre:</label>
             <input
@@ -69,7 +72,7 @@ export default function InformacionUsuarioAdm() {
               value={datos.nombre}
               onChange={handleChange}
               disabled={!edit} // Solo editable si está en modo edición
-              className="info-input"
+              className="ad-info-input"
             />
             {/* Campo de nombre de usuario */}
             <label>Nombre de usuario:</label>
@@ -79,22 +82,22 @@ export default function InformacionUsuarioAdm() {
               value={datos.username}
               onChange={handleChange}
               disabled={!edit}
-              className="info-input"
+              className="ad-info-input"
             />
           </div>
         </div>
         {/* Columna derecha: biografía, email y contraseña */}
-        <div className="info-usuario-right">
+        <div className="ad-info-usuario-right">
           {/* Campo de biografía */}
-          <label className="bio-label">Biografía:</label>
+          <label className="ad-bio-label">Biografía:</label>
           <textarea
             name="bio"
             value={datos.bio}
             onChange={handleChange}
             disabled={!edit}
-            className="bio-area"
+            className="ad-bio-area"
           />
-          <div className="info-campos">
+          <div className="ad-info-campos">
             {/* Campo de correo electrónico */}
             <label>Correo Electrónico:</label>
             <input
@@ -103,7 +106,7 @@ export default function InformacionUsuarioAdm() {
               value={datos.email}
               onChange={handleChange}
               disabled={!edit}
-              className="info-input"
+              className="ad-info-input"
             />
             {/* Campo de contraseña */}
             <label>Contraseña:</label>
@@ -113,7 +116,7 @@ export default function InformacionUsuarioAdm() {
               value={datos.password}
               onChange={handleChange}
               disabled={!edit}
-              className="info-input"
+              className="ad-info-input"
             />
           </div>
         </div>
@@ -125,19 +128,21 @@ export default function InformacionUsuarioAdm() {
           className="btn-editar"
           onClick={() => {
             if (edit) {
-              handleEditar();
+              handleEditar(); // Si está en edición, guarda cambios
             } else {
-              setEdit(true);
+              setEdit(true); // Si no, activa modo edición
             }
           }}
         >
           {edit ? "Guardar" : "Editar información"}
         </button>
         {/* Botón para regresar al menú principal */}
-        <button className="btn-regresar" onClick={() => navigate("/menu-administracion")}>REGRESAR</button>
+        <button className="ad-btn-regresar" onClick={() => navigate("/menu-administracion")}>
+          REGRESAR
+        </button>
       </div>
       {/* Mensaje temporal de confirmación */}
-      {mensaje && <div className="mensaje-actualizado">{mensaje}</div>}
+      {mensaje && <div className="ad-mensaje-actualizado">{mensaje}</div>}
     </div>
   );
 }

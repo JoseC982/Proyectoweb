@@ -18,7 +18,7 @@ export default function InformacionUsuario() {
     nombre: "Cesar Morocho",
     username: "cesmorO2",
     email: "cesmor02@gmail.com",
-    password: "************",
+    password: "",
     bio: "Soy una persona que quiere ayudar a que las personas puedan movilizarse en nuestra linda ciudad de manera segura"
   });
 
@@ -136,12 +136,12 @@ export default function InformacionUsuario() {
           {edit ? "Guardar" : "Editar información"}
         </button>
         {/* Botón para regresar al menú principal */}
-        <button className="btn-regresar" onClick={() => navigate("/menuUsuario")}>
+        <button className="us-btn-regresar" onClick={() => navigate("/menuUsuario")}>
           REGRESAR
         </button>
       </div>
       {/* Mensaje temporal de confirmación */}
       {mensaje && <div className="mensaje-actualizado">{mensaje}</div>}
-    </div>
-  );
+</div>
+);
 }

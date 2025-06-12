@@ -16,6 +16,7 @@ const MenuAdministracion = () => {
     setMenuAbierto(false);
     setMensaje("Sesión Cerrada");
     setTimeout(() => setMensaje(""), 2000);
+    navigate("/");
   }
 
   useEffect(() => {
