@@ -42,7 +42,7 @@ const CrearCuenta = ({ users }) => {
                             alt="App Store"
                             className="la-user-logo"
                         />
-                        <h1>¡Bienvenido de nuevo!</h1>
+                        <h1>Registrate</h1>
                     </div>
                     <div className="email-container">
                         <input
@@ -92,7 +92,7 @@ const CrearCuenta = ({ users }) => {
                         <button className="button" onClick={handleLogin}>
                             Crear Cuenta
                         </button>
-                        <Link to="/">
+                        <Link to="/loginAdmin">
                             <button className="button">Volver a Inicio</button>
                         </Link>
 

@@ -54,7 +54,7 @@ const RecuperarCuenta = ({ users }) => {
                         <button className="button" onClick={handleLogin}>
                             Recuperar Cuenta
                         </button>
-                        <Link to="/">
+                        <Link to="/loginAdmin">
                             <button className="button">Volver a Inicio</button>
                         </Link>
                     </div>

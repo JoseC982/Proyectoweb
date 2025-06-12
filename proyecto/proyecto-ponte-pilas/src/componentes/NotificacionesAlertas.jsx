@@ -87,6 +87,7 @@ const NotificacionesAlertas = () => {
                   <td>{n.descripcion}</td>
                   <td>{n.fecha}</td>
                   <td>{n.ubicacion}</td>
+                  {console.log(`Elemento:`, n, `Key:`, idx)}
                 </tr>
               ))}
             </tbody>
