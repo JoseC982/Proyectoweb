@@ -1,0 +1,306 @@
+.menu-admin-fondo {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(180deg, #e3f0ff 0%, #ffffff 100%);
+  position: relative;
+  font-family: 'Montserrat', Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+.menu-admin-fondo::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url("../recursos/MenuAdm/LogFondo.png") center center no-repeat;
+  background-size: 70% auto;
+  opacity: 0.2;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.menu-admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 32px 10px 32px;
+  background: linear-gradient(90deg, #fff 60%, #b3e0ff 100%);
+  border-bottom: 4px solid #000;
+  position: relative;
+  z-index: 2;
+}
+
+.menu-admin-logo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.logo-quito {
+  height: 60px;
+}
+
+.ponte-once {
+  background: #d6f6ff;
+  border-radius: 10px;
+  padding: 8px 18px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 6px #0002;
+}
+
+.ponte {
+  color: #0077c8;
+}
+
+.once {
+  color: #ff1a1a;
+  font-style: italic;
+}
+
+.menu-admin-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  position: relative;
+}
+
+.icono-engranaje {
+  font-size: 1.5rem;
+}
+
+.nombre-usuario {
+  font-weight: 500;
+}
+
+.icono-desplegar {
+  font-size: 1.2rem;
+}
+
+.icono-desplegar-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+}
+.icono-desplegar-btn:hover {
+  background: #333;
+}
+
+.menu-desplegable-usuario {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #000;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px #0003;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  z-index: 10;
+  padding: 8px 0;
+}
+.menu-desplegable-usuario .menu-item {
+  background: none;
+  border: 2px solid #fff;
+  color: #fff;
+  border-radius: 8px;
+  margin: 6px 12px;
+  padding: 8px 0;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+  text-decoration: underline;
+}
+.menu-desplegable-usuario .menu-item:hover {
+  background: #fff;
+  color: #000;
+}
+
+.menu-admin-main {
+  max-width: 1200px;
+  min-height: 70vh;
+  margin: 40px auto 0 auto;
+  background: #ffffffbb;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #0001;
+  padding: 32px 24px 48px 24px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.menu-admin-titulo {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 36px;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.menu-admin-opciones {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  gap: 32px;
+  height: 100%;
+}
+
+/* Modern/minimalist table styles for admin options */
+.menu-admin-main table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #f8fbff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #0001;
+  overflow: hidden;
+  margin: 0 auto 24px auto;
+}
+.menu-admin-main th, .menu-admin-main td {
+  padding: 18px 20px;
+  text-align: center;
+  font-size: 1.08rem;
+  border-bottom: 1.5px solid #e3eaf7;
+}
+.menu-admin-main th {
+  background: #e3f0ff;
+  color: #1a2a3a;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-bottom: 2.5px solid #b3e0ff;
+}
+.menu-admin-main tr:last-child td {
+  border-bottom: none;
+}
+.menu-admin-main tr {
+  transition: background 0.18s;
+}
+.menu-admin-main tr:hover {
+  background: #eaf4ff;
+}
+.menu-admin-main td {
+  color: #2a2a2a;
+}
+
+/* Rounded corners for the table */
+.menu-admin-main table th:first-child {
+  border-top-left-radius: 18px;
+}
+.menu-admin-main table th:last-child {
+  border-top-right-radius: 18px;
+}
+.menu-admin-main table tr:last-child td:first-child {
+  border-bottom-left-radius: 18px;
+}
+.menu-admin-main table tr:last-child td:last-child {
+  border-bottom-right-radius: 18px;
+}
+
+.opcion-admin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 33%;
+  min-width: 240px;
+}
+
+.btn-opcion {
+  margin-bottom: 10px;
+  padding: 10px 18px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #ff4e50 0%, #8f2fff 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px #0002;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.btn-opcion:hover {
+  transform: scale(1.05);
+}
+
+.img-opcion {
+  width: 240px;
+  height: 240px;
+  max-width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  margin-top: 8px;
+  transition: transform 0.2s;
+  display: block;
+}
+
+.menu-admin-img {
+  width: 200px;
+  max-width: 90vw;
+  display: block;
+  margin: 0 auto 5px auto;
+}
+
+.mensaje-sesion-cerrada {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #b6cdfa;
+  color: #222;
+  border-radius: 18px;
+  padding: 36px 48px;
+  font-size: 2rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 4px 24px #0002;
+  border: 2px solid #6a7bb7;
+  z-index: 9999;
+  min-width: 320px;
+  max-width: 90vw;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 1200px) {
+  .menu-admin-main {
+    max-width: 98vw;
+    padding: 18px 4vw 32px 4vw;
+  }
+  .img-opcion {
+    width: 180px;
+    height: 180px;
+  }
+  .opcion-admin {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 900px) {
+  .menu-admin-opciones {
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+  .opcion-admin {
+    width: 100%;
+    min-width: 140px;
+  }
+  .img-opcion {
+    width: 140px;
+    height: 140px;
+  }
+}

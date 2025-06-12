@@ -12,6 +12,7 @@ import RecuperarCuenta from "./componentes/RecuperarCuenta";
 import Home from "./componentes/Home";
 
 function App() {
+
   const [users, setUsers] = useState([
     { id: 1, name: "Admin", email: "admin@admin.com", pass: "admin" },
     { id: 2, name: "Usuario", email: "user@user.com", pass: "user" }
