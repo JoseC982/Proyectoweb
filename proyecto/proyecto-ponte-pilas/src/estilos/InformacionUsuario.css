@@ -1,0 +1,225 @@
+.info-usuario-container {
+  /* Contenedor principal de la información del usuario */
+  background: #f8fafd;                  /* Fondo claro */
+  border: 5px solid #2e2eec;            /* Borde azul grueso */
+  border-radius: 18px;                  /* Bordes redondeados */
+  margin: 18px;                         /* Margen exterior */
+  min-height: 98vh;                     /* Altura mínima casi toda la pantalla */
+  box-shadow: 0 2px 16px #e3e6f3;       /* Sombra suave */
+  position: relative;                   /* Para posicionar hijos relativos */
+  overflow: hidden;                     /* Oculta desbordes */
+}
+
+.info-usuario-main {
+  /* Contenedor principal de las dos columnas */
+  position: relative;                   /* Necesario para el pseudo-elemento de fondo */
+  display: flex;                        /* Flexbox para columnas */
+  justify-content: space-between;       /* Espacio entre columnas */
+  align-items: flex-start;              /* Alinea arriba */
+  padding: 36px 40px 0 40px;            /* Espaciado interno */
+  min-height: 80vh;                     /* Altura mínima */
+  z-index: 1;                           /* Sobre el fondo */
+}
+
+/* Imagen de fondo opaca usando pseudo-elemento */
+.info-usuario-main::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 70%;                           /* Ancho del fondo */
+  height: 100%;                         /* Alto del fondo */
+  background: url('../recursos/menuUser/LogoAlertaContigo.png') no-repeat left bottom;
+  background-size: contain;              /* Ajusta imagen al contenedor */
+  opacity: 0.18;                        /* Opacidad baja para no distraer */
+  pointer-events: none;                 /* No interfiere con clics */
+  z-index: 0;                           /* Detrás del contenido */
+}
+
+/* Asegura que el contenido esté por encima del fondo */
+.info-usuario-main > * {
+  position: relative;
+  z-index: 1;
+}
+
+.icono-grande {
+  /* Icono grande de usuario */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;                   /* Círculo */
+  border: 2px solid #e0e4f6;            /* Borde gris claro */
+  background: #fff;                     /* Fondo blanco */
+  margin-bottom: 18px;
+  font-size: 4rem;                      /* Tamaño grande */
+  color: #7c4dff;                       /* Morado */
+}
+
+.info-campos {
+  /* Contenedor de los campos de entrada */
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.info-campos label {
+  /* Etiquetas de los campos */
+  display: block;
+  font-weight: 500;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  color: #060606;
+  letter-spacing: 0.5px;
+}
+
+.info-input {
+  /* Inputs de texto */
+  width: 95%;
+  background: #f4f7fe;
+  color: #23235b;
+  border: 1.5px solid #e0e4f6;
+  border-radius: 18px;
+  padding: 10px 18px;
+  font-size: 1.08rem;
+  margin-bottom: 8px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.info-input:focus {
+  /* Borde morado al enfocar */
+  border: 1.5px solid #7c4dff;
+}
+
+.info-input:disabled {
+  /* Apariencia de input deshabilitado */
+  background: #f4f7fe;
+  color: #23235b;
+  opacity: 1;
+  border: 1.5px solid #e0e4f6;
+}
+
+.info-usuario-right {
+  /* Columna derecha (bio, email, contraseña) */
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 24px;
+}
+
+.bio-label {
+  /* Etiqueta de la biografía */
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #23235b;
+  align-self: flex-start;
+  letter-spacing: 0.5px;
+}
+
+.bio-area {
+  /* Área de texto para la biografía */
+  width: 320px;
+  height: 110px;
+  background: #f4f7fe;
+  color: #23235b;
+  border: 1.5px solid #e0e4f6;
+  border-radius: 28px;
+  padding: 16px 22px;
+  font-size: 1.08rem;
+  margin-bottom: 18px;
+  resize: none;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.bio-area:focus {
+  /* Borde morado al enfocar */
+  border: 1.5px solid #7c4dff;
+}
+
+.bio-area:disabled {
+  /* Apariencia de textarea deshabilitada */
+  background: #f4f7fe;
+  color: #23235b;
+  opacity: 1;
+  border: 1.5px solid #e0e4f6;
+}
+
+.info-botones {
+  /* Contenedor de los botones de acción */
+  display: flex;
+  justify-content: center;
+  gap: 24px;                            /* Espacio entre botones */
+  margin: 28px 0 10px 0;
+}
+
+.btn-editar,
+.btn-regresar {
+  /* Botones de editar y regresar */
+  background: linear-gradient(90deg, #7c4dff 0%, #5ee7df 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.08rem;
+  padding: 13px 32px;
+  border: none;
+  border-radius: 22px;
+  cursor: pointer;
+  box-shadow: 0 1px 6px #e3e6f3;
+  transition: background 0.18s, transform 0.18s;
+  outline: none;
+}
+
+.btn-editar:hover,
+.btn-regresar:hover {
+  /* Efecto hover: invierte el gradiente y eleva el botón */
+  background: linear-gradient(90deg, #5ee7df 0%, #7c4dff 100%);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.btn-regresar {
+  /* Botón regresar: gradiente rojo a morado */
+  background: linear-gradient(90deg, #ff1744 0%, #7c4dff 100%);
+}
+
+.btn-regresar:hover {
+  /* Hover: gradiente morado a rojo */
+  background: linear-gradient(90deg, #7c4dff 0%, #ff1744 100%);
+}
+
+.mensaje-actualizado {
+  /* Mensaje flotante de confirmación */
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #23235b;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  z-index: 999;
+  box-shadow: 0 2px 8px #e3e6f3;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive: adapta a pantallas pequeñas */
+@media (max-width: 900px) {
+  .info-usuario-main {
+    flex-direction: column;             /* Columnas apiladas */
+    align-items: stretch;
+    padding: 18px 5vw 0 5vw;
+    background-size: 70vw auto;
+  }
+  .info-usuario-left, .info-usuario-right {
+    width: 100%;
+    margin: 0;
+    padding: 18px 0;
+    align-items: flex-start;
+  }
+  .bio-area {
+    width: 100%;
+    min-width: 0;
+  }
+}

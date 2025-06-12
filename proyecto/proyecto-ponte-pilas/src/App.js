@@ -1,23 +1,54 @@
+import logo from './logo.svg';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './componentes/Home';
-import MenuAdministracion from './componentes/MenuAdministracion';
-import GestionUsuarios from './componentes/GestionUsuarios';
-import NotificacionesAlertas from './componentes/NotificacionesAlertas';
-import ValidarAlertas from './componentes/ValidarAlertas';
-import InformacionUsuarioAdm from './componentes/InformacionUsuarioAdm';
+import MenuUsuario from './componentes/MenuUsuario';
+import InformacionUsuario from './componentes/InformacionUsuario';
+import VisualizarReportes from './componentes/VisualizarReportes';
+import GenerarReporte from './componentes/GenerarReporte';
 import './App.css';
+import LoginAdmin from './componentes/LoginAdmin';
+import CrearCuenta from "./componentes/CrearCuenta";
+import RecuperarCuenta from "./componentes/RecuperarCuenta";
+import Home from "./componentes/Home";
 
 function App() {
-    
+
+  const [users, setUsers] = useState([
+    { id: 1, name: "Admin", email: "admin@admin.com", pass: "admin" },
+    { id: 2, name: "Usuario", email: "user@user.com", pass: "user" }
+  ])
+  const [state, setState] = useState({
+    id: 0,
+    nombre: "",
+    email: "",
+    pass: ""
+  });
+  const addUser = (newUser) => {
+    setUsers((prev) => [...prev, newUser]);
+  };
+
+  const delUser = (index) => {
+    console.log("Usuario seleccionado", index);
+    setUsers((prev) =>
+      prev.filter((users, i) => i !== index)
+    );
+  };
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/home" element={<Home />} />
-        <Route path="/menu-administracion" element={<MenuAdministracion />} />
-        <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
-        <Route path="/notificaciones-alertas" element={<NotificacionesAlertas />} />
-        <Route path="/validar-alertas" element={<ValidarAlertas />} />
-        <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm />} />
+        <Route path="/menuUsuario" element={<MenuUsuario />} />
+        <Route path="/informacion" element={<InformacionUsuario />} />
+        <Route path="/generar-reporte" element={<GenerarReporte />} />
+        <Route path="/visualizar-reportes" element={<VisualizarReportes />} />
+
+        <Route path="/" element={<Home />} />
+        <Route path="/loginAdmin" element={<LoginAdmin 
+        users={users}
+        />} 
+        />
+        <Route path="/crearCuenta" element={<CrearCuenta />} />
+        <Route path="/recuperarCuenta" element={<RecuperarCuenta />} />
       </Routes>
     </BrowserRouter>
   );
