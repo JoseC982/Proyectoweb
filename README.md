@@ -1,2 +1,2 @@
 # Proyectoweb
-En este repositorio se va a ir desarrollando el proyecto de diseño webs
+En este repositorio se va a ir desarrollando el proyecto PONTE ONCE, con el cual queremos darle a cada ciudadano de Quito la oportunidad de contribuir activamente a la seguridad y bienestar de su ciudad. A través de una plataforma web sencilla y eficiente, los usuarios pueden registrarse e iniciar sesión para reportar incidentes como accidentes de tráfico o robos, ayudando a mejorar la calidad de vida urbana, la interfaz está diseñada para ser intuitiva y está lista para integrarse con funcionalidades avanzadas como la geolocalización y un sistema de gestión por parte de administradores. Con Ponte Once, ¡todos podemos ser parte de una ciudad más segura!
