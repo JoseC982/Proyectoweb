@@ -31,7 +31,7 @@ const reportes = [
 ];
 
 // Componente principal del menú de usuario
-export default function MenuUsuario() {
+export default function MenuUsuario({ usuarioActual, logout }) {
     // Estado para mostrar/ocultar el menú desplegable del usuario
     const [open, setOpen] = useState(false);
     // Estado para guardar el reporte seleccionado por el usuario
@@ -70,6 +70,10 @@ export default function MenuUsuario() {
             navigate("/visualizar-reportes", { state: { reporte: reporteSeleccionado } });
         }
     };
+    const handleLogout = () => {
+  logout();
+  navigate("/"); // Redirige a Home
+};
 
     // Renderizado del componente
     return (
@@ -87,7 +91,7 @@ export default function MenuUsuario() {
         {/* Información del usuario y menú desplegable */}
         <div className="usuario-info" ref={menuRef}>
           <span className="icono-campana" role="img" aria-label="campana">🔔</span>
-          <span className="usuario-nombre">César M</span>
+          <span className="usuario-nombre">{usuarioActual ? usuarioActual.name : "Invitado"}</span>
           <span className="icono-avatar" role="img" aria-label="avatar">👤</span>
           {/* Botón para abrir/cerrar el menú desplegable */}
           <button
@@ -102,7 +106,7 @@ export default function MenuUsuario() {
               {/* Opción para ir a la información del usuario */}
               <button className="menu-opcion" onClick={() => navigate("/informacion")}>Mi cuenta</button>
               {/* Opción para cerrar sesión (a implementar) */}
-              <button className="menu-opcion" onClick={() => navigate("/")}>Cerrar sesión</button>
+              <button className="menu-opcion" onClick={handleLogout}>Cerrar sesión</button>
             </div>
           )}
         </div>
@@ -111,7 +115,7 @@ export default function MenuUsuario() {
       <main className="menu-usuario-main">
         {/* Sección de bienvenida y botones de acción */}
         <section className="bienvenida">
-          <h1>Bienvenido César M</h1>
+          <h1>Bienvenido {usuarioActual ? usuarioActual.name : "Invitado"}</h1>
           {/* Botón para generar reporte, solo habilitado si hay reporte seleccionado */}
           <button
             className="btn-generar-reporte"

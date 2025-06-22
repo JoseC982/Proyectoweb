@@ -1,43 +1,32 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import '../estilos/LoginAdmin.css'; // Para los estilos de la página
-import { useState } from "react";
-import policia from '../recursos/policia-logo.png'; // Importa la imagen del logo
-import user_logo from '../recursos/user-logo.png'; // Importa la imagen del logo
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import '../estilos/LoginAdmin.css';
+import policia from '../recursos/policia-logo.png';
+import user_logo from '../recursos/user-logo.png';
 
-const LoginAdmin = ({ users }) => {
+const LoginAdmin = ({ login }) => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = () => {
-        if (
-            users &&
-            Array.isArray(users) &&
-            users.some(
-                (u) => u.email === email && u.pass === password
-            )
-        ) {
-            const user = users.find(
-                (u) => u.email === email && u.pass === password
-            );
+        const user = login(email, password); // Llama a la función login de App.js
+        if (user) {
             if (user.name === "Admin") {
                 navigate("/menu-administracion");
-            } else if (user.name === "Usuario") {
-                alert("¡Bienvenido (user)!");
+            } else {
+                alert(`¡Bienvenido ${user.name}!`);
                 navigate("/menuUsuario");
             }
         } else {
-            alert("No existe el usuario");
+            alert("No existe el usuario o la contraseña es incorrecta");
         }
     };
 
-
     return (
         <div className="login-admin-container">
-            <title>Sing in</title>
+            <title>Sign in</title>
             <div className="left-side">
                 <img
                     src={policia}
@@ -49,7 +38,6 @@ const LoginAdmin = ({ users }) => {
                 <section className="la-user-type">
                     <div className="la-user-logo-container">
                         <h1>Usuario</h1>
-
                         <img
                             src={user_logo}
                             alt="App Store"
@@ -67,7 +55,6 @@ const LoginAdmin = ({ users }) => {
                         />
                     </div>
                     <div className="password-container">
-
                         <input
                             type={showPassword ? "text" : "password"}
                             placeholder="Contraseña"
@@ -102,5 +89,6 @@ const LoginAdmin = ({ users }) => {
             </div>
         </div>
     );
-}
+};
+
 export default LoginAdmin;
