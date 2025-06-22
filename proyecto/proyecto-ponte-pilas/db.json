@@ -1,0 +1,118 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "Admin",
+            "email": "admin@admin.com",
+            "pass": "admin",
+            "role": "admin",
+            "estado": "Activo"
+        },
+        {
+            "id": 2,
+            "name": "Usuario",
+            "email": "user@user.com",
+            "pass": "user",
+            "role": "user",
+            "estado": "Activo"
+        },
+        {
+            "id": 3,
+            "name": "Daniel",
+            "email": "daniel1@gmail.com",
+            "pass": "1234",
+            "role": "user",
+            "estado": "Activo"
+        },
+        {
+            "id": 4,
+            "name": "Cesar",
+            "email": "cesar1@gmail.com",
+            "pass": "1234",
+            "role": "user",
+            "estado": "Silenciado"
+        },
+        {
+            "id": 5,
+            "name": "Jose",
+            "email": "jose1@gmail.com",
+            "pass": "1234",
+            "role": "user",
+            "estado": "Activo"
+        }
+    ],
+    "incidents": [
+        {
+            "id": 1,
+            "type": "Personas sospechosas",
+            "icon": "logoPersonSospechoso.png"
+        },
+        {
+            "id": 2,
+            "type": "Conflicto / Enfrentamiento",
+            "icon": "logoEnfrentamiento.png"
+        },
+        {
+            "id": 3,
+            "type": "Riña",
+            "icon": "LogoRiña.jpg"
+        },
+        {
+            "id": 4,
+            "type": "Alteración del orden público",
+            "icon": "LogoAlteracion.png"
+        },
+        {
+            "id": 5,
+            "type": "Eventos de tránsito",
+            "icon": "LogoEvenTransito.png"
+        },
+        {
+            "id": 6,
+            "type": "Robo",
+            "icon": "LogoRobo.png"
+        },
+        {
+            "id": 7,
+            "type": "Violencia contra la mujer",
+            "icon": "LogoMujer.jpg"
+        },
+        {
+            "id": 8,
+            "type": "Emergencia médica",
+            "icon": "LogoMedico.png"
+        },
+        {
+            "id": 9,
+            "type": "Persona extraviada o no localizada",
+            "icon": "LogoExtraviado.jpg"
+        },
+        {
+            "id": 10,
+            "type": "Otros",
+            "icon": "iconoOtros.png"
+        }
+    ],
+    "reports": [
+        {
+            "id": 1,
+            "userId": 2,
+            "incidentTypeId": 1,
+            "description": "Persona sospechosa merodeando el parque.",
+            "location": "Parque central",
+            "date": "2025-06-10",
+            "time": "14:30",
+            "status": "nuevo"
+        },
+        {
+            "id": 2,
+            "userId": 2,
+            "incidentTypeId": 10,
+            "description": "Sugerencia: Falta de alumbrado público",
+            "location": "Calle 10 de Agosto",
+            "date": "2025-06-11",
+            "time": "20:00",
+            "status": "nuevo"
+        }
+    ]
+}
