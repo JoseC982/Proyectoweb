@@ -36,13 +36,18 @@ function App() {
   };
 
   // CRUD: Actualizar usuario
-  const actualizarUsuario = async (id, datos) => {
-  const res = await axios.put(`http://localhost:3000/users/${id}`, datos);
-  setUsers(prev => prev.map(u => u.id === id ? res.data : u));
-  // Si el usuario editado es el logueado, actualiza usuarioActual
-  if (usuarioActual && usuarioActual.id === id) {
-    setUsuarioActual(res.data);
-  }
+const actualizarUsuario = (id, datos) => {
+  axios.put(`http://localhost:3000/users/${id}`, datos)
+    .then(res => {
+      setUsers(prev => prev.map(u => u.id === id ? res.data : u));
+      // Si el usuario editado es el logueado, actualiza usuarioActual
+      if (usuarioActual && usuarioActual.id === id) {
+        setUsuarioActual(res.data);
+      }
+    })
+    .catch(err => {
+      console.error("Error actualizando usuario:", err);
+    });
 };
 
   // CRUD: Eliminar usuario
