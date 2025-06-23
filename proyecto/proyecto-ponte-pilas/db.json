@@ -111,14 +111,25 @@
     },
     {
       "id": "ed26",
-      "name": "David Merizalde",
+      "name": "David Merizalde Arcos",
       "email": "davidM@gmail.com",
       "pass": "1234",
       "role": "user",
       "estado": "Activo",
+      "fechaNacimiento": "2003-12-12",
+      "username": "davidmddd",
+      "bio": "Me llamo david merizalde de quto"
+    },
+    {
+      "id": "f3e3",
+      "name": "Fernadno",
+      "email": "ferfe@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
       "fechaNacimiento": "2000-12-12",
-      "username": "davidm",
-      "bio": "Me llamo david merizalde"
+      "username": "ajojd",
+      "bio": "asdas"
     }
   ],
   "incidents": [
