@@ -17,24 +17,25 @@ import InformacionUsuarioAdm from './componentes/InformacionUsuarioAdm';
 
 function App() {
 
-  const [users, setUsers] = useState([
-    { id: 1, name: "Admin", email: "admin@admin.com", pass: "admin" },
-    { id: 2, name: "Usuario", email: "user@user.com", pass: "user" }
-  ])
+  const [users, setUsers] = useState(() => {
+    const usuarioGuardado = localStorage.getItem("usuario");
+    return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  });
+
 
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/menuUsuario" element={<MenuUsuario />} />
-        <Route path="/informacion" element={<InformacionUsuario />} />
+        <Route path="/menuUsuario" element={<MenuUsuario users={users} />} />
+        <Route path="/informacion" element={<InformacionUsuario users={users} />} />
         <Route path="/generar-reporte" element={<GenerarReporte />} />
-        <Route path="/visualizar-reportes" element={<VisualizarReportes/>}/>
+        <Route path="/visualizar-reportes" element={<VisualizarReportes />} />
 
         <Route path="/" element={<Home />} />
-        <Route path="/loginAdmin" element={<LoginAdmin 
-        users={users}
-        />} 
+        <Route path="/loginAdmin" element={<LoginAdmin
+          setUsers={setUsers}
+        />}
         />
         <Route path="/crearCuenta" element={<CrearCuenta />} />
         <Route path="/recuperarCuenta" element={<RecuperarCuenta />} />

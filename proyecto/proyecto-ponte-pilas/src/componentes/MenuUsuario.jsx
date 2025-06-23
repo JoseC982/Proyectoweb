@@ -4,6 +4,8 @@ import "../estilos/MenuUsuario.css";
 // Importa hooks de React y el hook de navegación de React Router
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
 
 // Importa las imágenes de los diferentes tipos de reporte y el logo
 import LogoPersonSospechoso from "../recursos/menuUser/logoPersonSospechoso.png";
@@ -31,7 +33,8 @@ const reportes = [
 ];
 
 // Componente principal del menú de usuario
-export default function MenuUsuario() {
+export default function MenuUsuario({users}) {
+    console.log(users);
     // Estado para mostrar/ocultar el menú desplegable del usuario
     const [open, setOpen] = useState(false);
     // Estado para guardar el reporte seleccionado por el usuario
@@ -87,7 +90,7 @@ export default function MenuUsuario() {
         {/* Información del usuario y menú desplegable */}
         <div className="usuario-info" ref={menuRef}>
           <span className="icono-campana" role="img" aria-label="campana">🔔</span>
-          <span className="usuario-nombre">César M</span>
+          <span className="usuario-nombre">{users?.name}</span>
           <span className="icono-avatar" role="img" aria-label="avatar">👤</span>
           {/* Botón para abrir/cerrar el menú desplegable */}
           <button
@@ -102,7 +105,7 @@ export default function MenuUsuario() {
               {/* Opción para ir a la información del usuario */}
               <button className="menu-opcion" onClick={() => navigate("/informacion")}>Mi cuenta</button>
               {/* Opción para cerrar sesión (a implementar) */}
-              <button className="menu-opcion" onClick={() => navigate("/")}>Cerrar sesión</button>
+              <button className="menu-opcion" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar sesión</button>
             </div>
           )}
         </div>
@@ -111,7 +114,7 @@ export default function MenuUsuario() {
       <main className="menu-usuario-main">
         {/* Sección de bienvenida y botones de acción */}
         <section className="bienvenida">
-          <h1>Bienvenido César M</h1>
+          <h1>Bienvenido {users?.name}</h1>
           {/* Botón para generar reporte, solo habilitado si hay reporte seleccionado */}
           <button
             className="btn-generar-reporte"

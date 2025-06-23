@@ -5,33 +5,41 @@ import '../estilos/LoginAdmin.css'; // Para los estilos de la página
 import { useState } from "react";
 import policia from '../recursos/policia-logo.png'; // Importa la imagen del logo
 import user_logo from '../recursos/user-logo.png'; // Importa la imagen del logo
+import axios from "axios";
 
-const LoginAdmin = ({ users }) => {
+const LoginAdmin = ({ setUsers }) => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = () => {
-        if (
-            users &&
-            Array.isArray(users) &&
-            users.some(
-                (u) => u.email === email && u.pass === password
-            )
-        ) {
-            const user = users.find(
-                (u) => u.email === email && u.pass === password
-            );
-            if (user.name === "Admin") {
-                navigate("/menu-administracion");
-            } else if (user.name === "Usuario") {
-                alert("¡Bienvenido (user)!");
-                navigate("/menuUsuario");
-            }
-        } else {
-            alert("No existe el usuario");
-        }
+        console.log(email);
+        axios.get(`http://localhost:3000/users?email=${email}&pass=${password}`)
+            .then(response => {
+                const users = response.data;
+                if (users.length > 0) {
+                    const user = users[0];
+                    setUsers(user);
+                    localStorage.setItem("usuario", JSON.stringify(user));
+                    if (user.role === "admin") {
+                        navigate("/menu-administracion");
+                        console.log("Este es el usuario que envio al hijo", user)
+                    } else {
+                        console.log(users);
+                        alert("¡Bienvenido (user)!");
+                        navigate("/menuUsuario");
+                        console.log("Este es el usuario que envio al hijo", user)
+
+                    }
+                } else {
+                    alert("No existe el usuario");
+                }
+            })
+            .catch(error => {
+                alert("Error al conectar con el servidor");
+                console.error(error);
+            });
     };
 
 

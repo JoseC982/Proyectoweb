@@ -1,118 +1,176 @@
 {
-    "users": [
-        {
-            "id": 1,
-            "name": "Admin",
-            "email": "admin@admin.com",
-            "pass": "admin",
-            "role": "admin",
-            "estado": "Activo"
-        },
-        {
-            "id": 2,
-            "name": "Usuario",
-            "email": "user@user.com",
-            "pass": "user",
-            "role": "user",
-            "estado": "Activo"
-        },
-        {
-            "id": 3,
-            "name": "Daniel",
-            "email": "daniel1@gmail.com",
-            "pass": "1234",
-            "role": "user",
-            "estado": "Activo"
-        },
-        {
-            "id": 4,
-            "name": "Cesar",
-            "email": "cesar1@gmail.com",
-            "pass": "1234",
-            "role": "user",
-            "estado": "Silenciado"
-        },
-        {
-            "id": 5,
-            "name": "Jose",
-            "email": "jose1@gmail.com",
-            "pass": "1234",
-            "role": "user",
-            "estado": "Activo"
-        }
-    ],
-    "incidents": [
-        {
-            "id": 1,
-            "type": "Personas sospechosas",
-            "icon": "logoPersonSospechoso.png"
-        },
-        {
-            "id": 2,
-            "type": "Conflicto / Enfrentamiento",
-            "icon": "logoEnfrentamiento.png"
-        },
-        {
-            "id": 3,
-            "type": "Riña",
-            "icon": "LogoRiña.jpg"
-        },
-        {
-            "id": 4,
-            "type": "Alteración del orden público",
-            "icon": "LogoAlteracion.png"
-        },
-        {
-            "id": 5,
-            "type": "Eventos de tránsito",
-            "icon": "LogoEvenTransito.png"
-        },
-        {
-            "id": 6,
-            "type": "Robo",
-            "icon": "LogoRobo.png"
-        },
-        {
-            "id": 7,
-            "type": "Violencia contra la mujer",
-            "icon": "LogoMujer.jpg"
-        },
-        {
-            "id": 8,
-            "type": "Emergencia médica",
-            "icon": "LogoMedico.png"
-        },
-        {
-            "id": 9,
-            "type": "Persona extraviada o no localizada",
-            "icon": "LogoExtraviado.jpg"
-        },
-        {
-            "id": 10,
-            "type": "Otros",
-            "icon": "iconoOtros.png"
-        }
-    ],
-    "reports": [
-        {
-            "id": 1,
-            "userId": 2,
-            "incidentTypeId": 1,
-            "description": "Persona sospechosa merodeando el parque.",
-            "location": "Parque central",
-            "date": "2025-06-10",
-            "time": "14:30",
-            "status": "nuevo"
-        },
-        {
-            "id": 2,
-            "userId": 2,
-            "incidentTypeId": 10,
-            "description": "Sugerencia: Falta de alumbrado público",
-            "location": "Calle 10 de Agosto",
-            "date": "2025-06-11",
-            "time": "20:00",
-            "status": "nuevo"
-        }
-    ]
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin",
+      "email": "admin@admin.com",
+      "pass": "admin",
+      "role": "admin",
+      "estado": "Activo",
+      "fechaNacimiento": "2000-08-09",
+      "bio": "Soy administrador",
+      "username": "Adminadmin"
+    },
+    {
+      "id": "2",
+      "name": "Usuario",
+      "email": "user@user.com",
+      "pass": "user",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2001-08-09",
+      "bio": "Soy usuario normal",
+      "username": "userUser"
+    },
+    {
+      "id": "3",
+      "name": "Daniel",
+      "email": "daniel1@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2003-08-09",
+      "bio": "Hola me llamo daniel",
+      "username": "DaniCarlos"
+    },
+    {
+      "id": "4",
+      "name": "Cesar",
+      "email": "cesar1@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Silenciado",
+      "fechaNacimiento": "1999-08-09",
+      "bio": "Hola me llamo Cesar",
+      "username": "Cedamoch"
+    },
+    {
+      "id": "5",
+      "name": "Jose",
+      "email": "jose1@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "1998-08-09",
+      "bio": "Hola me llamo Jose",
+      "username": "joscd"
+    },
+    {
+      "id": "7649",
+      "name": "jose",
+      "email": "jose@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "1998-04-20",
+      "bio": "Hola me llamo Joseexd, busco ayudar a mi ciudad quito carita de dios",
+      "username": "jos982"
+    },
+    {
+      "id": "4f2d",
+      "name": "Pedro",
+      "email": "pedro@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2001-09-08",
+      "bio": ""
+    },
+    {
+      "id": "48cf",
+      "name": "David Peñaloza",
+      "email": "davidpza@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2001-12-13",
+      "username": "davidp99",
+      "bio": "Me llamo David Peñaloza y quiero ayudar a mi ciudad"
+    },
+    {
+      "id": "cd4a",
+      "name": "Dorian Grey",
+      "email": "dgrey432@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "1999-08-09",
+      "username": "dgrey432",
+      "bio": "Me llamo Dorian soy de quito norte"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "1",
+      "type": "Personas sospechosas",
+      "icon": "logoPersonSospechoso.png"
+    },
+    {
+      "id": "2",
+      "type": "Conflicto / Enfrentamiento",
+      "icon": "logoEnfrentamiento.png"
+    },
+    {
+      "id": "3",
+      "type": "Riña",
+      "icon": "LogoRiña.jpg"
+    },
+    {
+      "id": "4",
+      "type": "Alteración del orden público",
+      "icon": "LogoAlteracion.png"
+    },
+    {
+      "id": "5",
+      "type": "Eventos de tránsito",
+      "icon": "LogoEvenTransito.png"
+    },
+    {
+      "id": "6",
+      "type": "Robo",
+      "icon": "LogoRobo.png"
+    },
+    {
+      "id": "7",
+      "type": "Violencia contra la mujer",
+      "icon": "LogoMujer.jpg"
+    },
+    {
+      "id": "8",
+      "type": "Emergencia médica",
+      "icon": "LogoMedico.png"
+    },
+    {
+      "id": "9",
+      "type": "Persona extraviada o no localizada",
+      "icon": "LogoExtraviado.jpg"
+    },
+    {
+      "id": "10",
+      "type": "Otros",
+      "icon": "iconoOtros.png"
+    }
+  ],
+  "reports": [
+    {
+      "id": "1",
+      "userId": 2,
+      "incidentTypeId": 1,
+      "description": "Persona sospechosa merodeando el parque.",
+      "location": "Parque central",
+      "date": "2025-06-10",
+      "time": "14:30",
+      "status": "nuevo"
+    },
+    {
+      "id": "2",
+      "userId": 2,
+      "incidentTypeId": 10,
+      "description": "Sugerencia: Falta de alumbrado público",
+      "location": "Calle 10 de Agosto",
+      "date": "2025-06-11",
+      "time": "20:00",
+      "status": "nuevo"
+    }
+  ]
 }
