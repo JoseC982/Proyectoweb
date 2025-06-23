@@ -57,14 +57,14 @@
     },
     {
       "id": "7649",
-      "name": "jose",
+      "name": "Jose Felipe",
       "email": "jose@gmail.com",
       "pass": "1234",
       "role": "user",
       "estado": "Activo",
-      "fechaNacimiento": "1998-04-20",
-      "bio": "Hola me llamo Joseexd, busco ayudar a mi ciudad quito carita de dios",
-      "username": "jos982"
+      "fechaNacimiento": "2003-04-20",
+      "bio": "Hola me llamo Joseexd, busco ayudar a mi ciudad quito carita de dios, una de las ciudades mas lindas del mundo. d:",
+      "username": "jos982f"
     },
     {
       "id": "4f2d",
@@ -97,6 +97,28 @@
       "fechaNacimiento": "1999-08-09",
       "username": "dgrey432",
       "bio": "Me llamo Dorian soy de quito norte"
+    },
+    {
+      "id": "c514",
+      "name": "Miguel Fernandez Delgado",
+      "email": "mighf@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2000-08-09",
+      "username": "mighfff",
+      "bio": "SOy miguel xd"
+    },
+    {
+      "id": "ed26",
+      "name": "David Merizalde",
+      "email": "davidM@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2000-12-12",
+      "username": "davidm",
+      "bio": "Me llamo david merizalde"
     }
   ],
   "incidents": [

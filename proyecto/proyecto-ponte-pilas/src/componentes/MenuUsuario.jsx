@@ -4,7 +4,6 @@ import "../estilos/MenuUsuario.css";
 // Importa hooks de React y el hook de navegación de React Router
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 
 
 // Importa las imágenes de los diferentes tipos de reporte y el logo

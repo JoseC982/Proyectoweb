@@ -1,18 +1,33 @@
+// Importa React y el hook useState para manejar el estado local
 import React, { useState } from "react";
+// Importa useNavigate y Link de react-router-dom para navegación
 import { useNavigate, Link } from "react-router-dom";
+// Importa los estilos CSS para el formulario de registro
 import '../estilos/LoginAdmin.css';
+// Importa la imagen del logo de la policía
 import policia from '../recursos/policia-logo.png';
+// Importa la imagen del logo de usuario
 import user_logo from '../recursos/user-logo.png';
+// Importa axios para hacer peticiones HTTP
 import axios from "axios";
 
+// Define el componente funcional CrearCuenta
 const CrearCuenta = () => {
+    // Hook para navegar entre rutas
     const navigate = useNavigate();
+    // Estado para mostrar/ocultar la contraseña
     const [showPassword, setShowPassword] = useState(false);
+    // Estado para el campo de email
     const [email, setEmail] = useState('');
+    // Estado para el campo de contraseña
     const [password, setPassword] = useState('');
+    // Estado para el campo de nombre
     const [name, setName] = useState('');
+    // Estado para el campo de fecha de nacimiento
     const [fecha, setFecha] = useState('');
+    // Estado para el campo de nombre de usuario
     const [username, setUsername] = useState('');
+    // Estado para el campo de biografía
     const [bio, setBio] = useState('');
 
     const handleRegister = () => {
