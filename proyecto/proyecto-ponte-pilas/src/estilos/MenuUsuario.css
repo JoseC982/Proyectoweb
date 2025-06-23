@@ -1,261 +1,278 @@
-/* Fondo general y borde */
+/* Contenedor principal */
 .menu-usuario-container {
-  background: #fff;                        /* Fondo blanco para todo el contenedor */
-  border: 5px solid #2e2eec;               /* Borde azul grueso */
-  border-radius: 12px;                     /* Bordes redondeados */
-  margin: 10px;                            /* Margen exterior */
-  padding: 0;                              /* Sin padding interno */
-  min-height: 98vh;                        /* Altura mínima casi toda la pantalla */
-  box-shadow: 0 0 10px #bdbdbd;            /* Sombra suave */
-  position: relative;                      /* Para posicionar hijos relativos */
-  overflow: hidden;                        /* Oculta desbordes */
+  background: #fff;
+  border: 5px solid #2e2eec;
+  border-radius: 16px;
+  margin: 18px;
+  min-height: 98vh;
+  box-shadow: 0 2px 16px #e3e6f3;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Header superior */
+/* Header */
 .menu-usuario-header {
-  display: flex;                           /* Flexbox para alinear elementos */
-  justify-content: space-between;          /* Espacio entre logo y usuario */
-  align-items: center;                     /* Centra verticalmente */
-  background: linear-gradient(90deg, #e3f0ff 60%, #e3e3ff 100%); /* Degradado azul claro */
-  border-bottom: 3px solid #000;           /* Línea negra inferior */
-  padding: 10px 30px;                      /* Espaciado interno */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #e3f0ff 60%, #e3e3ff 100%);
+  border-bottom: 3px solid #000;
+  padding: 10px 30px;
 }
 
 .logo-titulo {
-  display: flex;                           /* Flexbox para logo y texto */
-  align-items: center;                     /* Centra verticalmente */
-  gap: 18px;                               /* Espacio entre logo y texto */
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 
 .logo-alerta {
-  height: 60px;                            /* Altura fija del logo */
+  height: 60px;
 }
 
 .titulo-app {
-  font-size: 2.1rem;                       /* Tamaño grande */
-  font-weight: bold;                       /* Negrita */
-  color: #1a237e;                          /* Azul oscuro */
-  background: #dff6ff;                     /* Fondo azul muy claro */
-  border-radius: 10px;                     /* Bordes redondeados */
-  padding: 5px 18px;                       /* Espaciado interno */
-  margin-left: 10px;                       /* Separación del logo */
-  letter-spacing: 1px;                     /* Espaciado entre letras */
-  border: 2px solid #b2ebf2;               /* Borde azul claro */
+  font-size: 2.1rem;
+  font-weight: bold;
+  color: #1a237e;
+  background: #dff6ff;
+  border-radius: 10px;
+  padding: 5px 18px;
+  margin-left: 10px;
+  letter-spacing: 1px;
+  border: 2px solid #b2ebf2;
 }
 
 .once {
-  color: #ff1744;                          /* Rojo */
-  font-style: italic;                      /* Cursiva */
-  font-weight: bold;                       /* Negrita */
+  color: #ff1744;
+  font-style: italic;
+  font-weight: bold;
 }
 
 .usuario-info {
-  display: flex;                           /* Flexbox para los íconos y nombre */
-  align-items: center;                     /* Centra verticalmente */
-  gap: 10px;                               /* Espacio entre elementos */
-  font-size: 1.3rem;                       /* Tamaño de fuente */
-  background: #f3f3ff;                     /* Fondo lila claro */
-  border-radius: 18px;                     /* Bordes redondeados */
-  padding: 6px 18px;                       /* Espaciado interno */
-  box-shadow: 0 0 4px #bdbdbd;             /* Sombra suave */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.3rem;
+  background: #f3f3ff;
+  border-radius: 18px;
+  padding: 6px 18px;
+  box-shadow: 0 0 4px #bdbdbd;
+  position: relative;
 }
 
 .icono-campana {
-  font-size: 1.7rem;                       /* Tamaño grande */
-  color: #7c4dff;                          /* Morado */
+  font-size: 1.7rem;
+  color: #7c4dff;
 }
 
 .usuario-nombre {
-  font-weight: 600;                        /* Negrita */
-  color: #333;                             /* Gris oscuro */
+  font-weight: 600;
+  color: #333;
 }
 
 .icono-avatar {
-  font-size: 2.1rem;                       /* Tamaño grande */
+  font-size: 2.1rem;
 }
 
-/* Main */
-.menu-usuario-main {
-  display: flex;                           /* Flexbox para columnas */
-  justify-content: space-between;          /* Espacio entre bienvenida y tipos de reporte */
-  align-items: flex-start;                 /* Alinea arriba */
-  padding: 30px 30px 0 30px;               /* Espaciado interno */
-  min-height: 80vh;                        /* Altura mínima */
-  background: url('/src/recursos/menuUser/LogoAlertaContigo.png') no-repeat left bottom; /* Logo de fondo */
-  background-size: 38% auto;               /* Tamaño del logo de fondo */
-}
-
-/* Bienvenida y botones */
-.bienvenida {
-  width: 35%;                              /* Ocupa 35% del ancho */
-  display: flex;
-  flex-direction: column;                  /* Apila verticalmente */
-  align-items: flex-start;                 /* Alinea a la izquierda */
-  margin-top: 30px;                        /* Espacio arriba */
-  margin-left: 10px;                       /* Espacio a la izquierda */
-}
-
-.bienvenida h1 {
-  font-size: 2rem;                         /* Tamaño grande */
-  font-weight: bold;                       /* Negrita */
-  margin-bottom: 30px;                     /* Espacio debajo */
-  color: #222;                             /* Gris oscuro */
-}
-
-.btn-generar-reporte {
-  background: linear-gradient(90deg, #ff5e62 0%, #8f5cff 100%); /* Degradado rojo a morado */
-  color: #fff;                              /* Texto blanco */
-  font-weight: bold;                        /* Negrita */
-  font-size: 1.2rem;                        /* Tamaño grande */
-  padding: 18px 38px;                       /* Espaciado interno */
-  border: none;                             /* Sin borde */
-  border-radius: 28px;                      /* Bordes redondeados */
-  margin-bottom: 18px;                      /* Espacio debajo */
-  cursor: pointer;                          /* Cursor de mano */
-  box-shadow: 0 2px 8px #bdbdbd;            /* Sombra suave */
-  transition: background 0.2s;              /* Transición suave */
-}
-
-.btn-generar-reporte:hover {
-  background: linear-gradient(90deg, #8f5cff 0%, #ff5e62 100%); /* Invierte el degradado */
-}
-
-.btn-ver-reportes {
-  background: linear-gradient(90deg, #ff1744 0%, #8f5cff 100%); /* Degradado rojo a morado */
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.1rem;
-  padding: 15px 32px;
-  border: none;
-  border-radius: 28px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px #bdbdbd;
-  transition: background 0.2s;
-}
-
-.btn-ver-reportes:hover {
-  background: linear-gradient(90deg, #8f5cff 0%, #ff1744 100%); /* Invierte el degradado */
-}
-
-/* Tipos de reporte */
-.tipos-reporte {
-  width: 62%;                              /* Ocupa 62% del ancho */
-  background: #fcf8ffb0;                   /* Fondo lila claro translúcido */
-  border-radius: 18px;                     /* Bordes redondeados */
-  padding: 30px 20px 30px 40px;            /* Espaciado interno */
-  margin-top: 10px;                        /* Espacio arriba */
-  box-shadow: 0 0 8px #e0e0e0;             /* Sombra suave */
-}
-
-.tipos-reporte h2 {
-  font-size: 1.3rem;                       /* Tamaño mediano */
-  font-weight: bold;                       /* Negrita */
-  margin-bottom: 25px;                     /* Espacio debajo */
-  color: #222;                             /* Gris oscuro */
-  text-align: center;                      /* Centrado */
-}
-
-.grid-reportes {
-  display: grid;                           /* Grid para los tipos de reporte */
-  grid-template-columns: repeat(3, 1fr);   /* 3 columnas iguales */
-  gap: 28px 10px;                          /* Espacio entre filas y columnas */
-}
-
-.reporte-item {
-  display: flex;
-  flex-direction: column;                  /* Apila icono y texto */
-  align-items: center;                     /* Centra horizontalmente */
-  background: #fff;                        /* Fondo blanco */
-  border-radius: 18px;                     /* Bordes redondeados */
-  padding: 16px 8px;                       /* Espaciado interno */
-  box-shadow: 0 2px 8px #e0e0e0;           /* Sombra suave */
-  cursor: pointer;                         /* Cursor de mano */
-  transition: transform 0.15s, box-shadow 0.15s; /* Transiciones suaves */
-}
-
-.reporte-item:hover {
-  transform: translateY(-5px) scale(1.04); /* Eleva y agranda al pasar el mouse */
-  box-shadow: 0 4px 16px #bdbdbd;          /* Sombra más fuerte */
-  background: #f3eaff;                     /* Fondo lila claro */
-}
-
-.reporte-item img {
-  width: 60px;                             /* Tamaño fijo del icono */
-  height: 60px;
-  object-fit: contain;                     /* Ajusta imagen sin deformar */
-  margin-bottom: 10px;                     /* Espacio debajo */
-}
-
-.reporte-item span {
-  font-size: 1rem;                         /* Tamaño de texto */
-  color: #7b1fa2;                          /* Morado */
-  font-weight: 600;                        /* Negrita */
-  text-align: center;                      /* Centrado */
-  margin-top: 4px;                         /* Espacio arriba */
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .menu-usuario-main {
-    flex-direction: column;                /* Columnas apiladas */
-    align-items: stretch;
-    padding: 18px 5vw 0 5vw;
-    background-size: 70vw auto;            /* Logo de fondo más pequeño */
-  }
-  .bienvenida, .tipos-reporte {
-    width: 100%;                           /* Ocupa todo el ancho */
-    margin: 0;
-    padding: 18px 0;
-  }
-  .tipos-reporte {
-    margin-top: 25px;
-    padding: 18px 10px;
-  }
-}
-
-/* Menú desplegable usuario */
+/* Botón menú desplegable */
 .btn-menu-desplegable {
-  background: #0d0c0c;                     /* Fondo negro */
-  border: none;                            /* Sin borde */
-  font-size: 1.4rem;                       /* Tamaño grande */
-  margin-left: 8px;                        /* Espacio a la izquierda */
-  cursor: pointer;                         /* Cursor de mano */
-  border-radius: 6px;                      /* Bordes redondeados */
-  padding: 2px 8px;                        /* Espaciado interno */
-  transition: background 0.2s;             /* Transición suave */
+  background: #0d0c0c;
+  border: none;
+  font-size: 1.4rem;
+  margin-left: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 2px 8px;
+  transition: background 0.2s;
+  color: #fff;
 }
 .btn-menu-desplegable:hover {
-  background: #ececff;                     /* Fondo lila claro al pasar el mouse */
+  background: #ececff;
+  color: #000;
 }
 
+/* Menú desplegable */
 .menu-desplegable {
-  position: absolute;                      /* Posiciona sobre el header */
-  top: 60px;                               /* Debajo del header */
-  right: 30px;                             /* A la derecha */
-  background: #000;                        /* Fondo negro */
-  border-radius: 10px;                     /* Bordes redondeados */
-  box-shadow: 0 2px 12px #bdbdbd;          /* Sombra fuerte */
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: #000;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px #bdbdbd;
   display: flex;
   flex-direction: column;
-  min-width: 160px;                        /* Ancho mínimo */
-  z-index: 100;                            /* Encima de todo */
-  padding: 8px 0;                          /* Espaciado interno */
+  min-width: 160px;
+  z-index: 100;
+  padding: 8px 0;
 }
 
 .menu-opcion {
-  background: transparent;                  /* Sin fondo */
-  border: 2px solid #fff;                   /* Borde blanco */
-  color: #fff;                              /* Texto blanco */
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
   font-size: 1rem;
   padding: 8px 0;
   margin: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
   text-align: center;
-  transition: background 0.2s, color 0.2s;  /* Transición suave */
-  text-decoration: underline;               /* Subrayado */
+  transition: background 0.2s, color 0.2s;
+  text-decoration: underline;
 }
 .menu-opcion:hover {
-  background: #fff;                         /* Fondo blanco al pasar el mouse */
-  color: #000;                              /* Texto negro */
+  background: #fff;
+  color: #000;
+}
+
+/* Main */
+.menu-usuario-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 30px 30px 0 30px;
+  min-height: 80vh;
+  gap: 32px;
+}
+
+/* Sección de incidentes */
+.incidentes-section {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.incidentes-titulo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 18px;
+  color: #23235b;
+}
+
+.combo-incidentes {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-text, select, textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #bdbdbd;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  background: #f8fafd;
+  color: #23235b;
+  outline: none;
+  transition: border 0.2s;
+}
+.input-text:focus, select:focus, textarea:focus {
+  border: 1.5px solid #7c4dff;
+}
+
+.detalle-incidente {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #e3e6f3;
+  padding: 18px 18px 10px 18px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #23235b;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-generar-reporte {
+  background: linear-gradient(90deg, #ff5e62 0%, #8f5cff 100%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 22px;
+  margin-top: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #bdbdbd;
+  transition: background 0.2s;
+}
+.btn-generar-reporte:disabled {
+  background: #bdbdbd;
+  color: #fff;
+  cursor: not-allowed;
+}
+.btn-generar-reporte:hover:not(:disabled) {
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5e62 100%);
+}
+
+/* Sección del mapa */
+.mapa-section {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.mapa-placeholder {
+  width: 100%;
+  height: 350px;
+  background: #e3e6f3;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  font-size: 1.2rem;
+  color: #23235b;
+  border: 2px solid #bdbdbd;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mapa-placeholder:hover {
+  background: #d1d8f3;
+}
+
+/* Botones de registro */
+.botones-registro {
+  display: flex;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.btn-cancelar-reporte {
+  background: #f44336;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px #bdbdbd;
+}
+.btn-cancelar-reporte:hover {
+  background: #e53935;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .menu-usuario-main {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px 5vw 0 5vw;
+    gap: 0;
+  }
+  .incidentes-section, .mapa-section {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .mapa-placeholder {
+    min-width: 0;
+    height: 220px;
+  }
 }

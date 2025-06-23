@@ -1,29 +1,40 @@
+// Importa React y el hook useState para manejar estados locales
 import React, { useState } from "react";
+// Importa useNavigate para redireccionar y Link para navegación entre rutas
 import { useNavigate, Link } from "react-router-dom";
+// Importa los estilos CSS específicos para este componente
 import '../estilos/LoginAdmin.css';
+// Importa imágenes utilizadas en el formulario
 import policia from '../recursos/policia-logo.png';
 import user_logo from '../recursos/user-logo.png';
 
+// Componente funcional que recibe la función login como prop desde App.js
 const LoginAdmin = ({ login }) => {
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Hook para redireccionar entre rutas
+
+    // Estado para mostrar/ocultar la contraseña
     const [showPassword, setShowPassword] = useState(false);
+    // Estado para el email ingresado por el usuario
     const [email, setEmail] = useState('');
+    // Estado para la contraseña ingresada por el usuario
     const [password, setPassword] = useState('');
 
+    // Función que se ejecuta al hacer clic en "Iniciar sesión"
     const handleLogin = () => {
-        const user = login(email, password); // Llama a la función login de App.js
-        if (user) {
-            if (user.name === "Admin") {
-                navigate("/menu-administracion");
+        const user = login(email, password); // Llama a la función login de App.js con los datos ingresados
+        if (user) { // Si el usuario existe y las credenciales son correctas
+            if (user.name === "Admin") { // Si el usuario es administrador
+                navigate("/menu-administracion"); // Redirige al menú de administración
             } else {
-                alert(`¡Bienvenido ${user.name}!`);
-                navigate("/menuUsuario");
+                alert(`¡Bienvenido ${user.name}!`); // Muestra un mensaje de bienvenida
+                navigate("/menuUsuario"); // Redirige al menú de usuario
             }
         } else {
-            alert("No existe el usuario o la contraseña es incorrecta");
+            alert("No existe el usuario o la contraseña es incorrecta"); // Muestra error si las credenciales no coinciden
         }
     };
 
+    // Renderizado del formulario de login
     return (
         <div className="login-admin-container">
             <title>Sign in</title>

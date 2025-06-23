@@ -1,13 +1,17 @@
+// Importa React y los hooks necesarios
 import React, { useState, useEffect } from "react";
+// Importa los estilos CSS para este componente
 import "../estilos/InformacionUsuario.css";
+// Importa el hook para navegar entre rutas
 import { useNavigate } from "react-router-dom";
 
+// Componente principal
 export default function InformacionUsuario({ usuarioActual, actualizarUsuario }) {
-  const navigate = useNavigate();
-  const [edit, setEdit] = useState(false);
-  const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate(); // Hook para cambiar de ruta
+  const [edit, setEdit] = useState(false); // Estado para saber si está en modo edición
+  const [mensaje, setMensaje] = useState(""); // Estado para mostrar mensajes de éxito
 
-  // Mapea los datos del usuario actual a los campos del formulario
+  // Función para mapear los datos del usuario actual a los campos del formulario
   const mapUserToForm = (user) => ({
     id: user?.id || "",
     nombre: user?.name || "",
@@ -17,15 +21,15 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
     password: user?.pass || "", // Mapea pass a password
   });
 
-  // Estado para los datos del formulario
+  // Estado para los datos del formulario, inicializado con los datos del usuario actual
   const [datos, setDatos] = useState(mapUserToForm(usuarioActual));
 
-  // Sincroniza los datos cuando cambia el usuario actual
+  // Sincroniza los datos del formulario cuando cambia el usuario actual
   useEffect(() => {
     setDatos(mapUserToForm(usuarioActual));
   }, [usuarioActual]);
 
-  // Maneja cambios en los inputs
+  // Maneja los cambios en los inputs del formulario
   const handleChange = (e) => {
     setDatos({ ...datos, [e.target.name]: e.target.value });
   };
@@ -41,15 +45,17 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
       email: datos.email,
       pass: datos.password, // Mapea password a pass
     };
-    await actualizarUsuario(datos.id, datosParaActualizar);
-    setEdit(false);
-    setMensaje("Información Actualizada");
-    setTimeout(() => setMensaje(""), 2000);
+    await actualizarUsuario(datos.id, datosParaActualizar); // Llama a la función para actualizar el usuario
+    setEdit(false); // Sale del modo edición
+    setMensaje("Información Actualizada"); // Muestra mensaje de éxito
+    setTimeout(() => setMensaje(""), 2000); // Oculta el mensaje después de 2 segundos
   };
 
+  // Renderizado del componente
   return (
     <div className="info-usuario-container">
       <title>Mi cuenta</title>
+      {/* Header con logo y nombre del usuario */}
       <header className="menu-usuario-header">
         <div className="logo-titulo">
           <img src={require("../recursos/menuUser/LogoAlertaContigo.png")} alt="Logo" className="logo-alerta" />
@@ -64,6 +70,7 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
           <span className="icono-avatar" role="img" aria-label="avatar">👤</span>
         </div>
       </header>
+      {/* Cuerpo principal con los campos de información */}
       <main className="info-usuario-main">
         <div className="info-usuario-left">
           {/* Bienvenida con el nombre actualizado */}
@@ -123,6 +130,7 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
           </div>
         </div>
       </main>
+      {/* Botones para editar/guardar y regresar */}
       <div className="info-botones">
         <button
           className="btn-editar"
@@ -140,6 +148,7 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
           REGRESAR
         </button>
       </div>
+      {/* Mensaje de éxito */}
       {mensaje && <div className="mensaje-actualizado">{mensaje}</div>}
     </div>
   );
