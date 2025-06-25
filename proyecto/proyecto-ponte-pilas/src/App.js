@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // Importa la librería axios para hacer peticiones HTTP
 import axios from 'axios';
+
 // Importa los componentes de la aplicación
 import MenuUsuario from './componentes/MenuUsuario';
 import InformacionUsuario from './componentes/InformacionUsuario';
 import VisualizarReportes from './componentes/VisualizarReportes';
 import GenerarReporte from './componentes/GenerarReporte';
-import './App.css';
+import './App.css'; // Importa los estilos globales de la app
 import LoginAdmin from './componentes/LoginAdmin';
 import CrearCuenta from "./componentes/CrearCuenta";
 import RecuperarCuenta from "./componentes/RecuperarCuenta";
@@ -20,6 +21,7 @@ import NotificacionesAlertas from './componentes/NotificacionesAlertas';
 import ValidarAlertas from './componentes/ValidarAlertas';
 import InformacionUsuarioAdm from './componentes/InformacionUsuarioAdm';
 
+// Define el componente principal App
 function App() {
   // Estado para almacenar la lista de usuarios
   const [users, setUsers] = useState([]);
@@ -29,6 +31,7 @@ function App() {
   const [reports, setReports] = useState([]);
   // Estado para almacenar la lista de notificaciones procesadas
   const [notificaciones, setNotificaciones] = useState([]);
+
 
   // useEffect se ejecuta una vez al montar el componente para cargar los datos
   useEffect(() => {
@@ -99,29 +102,54 @@ function App() {
   };
 
   // Busca el usuario con rol "admin" para pasarlo al componente de información de admin
-  const adminUser = users.find(u => u.role === "admin");
+  //const adminUser = users.find(u => u.role === "admin");
 
   // Renderiza las rutas de la aplicación y pasa los datos y funciones necesarias a cada componente
+  // Estado global para el usuario autenticado.
+  // Se inicializa leyendo el usuario guardado en localStorage (si existe).
+  const [users, setUsers] = useState(() => {
+    const usuarioGuardado = localStorage.getItem("usuario");
+    return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  });
+
+  // Renderiza el enrutador principal de la aplicación
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/menuUsuario" element={<MenuUsuario />} />
-        <Route path="/informacion" element={<InformacionUsuario />} />
+        {/* Ruta para el menú de usuario, pasa el usuario autenticado como prop */}
+        <Route path="/menuUsuario" element={<MenuUsuario users={users} />} />
+        {/* Ruta para la información del usuario, pasa el usuario y el setter como props */}
+        <Route path="/informacion" element={<InformacionUsuario users={users} setUsers={setUsers} />} />
+        {/* Ruta para generar un reporte */}
         <Route path="/generar-reporte" element={<GenerarReporte />} />
-        <Route path="/visualizar-reportes" element={<VisualizarReportes/>}/>
+//Rama4-Daniel
+        //<Route path="/visualizar-reportes" element={<VisualizarReportes/>}/>
+        //<Route path="/" element={<Home />} />
+        //<Route path="/loginAdmin" element={<LoginAdmin users={users} />} />
+
+        {/* Ruta para visualizar reportes */}
+        <Route path="/visualizar-reportes" element={<VisualizarReportes />} />
+
+        {/* Ruta para la página de inicio */}
         <Route path="/" element={<Home />} />
-        <Route path="/loginAdmin" element={<LoginAdmin users={users} />} />
+        {/* Ruta para el login de administrador, pasa el setter de usuario como prop */}
+        <Route path="/loginAdmin" element={<LoginAdmin setUsers={setUsers} />} />
+        {/* Ruta para crear una cuenta */}
+
         <Route path="/crearCuenta" element={<CrearCuenta />} />
+        {/* Ruta para recuperar cuenta */}
         <Route path="/recuperarCuenta" element={<RecuperarCuenta />} />
+        {/* Ruta para el menú de administración */}
         <Route path="/menu-administracion" element={<MenuAdministracion />} />
         <Route path="/gestion-usuarios" element={<GestionUsuarios users={users} silenciarUsuario={silenciarUsuario} borrarUsuario={borrarUsuario} />} />
         <Route path="/notificaciones-alertas" element={<NotificacionesAlertas notificaciones={notificaciones} />} />
         <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={users} incidents={incidents} borrarReporte={borrarReporte} />} />
         <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm admin={adminUser} />} />
+
       </Routes>
     </BrowserRouter>
   );
 }
 
-// Exporta el componente principal para que pueda ser usado por React
+// Exporta el componente App como predeterminado
 export default App;

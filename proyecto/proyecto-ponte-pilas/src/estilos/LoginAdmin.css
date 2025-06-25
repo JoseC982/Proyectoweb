@@ -123,6 +123,14 @@ html {
     justify-content: space-between;
     margin-bottom: 30px;
 }
+.cu-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
 .eye-button {
     background: none;
     border: none;
