@@ -1,24 +1,31 @@
-// Importa React y los hooks necesarios
-import React, { useState, useEffect } from "react";
-// Importa los estilos CSS para este componente
+// Importa React y el hook useState para manejar el estado local
+import React, { useState } from "react";
+// Importa los estilos CSS específicos para este componente
 import "../estilos/InformacionUsuario.css";
-// Importa el hook para navegar entre rutas
-import { useNavigate } from "react-router-dom";
+// Importa los hooks de navegación y localización de rutas de React Router
+import { useNavigate, useLocation } from "react-router-dom";
+// Importa axios para hacer peticiones HTTP
+import axios from "axios";
 
-// Componente principal
-export default function InformacionUsuario({ usuarioActual, actualizarUsuario }) {
-  const navigate = useNavigate(); // Hook para cambiar de ruta
-  const [edit, setEdit] = useState(false); // Estado para saber si está en modo edición
-  const [mensaje, setMensaje] = useState(""); // Estado para mostrar mensajes de éxito
+// Exporta el componente funcional InformacionUsuario, recibe el usuario y el setter global como props
+export default function InformacionUsuario({ users, setUsers }) {
+  // Muestra el usuario recibido en consola (para depuración)
+  console.log(users);
+  // Inicializa el hook de navegación
+  const navigate = useNavigate();
 
-  // Función para mapear los datos del usuario actual a los campos del formulario
-  const mapUserToForm = (user) => ({
-    id: user?.id || "",
-    nombre: user?.name || "",
-    username: user?.username || "",
-    bio: user?.bio || "",
-    email: user?.email || "",
-    password: user?.pass || "", // Mapea pass a password
+  // Estado para controlar si los campos están en modo edición
+  const [edit, setEdit] = useState(false);
+  // Estado para mostrar mensajes temporales (ej: "Información Actualizada")
+  const [mensaje, setMensaje] = useState("");
+  // Estado para almacenar los datos del usuario (rellena con los datos actuales)
+  const [datos, setDatos] = useState({
+    nombre: users?.name || "",
+    username: users?.username || "",
+    email: users?.email || "",
+    password: users?.pass || "",
+    bio: users?.bio || "",
+    fechaNacimiento: users?.fechaNacimiento || ""
   });
 
   // Estado para los datos del formulario, inicializado con los datos del usuario actual
@@ -33,29 +40,68 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
   const handleChange = (e) => {
     setDatos({ ...datos, [e.target.name]: e.target.value });
   };
-
-  // Guarda los cambios y actualiza el usuario en la base de datos
-  const handleEditar = async () => {
-    // Mapea los datos del formulario a los campos del usuario en la base de datos
-    const datosParaActualizar = {
-      ...usuarioActual,
-      name: datos.nombre,
-      username: datos.username,
-      bio: datos.bio,
-      email: datos.email,
-      pass: datos.password, // Mapea password a pass
-    };
-    await actualizarUsuario(datos.id, datosParaActualizar); // Llama a la función para actualizar el usuario
-    setEdit(false); // Sale del modo edición
-    setMensaje("Información Actualizada"); // Muestra mensaje de éxito
-    setTimeout(() => setMensaje(""), 2000); // Oculta el mensaje después de 2 segundos
+  // Función que guarda los cambios y muestra un mensaje temporal
+  const handleEditar = () => {
+    // Busca el usuario por email y actualiza sus datos en la base de datos
+    axios.get(`http://localhost:3000/users?email=${datos.email}`)
+      .then(response => {
+        // Muestra el email en consola (para depuración)
+        console.log(datos.email);
+        // Si encuentra el usuario
+        if (response.data.length > 0) {
+          const usuario = response.data[0];
+          // Actualiza los datos del usuario en la base de datos
+          axios.patch(`http://localhost:3000/users/${usuario.id}`, {
+            name: datos.nombre,
+            username: datos.username,
+            email: datos.email,
+            pass: datos.password,
+            bio: datos.bio,
+            fechaNacimiento: datos.fechaNacimiento
+          })
+            .then(() => {
+              // Crea el objeto actualizado
+              const usuarioActualizado = {
+                ...usuario,
+                name: datos.nombre,
+                username: datos.username,
+                email: datos.email,
+                pass: datos.password,
+                bio: datos.bio,
+                fechaNacimiento: datos.fechaNacimiento
+              };
+              // Actualiza el estado global y el localStorage
+              setUsers(usuarioActualizado);
+              localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
+              // Sale del modo edición y muestra mensaje de éxito
+              setEdit(false);
+              setMensaje("Información Actualizada");
+              setTimeout(() => setMensaje(""), 2000);
+            })
+            .catch(() => {
+              // Si hay error al actualizar, muestra mensaje de error
+              setMensaje("Error al actualizar");
+              setTimeout(() => setMensaje(""), 2000);
+            });
+        } else {
+          // Si no encuentra el usuario, muestra mensaje de error
+          setMensaje("Usuario no encontrado");
+          setTimeout(() => setMensaje(""), 2000);
+        }
+      })
+      .catch(() => {
+        // Si hay error al buscar el usuario, muestra mensaje de error
+        setMensaje("Error al buscar usuario");
+        setTimeout(() => setMensaje(""), 2000);
+      });
   };
 
-  // Renderizado del componente
+  // Renderiza el formulario de información del usuario
   return (
     <div className="info-usuario-container">
+      {/* Título de la página */}
       <title>Mi cuenta</title>
-      {/* Header con logo y nombre del usuario */}
+      {/* Encabezado con logo y nombre de la app */}
       <header className="menu-usuario-header">
         <div className="logo-titulo">
           <img src={require("../recursos/menuUser/LogoAlertaContigo.png")} alt="Logo" className="logo-alerta" />
@@ -63,15 +109,16 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
             ¡PONTE <span className="once">ONCE!</span>
           </span>
         </div>
+        {/* Información del usuario en el header */}
         <div className="usuario-info">
           <span className="icono-campana" role="img" aria-label="campana">🔔</span>
-          {/* Muestra el nombre actualizado */}
           <span className="usuario-nombre">{datos.nombre}</span>
           <span className="icono-avatar" role="img" aria-label="avatar">👤</span>
         </div>
       </header>
-      {/* Cuerpo principal con los campos de información */}
+      {/* Cuerpo principal con los datos del usuario */}
       <main className="info-usuario-main">
+        {/* Lado izquierdo con nombre, avatar y campos básicos */}
         <div className="info-usuario-left">
           {/* Bienvenida con el nombre actualizado */}
           <h1>Bienvenido {datos.nombre}</h1>
@@ -97,6 +144,15 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
               disabled={!edit}
               className="info-input"
             />
+            <label>Fecha de nacimiento:</label>
+            <input
+              type="date"
+              name="fechaNacimiento"
+              value={datos.fechaNacimiento}
+              onChange={handleChange}
+              disabled={!edit}
+              className="info-input"
+            />
           </div>
         </div>
         <div className="info-usuario-right">
@@ -107,6 +163,7 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
             onChange={handleChange}
             disabled={!edit}
             className="bio-area"
+            placeholder="Agrega una breve biografía"
           />
           <div className="info-campos">
             <label>Correo Electrónico:</label>
@@ -126,6 +183,7 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
               onChange={handleChange}
               disabled={!edit}
               className="info-input"
+              placeholder="********"
             />
           </div>
         </div>
@@ -148,7 +206,6 @@ export default function InformacionUsuario({ usuarioActual, actualizarUsuario })
           REGRESAR
         </button>
       </div>
-      {/* Mensaje de éxito */}
       {mensaje && <div className="mensaje-actualizado">{mensaje}</div>}
     </div>
   );

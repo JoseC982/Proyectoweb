@@ -7,7 +7,6 @@ import "../estilos/MenuUsuario.css"; // Importa los estilos
 // Componente principal
 export default function MenuUsuario({ usuarioActual, logout }) {
   const navigate = useNavigate(); // Hook para navegar entre rutas
-
   // Estado para la lista de incidentes (se carga desde la API/db.json)
   const [incidentes, setIncidentes] = useState([]);
   // Estado para el incidente seleccionado en el combo

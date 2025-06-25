@@ -6,7 +6,10 @@
       "email": "admin@admin.com",
       "pass": "admin",
       "role": "admin",
-      "estado": "Activo"
+      "estado": "Activo",
+      "fechaNacimiento": "1992-08-09",
+      "bio": "Soy administrador, el unico que se encarga de validar reportes",
+      "username": "Adminadmin"
     },
     {
       "id": "2",
@@ -14,27 +17,32 @@
       "email": "user@user.com",
       "pass": "user",
       "role": "user",
-      "estado": "Activo"
+      "estado": "Activo",
+      "fechaNacimiento": "2001-08-09",
+      "bio": "Soy usuario normal",
+      "username": "userUser"
     },
     {
       "id": "3",
-      "name": "Daniel Actualizado",
+      "name": "Daniel",
       "email": "daniel1@gmail.com",
-      "pass": "nuevaClave",
+      "pass": "1234",
       "role": "user",
-      "estado": "Activo"
+      "estado": "Activo",
+      "fechaNacimiento": "2003-08-09",
+      "bio": "Hola me llamo daniel",
+      "username": "DaniCarlos"
     },
     {
       "id": "4",
-      "name": "David C",
+      "name": "Cesar",
       "email": "cesar1@gmail.com",
-      "pass": "0123",
+      "pass": "1234",
       "role": "user",
       "estado": "Silenciado",
-      "bio": "",
-      "nombre": "",
-      "password": "",
-      "username": ""
+      "fechaNacimiento": "1999-08-09",
+      "bio": "Hola me llamo Cesar",
+      "username": "Cedamoch"
     },
     {
       "id": "5",
@@ -42,7 +50,86 @@
       "email": "jose1@gmail.com",
       "pass": "1234",
       "role": "user",
-      "estado": "Activo"
+      "estado": "Activo",
+      "fechaNacimiento": "1998-08-09",
+      "bio": "Hola me llamo Jose",
+      "username": "joscd"
+    },
+    {
+      "id": "7649",
+      "name": "Jose Felipe",
+      "email": "jose@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2003-04-20",
+      "bio": "Hola me llamo Joseexd, busco ayudar a mi ciudad quito carita de dios, una de las ciudades mas lindas del mundo. d:",
+      "username": "jos982f"
+    },
+    {
+      "id": "4f2d",
+      "name": "Pedro",
+      "email": "pedro@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2001-09-08",
+      "bio": ""
+    },
+    {
+      "id": "48cf",
+      "name": "David Peñaloza",
+      "email": "davidpza@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2001-12-13",
+      "username": "davidp99",
+      "bio": "Me llamo David Peñaloza y quiero ayudar a mi ciudad"
+    },
+    {
+      "id": "cd4a",
+      "name": "Dorian Grey",
+      "email": "dgrey432@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "1999-08-09",
+      "username": "dgrey432",
+      "bio": "Me llamo Dorian soy de quito norte"
+    },
+    {
+      "id": "c514",
+      "name": "Miguel Fernandez Delgado",
+      "email": "mighf@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2000-08-09",
+      "username": "mighfff",
+      "bio": "SOy miguel xd"
+    },
+    {
+      "id": "ed26",
+      "name": "David Merizalde Arcos Mendez",
+      "email": "davidM@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Silenciado",
+      "fechaNacimiento": "2003-12-12",
+      "username": "davidmddd",
+      "bio": "Me llamo david merizalde de quto, calderon, naci en cayambe"
+    },
+    {
+      "id": "f3e3",
+      "name": "Fernadno",
+      "email": "ferfe@gmail.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2000-12-12",
+      "username": "ajojd",
+      "bio": "asdas"
     }
   ],
   "incidents": [
@@ -116,19 +203,6 @@
       "location": "Calle 10 de Agosto",
       "date": "2025-06-11",
       "time": "20:00",
-      "status": "nuevo"
-    },
-    {
-      "id": "d1df"
-    },
-    {
-      "id": "13bc",
-      "userId": 3,
-      "incidentTypeId": 1,
-      "description": "Prueba de reporte",
-      "location": "Parque central",
-      "date": "2025-06-25",
-      "time": "15:00",
       "status": "nuevo"
     }
   ]
