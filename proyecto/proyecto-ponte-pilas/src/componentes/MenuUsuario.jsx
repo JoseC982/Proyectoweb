@@ -1,160 +1,250 @@
-import React from "react";
-// Importa los estilos CSS para este componente
-import "../estilos/MenuUsuario.css";
-// Importa hooks de React y el hook de navegación de React Router
-import { useState, useRef, useEffect } from "react";
+// Importa los hooks de React y utilidades de React Router
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Para hacer peticiones HTTP
+import "../estilos/MenuUsuario.css"; // Importa los estilos
 
+// Componente principal
+export default function MenuUsuario({ usuarioActual, logout }) {
+  const navigate = useNavigate(); // Hook para navegar entre rutas
+  // Estado para la lista de incidentes (se carga desde la API/db.json)
+  const [incidentes, setIncidentes] = useState([]);
+  // Estado para el incidente seleccionado en el combo
+  const [incidenteSeleccionado, setIncidenteSeleccionado] = useState("");
+  // Estado para la ubicación seleccionada en el mapa
+  const [ubicacion, setUbicacion] = useState("");
+  // Estado para la hora del incidente
+  const [hora, setHora] = useState("");
+  // Estado para el nombre de quien reporta (por defecto el usuario logueado)
+  const [quienReporta, setQuienReporta] = useState(usuarioActual ? usuarioActual.name : "");
+  // Estado para saber si se está registrando un nuevo incidente
+  const [registrando, setRegistrando] = useState(false);
+  // Estado para mostrar/ocultar el menú desplegable del usuario
+  const [open, setOpen] = useState(false);
+  // Referencia al menú para detectar clics fuera de él
+  const menuRef = useRef();
 
-// Importa las imágenes de los diferentes tipos de reporte y el logo
-import LogoPersonSospechoso from "../recursos/menuUser/logoPersonSospechoso.png";
-import LogoEnfrentamiento from "../recursos/menuUser/logoEnfrentamiento.png";
-import LogoRiña from "../recursos/menuUser/LogoRiña.jpg";
-import LogoAlteracion from "../recursos/menuUser/LogoAlteracion.png";
-import LogoEvenTransito from "../recursos/menuUser/LogoEvenTransito.png";
-import LogoRobo from "../recursos/menuUser/LogoRobo.png";
-import LogoMujer from "../recursos/menuUser/LogoMujer.jpg";
-import LogoMedico from "../recursos/menuUser/LogoMedico.png";
-import LogoExtraviado from "../recursos/menuUser/LogoExtraviado.jpg";
-import LogoAlertaContigo from "../recursos/menuUser/LogoAlertaContigo.png";
+  // useEffect para cargar los incidentes desde la API/db.json al montar el componente
+  useEffect(() => {
+    axios.get("http://localhost:3000/incidents")
+      .then(res => setIncidentes(res.data)) // Guarda los incidentes en el estado
+      .catch(err => setIncidentes([])); // Si hay error, deja el array vacío
+  }, []);
 
-// Array con los tipos de reportes disponibles, cada uno con su icono y texto
-const reportes = [
-  { icon: LogoPersonSospechoso, texto: "Personas sospechosas" },
-  { icon: LogoEnfrentamiento, texto: "Conflicto / Enfrentamiento" },
-  { icon: LogoRiña, texto: "Riña" },
-  { icon: LogoAlteracion, texto: "Alteración del orden público" },
-  { icon: LogoEvenTransito, texto: "Eventos de tránsito" },
-  { icon: LogoRobo, texto: "Robo" },
-  { icon: LogoMujer, texto: "Violencia contra la mujer" },
-  { icon: LogoMedico, texto: "Emergencia médica" },
-  { icon: LogoExtraviado, texto: "Persona extraviada o no localizada" },
-];
+  // useEffect para cerrar el menú desplegable si se hace clic fuera de él
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpen(false); // Cierra el menú
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-// Componente principal del menú de usuario
-export default function MenuUsuario({users}) {
-    console.log(users);
-    // Estado para mostrar/ocultar el menú desplegable del usuario
-    const [open, setOpen] = useState(false);
-    // Estado para guardar el reporte seleccionado por el usuario
-    const [reporteSeleccionado, setReporteSeleccionado] = useState(null);
-    // Referencia al contenedor del menú para detectar clics fuera de él
-    const menuRef = useRef();
-    // Hook para navegar entre páginas
-    const navigate = useNavigate();
+  // Función para limpiar todos los campos del formulario
+  const limpiarCampos = () => {
+    setIncidenteSeleccionado("");
+    setUbicacion("");
+    setHora("");
+    setQuienReporta(usuarioActual ? usuarioActual.name : "");
+  };
 
-    // Efecto para cerrar el menú desplegable si se hace clic fuera de él
-    useEffect(() => {
-        function handleClickOutside(event) {
-            // Si el clic fue fuera del menú, cierra el menú
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setOpen(false);
-            }
-        }
-        // Agrega el listener al montar el componente
-        document.addEventListener("mousedown", handleClickOutside);
-        // Limpia el listener al desmontar el componente
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+  // Función para guardar el reporte (aquí solo limpia y muestra alerta, deberías conectar con tu backend)
+  const handleGuardarReporte = () => {
+    limpiarCampos();
+    setRegistrando(false);
+    alert("Incidente registrado correctamente");
+  };
 
-    // Función para manejar el click en "Generar reporte"
-    // Solo navega si hay un reporte seleccionado
-    const handleGenerarReporte = () => {
-        if (reporteSeleccionado) {
-            navigate("/generar-reporte", { state: { reporte: reporteSeleccionado } });
-        }
-    };
+  // Función para simular la selección de una ubicación en el mapa
+  const handleSeleccionarUbicacion = () => {
+    setUbicacion("Ubicación seleccionada en el mapa");
+  };
 
-    // Función para manejar el click en "Ver reportes registrados"
-    // Solo navega si hay un reporte seleccionado
-    const handleVerReportes = () => {
-        if (reporteSeleccionado) {
-            navigate("/visualizar-reportes", { state: { reporte: reporteSeleccionado } });
-        }
-    };
+  // Función para ir a la información del usuario
+  const handleMiCuenta = () => {
+    setOpen(false);
+    navigate("/informacion");
+  };
 
-    // Renderizado del componente
-    return (
+  // Función para cerrar sesión y volver al Home
+  const handleCerrarSesion = () => {
+    setOpen(false);
+    logout();
+    navigate("/");
+  };
+
+  // Busca el objeto del incidente seleccionado para mostrar sus datos
+  const incidenteObj = incidentes.find(i => String(i.id) === String(incidenteSeleccionado));
+
+  // Renderizado del componente
+  return (
     <div className="menu-usuario-container">
-      {/* Header superior con logo, nombre de usuario y menú desplegable */}
       <title>Menu Usuario</title>
+      {/* Header con logo, título y menú de usuario */}
       <header className="menu-usuario-header">
         <div className="logo-titulo">
-          {/* Logo de la aplicación */}
-          <img src={LogoAlertaContigo} alt="Logo" className="logo-alerta" />
+          <img src={require("../recursos/menuUser/LogoAlertaContigo.png")} alt="Logo" className="logo-alerta" />
           <span className="titulo-app">
             ¡PONTE <span className="once">ONCE!</span>
           </span>
         </div>
-        {/* Información del usuario y menú desplegable */}
         <div className="usuario-info" ref={menuRef}>
           <span className="icono-campana" role="img" aria-label="campana">🔔</span>
-          <span className="usuario-nombre">{users?.name}</span>
+          <span className="usuario-nombre">{usuarioActual ? usuarioActual.name : "Invitado"}</span>
           <span className="icono-avatar" role="img" aria-label="avatar">👤</span>
-          {/* Botón para abrir/cerrar el menú desplegable */}
           <button
             className="btn-menu-desplegable"
             onClick={() => setOpen((v) => !v)}
             aria-label="Abrir menú"
           >
+            ☰
           </button>
-          {/* Menú desplegable con opciones de cuenta */}
           {open && (
             <div className="menu-desplegable">
-              {/* Opción para ir a la información del usuario */}
-              <button className="menu-opcion" onClick={() => navigate("/informacion")}>Mi cuenta</button>
-              {/* Opción para cerrar sesión (a implementar) */}
-              <button className="menu-opcion" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar sesión</button>
+              <button className="menu-opcion" onClick={handleMiCuenta}>Mi cuenta</button>
+              <button className="menu-opcion" onClick={handleCerrarSesion}>Cerrar sesión</button>
             </div>
           )}
         </div>
       </header>
-      {/* Cuerpo principal del menú */}
+
+      {/* Cuerpo principal */}
       <main className="menu-usuario-main">
-        {/* Sección de bienvenida y botones de acción */}
-        <section className="bienvenida">
-          <h1>Bienvenido {users?.name}</h1>
-          {/* Botón para generar reporte, solo habilitado si hay reporte seleccionado */}
-          <button
-            className="btn-generar-reporte"
-            onClick={handleGenerarReporte}
-            disabled={!reporteSeleccionado}
-            style={{ opacity: reporteSeleccionado ? 1 : 0.5, cursor: reporteSeleccionado ? "pointer" : "not-allowed" }}
-          >
-            Generar reporte
-          </button>
-          {/* Botón para ver reportes registrados, solo habilitado si hay reporte seleccionado */}
-          <button
-            className="btn-ver-reportes"
-            onClick={handleVerReportes}
-            disabled={!reporteSeleccionado}
-            style={{ opacity: reporteSeleccionado ? 1 : 0.5, cursor: reporteSeleccionado ? "pointer" : "not-allowed" }}
-          >
-            Ver reportes registrados
-          </button>
-        </section>
-        {/* Sección para elegir el tipo de reporte */}
-        <section className="tipos-reporte">
-          <h2>Elija el tipo de reporte</h2>
-          <div className="grid-reportes">
-            {/* Muestra todos los tipos de reporte como cuadros seleccionables */}
-            {reportes.map((r, i) => (
-              <div
-                className={`reporte-item${reporteSeleccionado === r ? " seleccionado" : ""}`}
-                key={i}
-                onClick={() => setReporteSeleccionado(r)}
-                // Si está seleccionado, cambia el borde y la sombra
-                style={{
-                  border: reporteSeleccionado === r ? "3px solid #7c4dff" : "",
-                  boxShadow: reporteSeleccionado === r ? "0 0 10px #7c4dff44" : ""
-                }}
-              >
-                {/* Icono del tipo de reporte */}
-                <img src={r.icon} alt={r.texto} />
-                {/* Texto del tipo de reporte */}
-                <span>{r.texto}</span>
+        {/* Sección izquierda: incidentes */}
+        <section className="incidentes-section">
+          {/* Si NO se está registrando, muestra el listado y detalles */}
+          {!registrando ? (
+            <>
+              <h2 className="incidentes-titulo">Considera los siguientes incidentes ocurridos en la zona</h2>
+              <div className="combo-incidentes">
+                <label>Tipo de incidente:</label>
+                <select
+                  value={incidenteSeleccionado}
+                  onChange={e => setIncidenteSeleccionado(e.target.value)}
+                  className="input-text"
+                >
+                  <option value="">Seleccione un incidente</option>
+                  {incidentes.map(inc => (
+                    <option key={inc.id} value={inc.id}>{inc.type}</option>
+                  ))}
+                </select>
               </div>
-            ))}
+              {/* Si hay un incidente seleccionado, muestra sus detalles */}
+              {incidenteSeleccionado && incidenteObj && (
+                <div className="detalle-incidente">
+                  <h3>{incidenteObj.type}</h3>
+                  <p><b>Descripción:</b> {incidenteObj.descripcion || "Sin descripción"}</p>
+                  <p><b>Ubicación registrada:</b> {ubicacion || "No seleccionada"}</p>
+                  <p><b>Hora del incidente:</b> {hora || "No registrada"}</p>
+                  <p><b>Quien reporta:</b> {quienReporta}</p>
+                  <button
+                    className="btn-generar-reporte"
+                    disabled={!incidenteSeleccionado}
+                    onClick={() => {
+                      limpiarCampos();
+                      setRegistrando(true);
+                    }}
+                  >
+                    Crear reporte
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            // Si se está registrando, muestra el formulario de registro
+            <>
+              <h2 className="incidentes-titulo">Registra el Incidente</h2>
+              <div className="combo-incidentes">
+                <label>Tipo de incidente:</label>
+                <select
+                  value={incidenteSeleccionado}
+                  onChange={e => setIncidenteSeleccionado(e.target.value)}
+                  className="input-text"
+                >
+                  <option value="">Seleccione un incidente</option>
+                  {incidentes.map(inc => (
+                    <option key={inc.id} value={inc.id}>{inc.type}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="detalle-incidente">
+                <label>Descripción:</label>
+                <textarea
+                  value={incidenteObj ? (incidenteObj.descripcion || "Sin descripción") : ""}
+                  disabled
+                  className="input-text"
+                />
+              </div>
+              <div className="detalle-incidente">
+                <label>Ubicación registrada:</label>
+                <input
+                  type="text"
+                  value={ubicacion}
+                  className="input-text"
+                  placeholder="Selecciona en el mapa"
+                  readOnly
+                />
+              </div>
+              <div className="detalle-incidente">
+                <label>Hora del incidente:</label>
+                <input
+                  type="time"
+                  value={hora}
+                  onChange={e => setHora(e.target.value)}
+                  className="input-text"
+                />
+              </div>
+              <div className="detalle-incidente">
+                <label>Quien reporta:</label>
+                <input
+                  type="text"
+                  value={quienReporta}
+                  disabled
+                  className="input-text"
+                />
+              </div>
+              {/* Botones para guardar o cancelar el registro */}
+              <div className="botones-registro">
+                <button
+                  className="btn-generar-reporte"
+                  disabled={
+                    !incidenteSeleccionado ||
+                    !ubicacion ||
+                    !hora ||
+                    !quienReporta
+                  }
+                  onClick={handleGuardarReporte}
+                >
+                  Guardar reporte
+                </button>
+                <button
+                  className="btn-cancelar-reporte"
+                  onClick={() => {
+                    limpiarCampos();
+                    setRegistrando(false);
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* Sección derecha: mapa */}
+        <section className="mapa-section">
+          <h2>Mapa del incidente</h2>
+          <div
+            className="mapa-placeholder"
+            onClick={registrando ? handleSeleccionarUbicacion : undefined}
+          >
+            <span>
+              {ubicacion
+                ? "Ubicación seleccionada"
+                : "Haz clic para seleccionar ubicación"}
+            </span>
           </div>
         </section>
       </main>
