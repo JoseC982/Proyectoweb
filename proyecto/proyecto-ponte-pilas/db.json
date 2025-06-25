@@ -13,7 +13,7 @@
     },
     {
       "id": "2",
-      "name": "Usuario",
+      "name": "Pedro",
       "email": "user@user.com",
       "pass": "user",
       "role": "user",
@@ -68,7 +68,7 @@
     },
     {
       "id": "4f2d",
-      "name": "Pedro",
+      "name": "Miguel",
       "email": "pedro@gmail.com",
       "pass": "1234",
       "role": "user",
@@ -111,7 +111,7 @@
     },
     {
       "id": "ed26",
-      "name": "David Merizalde Arcos Mendez",
+      "name": "David Merizalde ",
       "email": "davidM@gmail.com",
       "pass": "1234",
       "role": "user",
@@ -137,7 +137,7 @@
       "email": "nuevo@correo.com",
       "pass": "1234",
       "role": "user",
-      "estado": "Activo",
+      "estado": "Silenciado",
       "fechaNacimiento": "2000-01-01",
       "bio": "Mi biografía",
       "username": "nuevoUser"
@@ -198,7 +198,7 @@
   "reports": [
     {
       "id": "1",
-      "userId": 2,
+      "userId": 4,
       "incidentTypeId": 1,
       "description": "Persona sospechosa merodeando el parque.",
       "location": "Parque central",
@@ -209,6 +209,36 @@
     {
       "id": "2",
       "userId": 2,
+      "incidentTypeId": 10,
+      "description": "Sugerencia: Falta de alumbrado público",
+      "location": "Calle 10 de Agosto",
+      "date": "2025-06-11",
+      "time": "20:00",
+      "status": "nuevo"
+    },
+    {
+      "id": "3",
+      "userId": "4f2d",
+      "incidentTypeId": 10,
+      "description": "Sugerencia:",
+      "location": "Calle 10 de Agosto",
+      "date": "2025-06-11",
+      "time": "20:00",
+      "status": "nuevo"
+    },
+    {
+      "id": "4",
+      "userId": 5,
+      "incidentTypeId": 10,
+      "description": "Sugerencia: Falta de alumbrado público",
+      "location": "Calle 10 de Agosto",
+      "date": "2025-06-11",
+      "time": "20:00",
+      "status": "nuevo"
+    },
+    {
+      "id": "5",
+      "userId": "cd4a",
       "incidentTypeId": 10,
       "description": "Sugerencia: Falta de alumbrado público",
       "location": "Calle 10 de Agosto",

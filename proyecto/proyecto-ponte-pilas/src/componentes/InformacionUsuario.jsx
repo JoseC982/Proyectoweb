@@ -28,13 +28,6 @@ export default function InformacionUsuario({ users, setUsers }) {
     fechaNacimiento: users?.fechaNacimiento || ""
   });
 
-  // Estado para los datos del formulario, inicializado con los datos del usuario actual
-  const [datos, setDatos] = useState(mapUserToForm(usuarioActual));
-
-  // Sincroniza los datos del formulario cuando cambia el usuario actual
-  useEffect(() => {
-    setDatos(mapUserToForm(usuarioActual));
-  }, [usuarioActual]);
 
   // Maneja los cambios en los inputs del formulario
   const handleChange = (e) => {

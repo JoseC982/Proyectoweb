@@ -5,7 +5,7 @@ import axios from "axios"; // Para hacer peticiones HTTP
 import "../estilos/MenuUsuario.css"; // Importa los estilos
 
 // Componente principal
-export default function MenuUsuario({ usuarioActual, logout }) {
+export default function MenuUsuario({ users }) {
   const navigate = useNavigate(); // Hook para navegar entre rutas
   // Estado para la lista de incidentes (se carga desde la API/db.json)
   const [incidentes, setIncidentes] = useState([]);
@@ -16,7 +16,7 @@ export default function MenuUsuario({ usuarioActual, logout }) {
   // Estado para la hora del incidente
   const [hora, setHora] = useState("");
   // Estado para el nombre de quien reporta (por defecto el usuario logueado)
-  const [quienReporta, setQuienReporta] = useState(usuarioActual ? usuarioActual.name : "");
+  const [quienReporta, setQuienReporta] = useState(users ? users.name : "");
   // Estado para saber si se está registrando un nuevo incidente
   const [registrando, setRegistrando] = useState(false);
   // Estado para mostrar/ocultar el menú desplegable del usuario
@@ -47,7 +47,7 @@ export default function MenuUsuario({ usuarioActual, logout }) {
     setIncidenteSeleccionado("");
     setUbicacion("");
     setHora("");
-    setQuienReporta(usuarioActual ? usuarioActual.name : "");
+    setQuienReporta(users?.name);
   };
 
   // Función para guardar el reporte (aquí solo limpia y muestra alerta, deberías conectar con tu backend)
@@ -71,8 +71,8 @@ export default function MenuUsuario({ usuarioActual, logout }) {
   // Función para cerrar sesión y volver al Home
   const handleCerrarSesion = () => {
     setOpen(false);
-    logout();
     navigate("/");
+    localStorage.removeItem("usuario");
   };
 
   // Busca el objeto del incidente seleccionado para mostrar sus datos
@@ -92,7 +92,7 @@ export default function MenuUsuario({ usuarioActual, logout }) {
         </div>
         <div className="usuario-info" ref={menuRef}>
           <span className="icono-campana" role="img" aria-label="campana">🔔</span>
-          <span className="usuario-nombre">{usuarioActual ? usuarioActual.name : "Invitado"}</span>
+          <span className="usuario-nombre">{users?.name}</span>
           <span className="icono-avatar" role="img" aria-label="avatar">👤</span>
           <button
             className="btn-menu-desplegable"
