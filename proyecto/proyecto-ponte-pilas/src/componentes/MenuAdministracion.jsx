@@ -14,7 +14,8 @@ import LogValidarAlerta from "../recursos/MenuAdm/LogValidarAlerta.png";
 import { useNavigate } from "react-router-dom";
 
 // Componente funcional del menú de administración
-const MenuAdministracion = () => {
+const MenuAdministracion = ({users}) => {
+  console.log(users); // Muestra el usuario actual en la consola
   // Hook para navegar entre rutas
   const navigate = useNavigate();
   // Estado para controlar si el menú de usuario está abierto o cerrado
@@ -70,7 +71,7 @@ const MenuAdministracion = () => {
         {/* Menú de usuario con nombre y opciones */}
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
-          <span className="nombre-usuario">César M</span>
+          <span className="nombre-usuario">{users?.name}</span>
           {/* Botón para desplegar el menú de usuario */}
           <button
             className="icono-desplegar-btn"
@@ -83,7 +84,7 @@ const MenuAdministracion = () => {
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
               <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
-              <button className="menu-item" onClick={handleCerrarSesion}>Cerrar Sesión</button>
+              <button className="menu-item" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar Sesión</button>
             </div>
           )}
         </div>

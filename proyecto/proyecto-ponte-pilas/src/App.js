@@ -24,7 +24,7 @@ import InformacionUsuarioAdm from './componentes/InformacionUsuarioAdm';
 // Define el componente principal App
 function App() {
   // Estado para almacenar la lista de usuarios
-  const [users, setUsers] = useState([]);
+  const [usersList, setUsersList] = useState([]);
   // Estado para almacenar la lista de incidentes
   const [incidents, setIncidents] = useState([]);
   // Estado para almacenar la lista de reportes
@@ -48,7 +48,7 @@ function App() {
     ])
       // Cuando todas las peticiones terminan, procesa los resultados
       .then(([usersRes, incidentsRes, reportsRes]) => {
-        setUsers(usersRes.data);         // Guarda los usuarios en el estado
+        setUsersList(usersRes.data);         // Guarda los usuarios en el estado
         setIncidents(incidentsRes.data); // Guarda los incidentes en el estado
         setReports(reportsRes.data);     // Guarda los reportes en el estado
         // Procesa los reportes para crear la lista de notificaciones
@@ -122,10 +122,6 @@ function App() {
         <Route path="/informacion" element={<InformacionUsuario users={users} setUsers={setUsers} />} />
         {/* Ruta para generar un reporte */}
         <Route path="/generar-reporte" element={<GenerarReporte />} />
-//Rama4-Daniel
-        //<Route path="/visualizar-reportes" element={<VisualizarReportes/>}/>
-        //<Route path="/" element={<Home />} />
-        //<Route path="/loginAdmin" element={<LoginAdmin users={users} />} />
 
         {/* Ruta para visualizar reportes */}
         <Route path="/visualizar-reportes" element={<VisualizarReportes />} />
@@ -140,11 +136,11 @@ function App() {
         {/* Ruta para recuperar cuenta */}
         <Route path="/recuperarCuenta" element={<RecuperarCuenta />} />
         {/* Ruta para el menú de administración */}
-        <Route path="/menu-administracion" element={<MenuAdministracion />} />
-        <Route path="/gestion-usuarios" element={<GestionUsuarios users={users} silenciarUsuario={silenciarUsuario} borrarUsuario={borrarUsuario} />} />
+        <Route path="/menu-administracion" element={<MenuAdministracion users={users}/>} />
+        <Route path="/gestion-usuarios" element={<GestionUsuarios users={usersList} silenciarUsuario={silenciarUsuario} borrarUsuario={borrarUsuario} />} />
         <Route path="/notificaciones-alertas" element={<NotificacionesAlertas notificaciones={notificaciones} />} />
-        <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={users} incidents={incidents} borrarReporte={borrarReporte} />} />
-        <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm admin={adminUser} />} />
+        <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={usersList} incidents={incidents} borrarReporte={borrarReporte} />} />
+        <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm users={users} setUsers={setUsers}/>} />
 
       </Routes>
     </BrowserRouter>

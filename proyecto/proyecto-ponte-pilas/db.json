@@ -7,8 +7,8 @@
       "pass": "admin",
       "role": "admin",
       "estado": "Activo",
-      "fechaNacimiento": "2000-08-09",
-      "bio": "Soy administrador",
+      "fechaNacimiento": "1992-08-09",
+      "bio": "Soy administrador, el unico que se encarga de validar reportes",
       "username": "Adminadmin"
     },
     {
@@ -111,14 +111,14 @@
     },
     {
       "id": "ed26",
-      "name": "David Merizalde Arcos",
+      "name": "David Merizalde Arcos Mendez",
       "email": "davidM@gmail.com",
       "pass": "1234",
       "role": "user",
-      "estado": "Activo",
+      "estado": "Silenciado",
       "fechaNacimiento": "2003-12-12",
       "username": "davidmddd",
-      "bio": "Me llamo david merizalde de quto, calderon"
+      "bio": "Me llamo david merizalde de quto, calderon, naci en cayambe"
     },
     {
       "id": "f3e3",
