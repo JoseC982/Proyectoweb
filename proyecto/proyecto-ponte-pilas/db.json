@@ -24,13 +24,13 @@
     },
     {
       "id": "3",
-      "name": "Daniel",
+      "name": "Nombre Actualizado",
       "email": "daniel1@gmail.com",
       "pass": "1234",
       "role": "user",
       "estado": "Activo",
       "fechaNacimiento": "2003-08-09",
-      "bio": "Hola me llamo daniel",
+      "bio": "Nueva biografía",
       "username": "DaniCarlos"
     },
     {
@@ -130,6 +130,17 @@
       "fechaNacimiento": "2000-12-12",
       "username": "ajojd",
       "bio": "asdas"
+    },
+    {
+      "id": "ff3d",
+      "name": "Nuevo Usuario",
+      "email": "nuevo@correo.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2000-01-01",
+      "bio": "Mi biografía",
+      "username": "nuevoUser"
     }
   ],
   "incidents": [
