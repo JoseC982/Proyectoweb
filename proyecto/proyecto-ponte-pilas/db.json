@@ -18,9 +18,9 @@
     },
     {
       "id": "3",
-      "name": "Daniel",
+      "name": "Daniel Actualizado",
       "email": "daniel1@gmail.com",
-      "pass": "1234",
+      "pass": "nuevaClave",
       "role": "user",
       "estado": "Activo"
     },
@@ -116,6 +116,19 @@
       "location": "Calle 10 de Agosto",
       "date": "2025-06-11",
       "time": "20:00",
+      "status": "nuevo"
+    },
+    {
+      "id": "d1df"
+    },
+    {
+      "id": "13bc",
+      "userId": 3,
+      "incidentTypeId": 1,
+      "description": "Prueba de reporte",
+      "location": "Parque central",
+      "date": "2025-06-25",
+      "time": "15:00",
       "status": "nuevo"
     }
   ]
