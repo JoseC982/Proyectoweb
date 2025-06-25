@@ -28,11 +28,18 @@ export default function InformacionUsuario({ users, setUsers }) {
     fechaNacimiento: users?.fechaNacimiento || ""
   });
 
-  // Función que maneja los cambios en los inputs y actualiza el estado 'datos'
+  // Estado para los datos del formulario, inicializado con los datos del usuario actual
+  const [datos, setDatos] = useState(mapUserToForm(usuarioActual));
+
+  // Sincroniza los datos del formulario cuando cambia el usuario actual
+  useEffect(() => {
+    setDatos(mapUserToForm(usuarioActual));
+  }, [usuarioActual]);
+
+  // Maneja los cambios en los inputs del formulario
   const handleChange = (e) => {
     setDatos({ ...datos, [e.target.name]: e.target.value });
   };
-
   // Función que guarda los cambios y muestra un mensaje temporal
   const handleEditar = () => {
     // Busca el usuario por email y actualiza sus datos en la base de datos
@@ -113,6 +120,7 @@ export default function InformacionUsuario({ users, setUsers }) {
       <main className="info-usuario-main">
         {/* Lado izquierdo con nombre, avatar y campos básicos */}
         <div className="info-usuario-left">
+          {/* Bienvenida con el nombre actualizado */}
           <h1>Bienvenido {datos.nombre}</h1>
           <div className="icono-grande">
             <span role="img" aria-label="avatar" style={{ fontSize: "5rem" }}>👤</span>
@@ -147,7 +155,6 @@ export default function InformacionUsuario({ users, setUsers }) {
             />
           </div>
         </div>
-        {/* Lado derecho con biografía, email y contraseña */}
         <div className="info-usuario-right">
           <label className="bio-label">Biografía:</label>
           <textarea
@@ -199,7 +206,6 @@ export default function InformacionUsuario({ users, setUsers }) {
           REGRESAR
         </button>
       </div>
-      {/* Muestra mensaje temporal si existe */}
       {mensaje && <div className="mensaje-actualizado">{mensaje}</div>}
     </div>
   );

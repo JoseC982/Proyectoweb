@@ -141,7 +141,5 @@ const LoginAdmin = ({ setUsers }) => {
             </div>
         </div>
     );
-}
 
-// Exporta el componente LoginAdmin como predeterminado
 export default LoginAdmin;
