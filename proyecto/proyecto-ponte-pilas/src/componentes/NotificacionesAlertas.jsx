@@ -10,11 +10,11 @@ import LogNotiAlerta from "../recursos/MenuAdm/LogNotiAlerta.png";
 import { useNavigate } from "react-router-dom";
 
 // Componente funcional que recibe las notificaciones como prop
-const NotificacionesAlertas = ({ notificaciones }) => {
+const NotificacionesAlertas = ({ users,notificaciones }) => {
   // Estado para controlar si el menú de usuario está abierto o cerrado
   const [menuAbierto, setMenuAbierto] = useState(false);
   // Estado para mostrar mensajes temporales (ej: "Sesión Cerrada")
-  const [mensaje, setMensaje] = useState("");
+  const [mensaje] = useState("");
   // Referencia al contenedor del menú de usuario para detectar clics fuera
   const menuRef = useRef(null);
   // Hook para navegar entre rutas
@@ -36,13 +36,6 @@ const NotificacionesAlertas = ({ notificaciones }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  // Función para manejar el cierre de sesión
-  const handleCerrarSesion = () => {
-    setMenuAbierto(false); // Cierra el menú
-    setMensaje("Sesión Cerrada"); // Muestra mensaje temporal
-    setTimeout(() => setMensaje(""), 2000); // Oculta mensaje después de 2 segundos
-  };
 
   // Renderizado del componente
   return (
@@ -67,7 +60,7 @@ const NotificacionesAlertas = ({ notificaciones }) => {
         {/* Menú de usuario con nombre y opciones */}
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
-          <span className="nombre-usuario">César M</span>
+          <span className="nombre-usuario">{users?.name}</span>
           {/* Botón para desplegar el menú de usuario */}
           <button
             className="icono-desplegar-btn"
@@ -79,8 +72,8 @@ const NotificacionesAlertas = ({ notificaciones }) => {
           {/* Menú desplegable de usuario */}
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
-              <button className="menu-item" onClick={() => setMenuAbierto(false)}>Mi cuenta</button>
-              <button className="menu-item" onClick={handleCerrarSesion}>Cerrar Sesión</button>
+              <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
+              <button className="menu-item" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar Sesión</button>
             </div>
           )}
         </div>

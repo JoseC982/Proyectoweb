@@ -2,20 +2,24 @@ import React, { useRef, useEffect, useState } from "react";
 import "../estilos/GestionUsuarios.css";
 import LogFondo from "../recursos/MenuAdm/LogFondo.png";
 import LogGestionUsuario from "../recursos/MenuAdm/LogGestionUsuario.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 // Componente principal de gestión de usuarios
-const GestionUsuarios = ({ users, silenciarUsuario, borrarUsuario }) => {
+const GestionUsuarios = ({ silenciarUsuario, borrarUsuario }) => {
   // Estado para mostrar mensajes temporales (ej: usuario silenciado/eliminado)
   const [mensaje, setMensaje] = useState("");
   // Estado para guardar el índice del usuario seleccionado en la tabla
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   // Estado para controlar si el menú de usuario (desplegable) está abierto o cerrado
   const [menuAbierto, setMenuAbierto] = useState(false);
+  // Estado para guardar la lista de usuarios
+  const [users, setUsers] = useState([]);
   // Referencia al contenedor del menú de usuario, para detectar clics fuera de él
   const menuRef = useRef(null);
   // Hook de navegación para cambiar de ruta programáticamente
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Efecto secundario: Detecta clics fuera del menú para cerrarlo automáticamente
   useEffect(() => {
@@ -33,6 +37,12 @@ const GestionUsuarios = ({ users, silenciarUsuario, borrarUsuario }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []); // Solo se ejecuta una vez al montar
+
+  // Efecto secundario: Recarga usuarios cada vez que se monta o cambia la ruta
+  useEffect(() => {
+    axios.get("http://localhost:3000/users")
+      .then(res => setUsers(res.data));
+  }, [location]);
 
   // Función para silenciar al usuario seleccionado
   const handleSilenciar = async () => {
@@ -74,13 +84,6 @@ const GestionUsuarios = ({ users, silenciarUsuario, borrarUsuario }) => {
     setUsuarioSeleccionado(idx);
   };
 
-  // Función para cerrar sesión (solo muestra mensaje, no implementa lógica real de logout)
-  const handleCerrarSesion = () => {
-    setMenuAbierto(false); // Cierra el menú
-    setMensaje("Sesión Cerrada"); // Muestra mensaje
-    setTimeout(() => setMensaje(""), 2000); // Borra mensaje después de 2 segundos
-  };
-
   // Renderizado del componente
   return (
     <div className="gestion-usuarios-fondo" style={{ position: "relative", minHeight: "100vh" }}>
@@ -101,7 +104,7 @@ const GestionUsuarios = ({ users, silenciarUsuario, borrarUsuario }) => {
         {/* Menú de usuario (icono engranaje, nombre, menú desplegable) */}
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
-          <span className="nombre-usuario">César M</span>
+          <span className="nombre-usuario">{users?.name}</span>
           {/* Botón para abrir/cerrar menú desplegable */}
           <button
             className="icono-desplegar-btn"
@@ -113,8 +116,8 @@ const GestionUsuarios = ({ users, silenciarUsuario, borrarUsuario }) => {
           {/* Menú desplegable de usuario */}
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
-              <button className="menu-item" onClick={() => setMenuAbierto(false)}>Mi cuenta</button>
-              <button className="menu-item" onClick={handleCerrarSesion}>Cerrar Sesión</button>
+              <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
+              <button className="menu-item" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar Sesión</button>
             </div>
           )}
         </div>

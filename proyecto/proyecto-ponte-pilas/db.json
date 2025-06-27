@@ -24,7 +24,7 @@
     },
     {
       "id": "3",
-      "name": "Nombre Actualizado",
+      "name": "Carlos Daniel",
       "email": "daniel1@gmail.com",
       "pass": "1234",
       "role": "user",
@@ -35,7 +35,7 @@
     },
     {
       "id": "4",
-      "name": "Cesar",
+      "name": "David C",
       "email": "cesar1@gmail.com",
       "pass": "1234",
       "role": "user",
@@ -46,7 +46,7 @@
     },
     {
       "id": "5",
-      "name": "Jose",
+      "name": "Jose J",
       "email": "jose1@gmail.com",
       "pass": "1234",
       "role": "user",
@@ -147,52 +147,62 @@
     {
       "id": "1",
       "type": "Personas sospechosas",
-      "icon": "logoPersonSospechoso.png"
+      "icon": "logoPersonSospechoso.png",
+      "color": "#FFD600"
     },
     {
       "id": "2",
       "type": "Conflicto / Enfrentamiento",
-      "icon": "logoEnfrentamiento.png"
+      "icon": "logoEnfrentamiento.png",
+      "color": "#FF9800"
     },
     {
       "id": "3",
       "type": "Riña",
-      "icon": "LogoRiña.jpg"
+      "icon": "LogoRiña.jpg",
+      "color": "#FF6347"
     },
     {
       "id": "4",
       "type": "Alteración del orden público",
-      "icon": "LogoAlteracion.png"
+      "icon": "LogoAlteracion.png",
+      "color": "#1976d2"
     },
     {
       "id": "5",
       "type": "Eventos de tránsito",
-      "icon": "LogoEvenTransito.png"
+      "icon": "LogoEvenTransito.png",
+      "color": "#43a047"
     },
     {
       "id": "6",
       "type": "Robo",
-      "icon": "LogoRobo.png"
+      "icon": "LogoRobo.png",
+      "color": "#e53935"
     },
     {
       "id": "7",
       "type": "Violencia contra la mujer",
-      "icon": "LogoMujer.jpg"
+      "icon": "LogoMujer.jpg",
+      "color": "#8e24aa"
     },
     {
       "id": "8",
       "type": "Emergencia médica",
-      "icon": "LogoMedico.png"
+      "icon": "LogoMedico.png",
+      "color": "#00bcd4"
     },
     {
       "id": "9",
       "type": "Persona extraviada o no localizada",
-      "icon": "LogoExtraviado.jpg"
+      "icon": "LogoExtraviado.jpg",
+      "color": "#cddc39"
     },
     {
       "id": "10",
       "type": "Otros",
-      "icon": "iconoOtros.png"
+      "icon": "iconoOtros.png",
+      "color": "#bdbdbd"
     }
   ],
   "reports": [
@@ -244,6 +254,102 @@
       "location": "Calle 10 de Agosto",
       "date": "2025-06-11",
       "time": "20:00",
+      "status": "nuevo"
+    },
+    {
+      "id": "5563",
+      "incidentTypeId": "4",
+      "description": "Arboles caidos en la via principal",
+      "location": "San Juan de Turubamba",
+      "lat": -0.34925263244442867,
+      "lng": -78.52806787227765,
+      "time": "18:00",
+      "date": "2025-06-26",
+      "userId": "4",
+      "status": "nuevo"
+    },
+    {
+      "id": "9335",
+      "incidentTypeId": "6",
+      "description": "Robo de celular por el sector del beaterio",
+      "location": "Beaterio - Nueva Aurora",
+      "lat": -0.31542618684235724,
+      "lng": -78.55052947998047,
+      "time": "18:51",
+      "date": "2025-06-26",
+      "userId": "3",
+      "status": "nuevo"
+    },
+    {
+      "id": "ddcb",
+      "incidentTypeId": "6",
+      "description": "Robo a un local de belleza",
+      "location": "Solanda",
+      "lat": -0.268371525936807,
+      "lng": -78.53986991991783,
+      "time": "15:18",
+      "date": "2025-06-26",
+      "userId": "3",
+      "status": "nuevo"
+    },
+    {
+      "id": "b27a",
+      "incidentTypeId": "8",
+      "description": "Persona Atropellada ",
+      "location": "Quicentro Sur",
+      "lat": -0.28639435716108586,
+      "lng": -78.54201078414917,
+      "time": "09:30",
+      "date": "2025-06-26",
+      "userId": "3",
+      "status": "nuevo"
+    },
+    {
+      "id": "d98b",
+      "incidentTypeId": "3",
+      "description": "pelea entre estudiantes de colegio",
+      "location": "Villaflora",
+      "lat": -0.24410173958246376,
+      "lng": -78.52211952209473,
+      "time": "15:05",
+      "date": "2025-06-26",
+      "userId": "4",
+      "status": "nuevo"
+    },
+    {
+      "id": "7cb4",
+      "incidentTypeId": "6",
+      "description": "Robo a mano armada en la estacion palyon de la marin",
+      "location": "Playon de la marin",
+      "lat": -0.22852360217240558,
+      "lng": -78.50697040557861,
+      "time": "15:50",
+      "date": "2025-06-26",
+      "userId": "4",
+      "status": "nuevo"
+    },
+    {
+      "id": "966a",
+      "incidentTypeId": "10",
+      "description": "Pelea de perros",
+      "location": "El panecillo",
+      "lat": -0.23083624366246844,
+      "lng": -78.51961809472373,
+      "time": "15:15",
+      "date": "2025-06-26",
+      "userId": "4",
+      "status": "nuevo"
+    },
+    {
+      "id": "1849",
+      "incidentTypeId": "10",
+      "description": "Caida de 2 postes",
+      "location": "Argelia",
+      "lat": -0.2880698535653255,
+      "lng": -78.51948337609687,
+      "time": "23:50",
+      "date": "2025-06-26",
+      "userId": "3",
       "status": "nuevo"
     }
   ]

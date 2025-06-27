@@ -1,7 +1,8 @@
 // Importa los hooks de React y utilidades de React Router
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Para hacer peticiones HTTP
+import axios from "axios";
+import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import "../estilos/MenuUsuario.css"; // Importa los estilos
 
 // Componente principal
@@ -9,74 +10,205 @@ export default function MenuUsuario({ users }) {
   const navigate = useNavigate(); // Hook para navegar entre rutas
   // Estado para la lista de incidentes (se carga desde la API/db.json)
   const [incidentes, setIncidentes] = useState([]);
+  const [reportes, setReportes] = useState([]);
+  const [filtro, setFiltro] = useState("todos"); // "todos" | "mios"
   // Estado para el incidente seleccionado en el combo
   const [incidenteSeleccionado, setIncidenteSeleccionado] = useState("");
-  // Estado para la ubicación seleccionada en el mapa
-  const [ubicacion, setUbicacion] = useState("");
-  // Estado para la hora del incidente
-  const [hora, setHora] = useState("");
-  // Estado para el nombre de quien reporta (por defecto el usuario logueado)
-  const [quienReporta, setQuienReporta] = useState(users ? users.name : "");
-  // Estado para saber si se está registrando un nuevo incidente
-  const [registrando, setRegistrando] = useState(false);
-  // Estado para mostrar/ocultar el menú desplegable del usuario
-  const [open, setOpen] = useState(false);
-  // Referencia al menú para detectar clics fuera de él
-  const menuRef = useRef();
+  // Estado para mostrar/ocultar el modal de crear/editar reporte
+  const [modalOpen, setModalOpen] = useState(false);
+  // Estado para saber si se está editando un reporte (guarda el id del reporte)
+  const [editando, setEditando] = useState(null);
+  // Estado para el marcador seleccionado (para mostrar en el mapa y en el tooltip)
+  const [markerSeleccionado, setMarkerSeleccionado] = useState(null);
+  // Estado para centrar el mapa
+  const [mapCenter, setMapCenter] = useState({ lat: -0.1806532, lng: -78.4678382 }); // Quito por defecto
+  const [miUbicacion, setMiUbicacion] = useState(null); // Guarda la ubicación actual del usuario
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const [comboAbierto, setComboAbierto] = useState(false); // Estado para mostrar/ocultar el menú de incidentes
+  const menuRef = useRef(null); // <--- Añade el ref para el menú
 
-  // useEffect para cargar los incidentes desde la API/db.json al montar el componente
+  // Para el formulario de crear/editar reporte
+  const [form, setForm] = useState({
+    incidentTypeId: "",
+    description: "",
+    location: "",
+    lat: null,
+    lng: null,
+    time: "",
+    date: "",
+  });
+
+  // Carga el script de Google Maps solo una vez
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: "AIzaSyBzw-IeZMNP2ivHd-Bmxu6b1O3I2h7V3yA", //API Key real
+  });
+
+  // Al cargar, pide la ubicación actual del usuario y centra el mapa ahí
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setMapCenter({ lat: latitude, lng: longitude });
+          setMiUbicacion({ lat: latitude, lng: longitude });
+        },
+        () => {
+          // Si el usuario no da permiso, se queda en Quito
+        }
+      );
+    }
+  }, []);
+
+  // Cargar incidentes y reportes desde la API/db.json
   useEffect(() => {
     axios.get("http://localhost:3000/incidents")
       .then(res => setIncidentes(res.data)) // Guarda los incidentes en el estado
-      .catch(err => setIncidentes([])); // Si hay error, deja el array vacío
+      .catch(() => setIncidentes([])); // Si hay error, deja el array vacío
+
+    axios.get("http://localhost:3000/reports")
+      .then(res => setReportes(res.data)) // Guarda los reportes en el estado
+      .catch(() => setReportes([])); // Si hay error, deja el array vacío
   }, []);
 
-  // useEffect para cerrar el menú desplegable si se hace clic fuera de él
+  // Filtro de reportes
+  const reportesFiltrados = filtro === "mios"
+    ? reportes.filter(r => String(r.userId) === String(users.id))
+    : reportes;
+
+
+  // --- FUNCIONES DE MANIPULACIÓN DE REPORTES ---
+  // Abre el modal para crear un nuevo reporte
+  const abrirModalCrear = (e) => {
+    setForm({
+      incidentTypeId: "",
+      description: "",
+      location: "",
+      lat: e ? e.latLng.lat() : null,
+      lng: e ? e.latLng.lng() : null,
+      time: "",
+      date: new Date().toISOString().slice(0, 10),
+    });
+    setEditando(null);
+    setModalOpen(true);
+  };
+
+  // Abre el modal para editar un reporte existente
+  const abrirModalEditar = (reporte) => {
+    setForm({
+      incidentTypeId: reporte.incidentTypeId,
+      description: reporte.description,
+      location: reporte.location,
+      lat: reporte.lat,
+      lng: reporte.lng,
+      time: reporte.time,
+      date: reporte.date,
+    });
+    setEditando(reporte.id);
+    setModalOpen(true);
+  };
+
+  // Guarda (crea o edita) un reporte
+  const guardarReporte = () => {
+    if (editando) {
+      // Editar reporte
+      axios.put(`http://localhost:3000/reports/${editando}`, {
+        ...form,
+        userId: users.id,
+      }).then(res => {
+        setReportes(prev => prev.map(r => r.id === editando ? res.data : r));
+        setModalOpen(false);
+      });
+    } else {
+      // Crear nuevo reporte
+      axios.post("http://localhost:3000/reports", {
+        ...form,
+        userId: users.id,
+        status: "nuevo",
+      }).then(res => {
+        setReportes(prev => [...prev, res.data]);
+        setModalOpen(false);
+      });
+    }
+  };
+
+  // Elimina un reporte
+  const eliminarReporte = (id) => {
+    axios.delete(`http://localhost:3000/reports/${id}`).then(() => {
+      setReportes(prev => prev.filter(r => r.id !== id));
+    });
+  };
+
+  // --- FUNCIONES DE MANIPULACIÓN DEL MAPA ---
+  // Cuando el usuario hace click en el mapa, abre el modal para crear un reporte en esa ubicación
+  const handleMapClick = (e) => {
+    abrirModalCrear(e);
+  };
+
+  // Definición de handleMarkerRightClick para evitar error de no-undef
+  const handleMarkerRightClick = (reporte) => {
+    if (String(reporte.userId) === String(users.id)) {
+      abrirModalEditar(reporte);
+    }
+  };
+
+  // Botón para centrar el mapa en la ubicación actual
+  const handleTuUbicacion = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setMapCenter({ lat: latitude, lng: longitude });
+          setMiUbicacion({ lat: latitude, lng: longitude });
+        },
+        () => {
+          alert("No se pudo obtener tu ubicación actual.");
+        }
+      );
+    } else {
+      alert("La geolocalización no está soportada en este navegador.");
+    }
+  };
+
+  // Efecto para cerrar el menú si se hace clic fuera de él
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpen(false); // Cierra el menú
+        setMenuAbierto(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
-
-  // Función para limpiar todos los campos del formulario
-  const limpiarCampos = () => {
-    setIncidenteSeleccionado("");
-    setUbicacion("");
-    setHora("");
-    setQuienReporta(users?.name);
-  };
-
-  // Función para guardar el reporte (aquí solo limpia y muestra alerta, deberías conectar con tu backend)
-  const handleGuardarReporte = () => {
-    limpiarCampos();
-    setRegistrando(false);
-    alert("Incidente registrado correctamente");
-  };
-
-  // Función para simular la selección de una ubicación en el mapa
-  const handleSeleccionarUbicacion = () => {
-    setUbicacion("Ubicación seleccionada en el mapa");
-  };
 
   // Función para ir a la información del usuario
   const handleMiCuenta = () => {
-    setOpen(false);
+    setMenuAbierto(false);
     navigate("/informacion");
   };
 
-  // Función para cerrar sesión y volver al Home
+  // Función para manejar el cierre de sesión
   const handleCerrarSesion = () => {
-    setOpen(false);
+    setMenuAbierto(false);
     navigate("/");
-    localStorage.removeItem("usuario");
   };
 
-  // Busca el objeto del incidente seleccionado para mostrar sus datos
-  const incidenteObj = incidentes.find(i => String(i.id) === String(incidenteSeleccionado));
+  function getMarkerIcon(color) {
+  return {
+    url: `data:image/svg+xml;utf-8,<svg width="32" height="32" viewBox="0 0 32 32" fill="${encodeURIComponent(color)}" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="12" /></svg>`,
+    scaledSize: {
+      width: 32,
+      height: 32
+    }
+  };
+}
+
+// Busca el incidente por id y toma su color
+function getColorByIncidentId(id) {
+  const incidente = incidentes.find(i => String(i.id) === String(id));
+  return incidente?.color || "#bdbdbd";
+}
 
   // Renderizado del componente
   return (
@@ -94,17 +226,19 @@ export default function MenuUsuario({ users }) {
           <span className="icono-campana" role="img" aria-label="campana">🔔</span>
           <span className="usuario-nombre">{users?.name}</span>
           <span className="icono-avatar" role="img" aria-label="avatar">👤</span>
+          {/* Botón para desplegar el menú de usuario */}
           <button
-            className="btn-menu-desplegable"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Abrir menú"
+            className="icono-desplegar-btn"
+            onClick={() => setMenuAbierto((v) => !v)}
+            aria-label="Abrir menú de usuario"
           >
-            ☰
+            <span className="icono-desplegar">▼</span>
           </button>
-          {open && (
-            <div className="menu-desplegable">
-              <button className="menu-opcion" onClick={handleMiCuenta}>Mi cuenta</button>
-              <button className="menu-opcion" onClick={handleCerrarSesion}>Cerrar sesión</button>
+          {/* Menú desplegable de usuario */}
+          {menuAbierto && (
+            <div className="menu-desplegable-usuario">
+              <button className="menu-item" onClick={handleMiCuenta}>Mi cuenta</button>
+              <button className="menu-item" onClick={handleCerrarSesion}>Cerrar Sesión</button>
             </div>
           )}
         </div>
@@ -112,142 +246,189 @@ export default function MenuUsuario({ users }) {
 
       {/* Cuerpo principal */}
       <main className="menu-usuario-main">
-        {/* Sección izquierda: incidentes */}
-        <section className="incidentes-section">
-          {/* Si NO se está registrando, muestra el listado y detalles */}
-          {!registrando ? (
-            <>
-              <h2 className="incidentes-titulo">Considera los siguientes incidentes ocurridos en la zona</h2>
-              <div className="combo-incidentes">
-                <label>Tipo de incidente:</label>
-                <select
-                  value={incidenteSeleccionado}
-                  onChange={e => setIncidenteSeleccionado(e.target.value)}
-                  className="input-text"
-                >
-                  <option value="">Seleccione un incidente</option>
-                  {incidentes.map(inc => (
-                    <option key={inc.id} value={inc.id}>{inc.type}</option>
-                  ))}
-                </select>
-              </div>
-              {/* Si hay un incidente seleccionado, muestra sus detalles */}
-              {incidenteSeleccionado && incidenteObj && (
-                <div className="detalle-incidente">
-                  <h3>{incidenteObj.type}</h3>
-                  <p><b>Descripción:</b> {incidenteObj.descripcion || "Sin descripción"}</p>
-                  <p><b>Ubicación registrada:</b> {ubicacion || "No seleccionada"}</p>
-                  <p><b>Hora del incidente:</b> {hora || "No registrada"}</p>
-                  <p><b>Quien reporta:</b> {quienReporta}</p>
-                  <button
-                    className="btn-generar-reporte"
-                    disabled={!incidenteSeleccionado}
-                    onClick={() => {
-                      limpiarCampos();
-                      setRegistrando(true);
-                    }}
-                  >
-                    Crear reporte
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            // Si se está registrando, muestra el formulario de registro
-            <>
-              <h2 className="incidentes-titulo">Registra el Incidente</h2>
-              <div className="combo-incidentes">
-                <label>Tipo de incidente:</label>
-                <select
-                  value={incidenteSeleccionado}
-                  onChange={e => setIncidenteSeleccionado(e.target.value)}
-                  className="input-text"
-                >
-                  <option value="">Seleccione un incidente</option>
-                  {incidentes.map(inc => (
-                    <option key={inc.id} value={inc.id}>{inc.type}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="detalle-incidente">
-                <label>Descripción:</label>
-                <textarea
-                  value={incidenteObj ? (incidenteObj.descripcion || "Sin descripción") : ""}
-                  disabled
-                  className="input-text"
-                />
-              </div>
-              <div className="detalle-incidente">
-                <label>Ubicación registrada:</label>
-                <input
-                  type="text"
-                  value={ubicacion}
-                  className="input-text"
-                  placeholder="Selecciona en el mapa"
-                  readOnly
-                />
-              </div>
-              <div className="detalle-incidente">
-                <label>Hora del incidente:</label>
-                <input
-                  type="time"
-                  value={hora}
-                  onChange={e => setHora(e.target.value)}
-                  className="input-text"
-                />
-              </div>
-              <div className="detalle-incidente">
-                <label>Quien reporta:</label>
-                <input
-                  type="text"
-                  value={quienReporta}
-                  disabled
-                  className="input-text"
-                />
-              </div>
-              {/* Botones para guardar o cancelar el registro */}
-              <div className="botones-registro">
-                <button
-                  className="btn-generar-reporte"
-                  disabled={
-                    !incidenteSeleccionado ||
-                    !ubicacion ||
-                    !hora ||
-                    !quienReporta
-                  }
-                  onClick={handleGuardarReporte}
-                >
-                  Guardar reporte
-                </button>
-                <button
-                  className="btn-cancelar-reporte"
-                  onClick={() => {
-                    limpiarCampos();
-                    setRegistrando(false);
-                  }}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </>
-          )}
-        </section>
-
-        {/* Sección derecha: mapa */}
-        <section className="mapa-section">
-          <h2>Mapa del incidente</h2>
-          <div
-            className="mapa-placeholder"
-            onClick={registrando ? handleSeleccionarUbicacion : undefined}
-          >
-            <span>
-              {ubicacion
-                ? "Ubicación seleccionada"
-                : "Haz clic para seleccionar ubicación"}
-            </span>
+        <div className="menu-usuario-panel">
+          <div className="combo-incidentes-custom" tabIndex={0} onBlur={() => setComboAbierto(false)}>
+            <div className="combo-selected" onClick={() => setComboAbierto(v => !v)}>
+              {incidenteSeleccionado
+                ? <>
+                    <span className="color-circulo" style={{ background: getColorByIncidentId(incidenteSeleccionado) }}></span>
+                    {incidentes.find(i => String(i.id) === incidenteSeleccionado)?.type}
+                  </>
+                : "Todos los tipos de reporte"}
+              <span className="combo-arrow">▼</span>
+            </div>
+            {comboAbierto && (
+              <ul className="combo-lista">
+                <li onClick={() => { setIncidenteSeleccionado(""); setComboAbierto(false); }}>
+                  <span className="color-circulo" style={{ background: "#bdbdbd" }}></span>
+                  Todos los de reporte
+                </li>
+                {incidentes.map(inc => (
+                  <li key={inc.id} onClick={() => { setIncidenteSeleccionado(String(inc.id)); setComboAbierto(false); }}>
+                    <span className="color-circulo" style={{ background: inc.color || "#bdbdbd" }}></span>
+                    {inc.type}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-        </section>
+          <button className="btn-panel" onClick={() => setFiltro("mios")}>Mis reportes</button>
+          <button className="btn-panel" onClick={() => setFiltro("todos")}>Todos los reportes</button>
+          <button className="btn-panel btn-crear" onClick={() => abrirModalCrear()}>+ Crear reporte</button>
+        </div>
+        <div className="menu-usuario-mapa">
+          <button className="btn-tu-ubicacion" onClick={handleTuUbicacion}>
+            Tu ubicación
+          </button>
+          {isLoaded ? (
+            <GoogleMap
+              mapContainerClassName="mapa-google"
+              center={mapCenter}
+              zoom={14}
+              onClick={handleMapClick}
+              options={{
+                streetViewControl: false,
+                mapTypeControl: false,
+                fullscreenControl: false,
+              }}
+            >
+              {/* Punto azul: tu ubicación */}
+              {miUbicacion && (
+                <Marker
+                  position={miUbicacion}
+                  icon={{
+                    url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                    scaledSize: new window.google.maps.Size(40, 40),
+                  }}
+                />
+              )}
+              {/* Marcadores de reportes */}
+              {reportesFiltrados
+                .filter(r => !incidenteSeleccionado || String(r.incidentTypeId) === incidenteSeleccionado)
+                .map(reporte => {
+                  const color = getColorByIncidentId(reporte.incidentTypeId);
+                  return (
+                    <Marker
+                      key={reporte.id}
+                      position={{ lat: Number(reporte.lat), lng: Number(reporte.lng) }}
+                      onClick={() => setMarkerSeleccionado(reporte)}
+                      onRightClick={() => handleMarkerRightClick(reporte)}
+                      icon={getMarkerIcon(color)}
+                    />
+                  );
+                })}
+              {/* Tooltip/InfoWindow */}
+              {markerSeleccionado && (
+                <InfoWindow
+                  position={{ lat: Number(markerSeleccionado.lat), lng: Number(markerSeleccionado.lng) }}
+                  onCloseClick={() => setMarkerSeleccionado(null)}
+                >
+                  <div>
+                    <b>{incidentes.find(i => String(i.id) === String(markerSeleccionado.incidentTypeId))?.type}</b>
+                    <p>{markerSeleccionado.description}</p>
+                    <small>{markerSeleccionado.location}</small>
+                    <br />
+                    <small>{markerSeleccionado.date} {markerSeleccionado.time}</small>
+                    {String(markerSeleccionado.userId) === String(users.id) && (
+                      <div style={{ marginTop: 8 }}>
+                        <button className="btn-panel" onClick={() => abrirModalEditar(markerSeleccionado)}>Editar</button>
+                        <button className="btn-panel btn-eliminar" onClick={() => eliminarReporte(markerSeleccionado.id)}>Eliminar</button>
+                      </div>
+                    )}
+                  </div>
+                </InfoWindow>
+              )}
+            </GoogleMap>
+          ) : (
+            <div>Cargando mapa...</div>
+          )}
+        </div>
       </main>
+
+      {/* Modal para crear/editar reporte */}
+      {modalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>{editando ? "Editar reporte" : "Crear reporte"}</h2>
+            <select
+              className="input-text"
+              value={form.incidentTypeId}
+              onChange={e => setForm(f => ({ ...f, incidentTypeId: e.target.value }))}
+            >
+              <option value="">Tipo de incidente</option>
+              {incidentes.map(inc => (
+                <option key={inc.id} value={inc.id}>{inc.type}</option>
+              ))}
+            </select>
+            <textarea
+              className="input-text"
+              placeholder="Descripción"
+              value={form.description}
+              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+            />
+            <input
+              className="input-text"
+              placeholder="Ubicación (opcional)"
+              value={form.location}
+              onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
+            />
+            <input
+              className="input-text"
+              type="time"
+              value={form.time}
+              onChange={e => setForm(f => ({ ...f, time: e.target.value }))}
+            />
+            <input
+              className="input-text"
+              type="date"
+              value={form.date}
+              onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+            />
+            <div className="modal-botones">
+              <button className="btn-panel btn-crear" onClick={guardarReporte}>
+                {editando ? "Actualizar" : "Crear"}
+              </button>
+              <button className="btn-panel btn-cancelar" onClick={() => setModalOpen(false)}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Tabla de reportes propios */}
+      {filtro === "mios" && (
+        <div className="tabla-reportes">
+          <h3>Mis reportes</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Ubicación</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportesFiltrados.map(r => (
+                <tr key={r.id}>
+                  <td>{incidentes.find(i => String(i.id) === String(r.incidentTypeId))?.type}</td>
+                  <td>{r.description}</td>
+                  <td>{r.location}</td>
+                  <td>{r.date}</td>
+                  <td>{r.time}</td>
+                  <td>
+                    <button className="btn-panel" onClick={() => abrirModalEditar(r)}>Editar</button>
+                    <button className="btn-panel btn-eliminar" onClick={() => eliminarReporte(r.id)}>Eliminar</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
+

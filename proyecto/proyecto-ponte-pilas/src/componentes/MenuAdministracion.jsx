@@ -21,18 +21,10 @@ const MenuAdministracion = ({users}) => {
   // Estado para controlar si el menú de usuario está abierto o cerrado
   const [menuAbierto, setMenuAbierto] = useState(false);
   // Estado para mostrar mensajes temporales (ej: "Sesión Cerrada")
-  const [mensaje, setMensaje] = useState("");
+  const [mensaje] = useState("");
   // Referencia al contenedor del menú de usuario para detectar clics fuera
   const menuRef = useRef(null);
-
-  // Función para manejar el cierre de sesión
-  const handleCerrarSesion = () => {
-    setMenuAbierto(false); // Cierra el menú
-    setMensaje("Sesión Cerrada"); // Muestra mensaje temporal
-    setTimeout(() => setMensaje(""), 2000); // Oculta mensaje después de 2 segundos
-    navigate("/"); // Redirige a la página principal
-  }
-
+  
   // Efecto para cerrar el menú si se hace clic fuera de él
   useEffect(() => {
     // Función que detecta clics fuera del menú
