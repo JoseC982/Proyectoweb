@@ -3,6 +3,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Para hacer peticiones HTTP
 import "../estilos/MenuUsuario.css"; // Importa los estilos
+import { MapContainer, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import MarcadoresMap from "./MarcadoresMap";
+
 
 // Componente principal
 export default function MenuUsuario({ users }) {
@@ -14,8 +18,6 @@ export default function MenuUsuario({ users }) {
   const [incidenteSeleccionado, setIncidenteSeleccionado] = useState("");
   // Estado para el nombre de quien reporta (por defecto el usuario logueado)
   const [quienReporta, setQuienReporta] = useState(users ? users.name : "");
-  // Estado para saber si se está registrando un nuevo incidente
-  const [registrando, setRegistrando] = useState(false);
   // Estado para mostrar/ocultar el menú desplegable del usuario
   const [open, setOpen] = useState(false);
   // Referencia al menú para detectar clics fuera de él
@@ -23,7 +25,7 @@ export default function MenuUsuario({ users }) {
   const [modalAbierto, setModalAbierto] = useState(false);
 
   const [modalCrearReporte, setModalCrearReporte] = useState(false);
-
+  // Ejemplo de posiciones por tipo de incidente (deberías tener lat/lng reales)
 
   // useEffect para cargar los incidentes desde la API/db.json al montar el componente
   useEffect(() => {
@@ -88,7 +90,7 @@ export default function MenuUsuario({ users }) {
         alert("Error al crear el reporte");
       });
   };
- 
+
 
   // Función para ir a la información del usuario
   const handleMiCuenta = () => {
@@ -101,6 +103,10 @@ export default function MenuUsuario({ users }) {
     setOpen(false);
     navigate("/");
     localStorage.removeItem("usuario");
+  };
+  const handleAbrirModalDesdeMapa = (incidenteId) => {
+    setIncidenteSeleccionado(incidenteId);
+    setModalAbierto(true);
   };
 
   // Busca el objeto del incidente seleccionado para mostrar sus datos
@@ -156,16 +162,7 @@ export default function MenuUsuario({ users }) {
               ))}
             </select>
           </div>
-          {/* Botón para abrir el modal con la información del incidente */}
-          {incidenteSeleccionado && incidenteObj && (
-            <button
-              className="btn-generar-reporte"
-              style={{ marginTop: "1rem" }}
-              onClick={() => setModalAbierto(true)}
-            >
-              Ver información del incidente
-            </button>
-          )}
+          
           {/* Contenedor derecho: botones adicionales */}
           <div className="botones-adicionales">
             <button className="btn-generar-reporte" onClick={() => alert("Botón 1")}>Ver todos los reportes</button>
@@ -212,7 +209,7 @@ export default function MenuUsuario({ users }) {
                   <label>Tipo de incidente:</label>
                   <input
                     type="text"
-                    value={incidentes.find(inc => inc.id == incidenteSeleccionado)?.type || ""}
+                    value={incidentes.find(inc => inc.id === incidenteSeleccionado)?.type || ""}
                     disabled
                     className="input-text"
                   />
@@ -285,10 +282,20 @@ export default function MenuUsuario({ users }) {
         )}
 
         {/* Sección derecha: mapa */}
-        <section className="mapa-section">
-          <h2>Mapa del incidente</h2>
-          <div >
-            
+        <section className="mu-mapa-section">
+          <h2 className="mu-tit-mapa">Mapa del incidente</h2>
+          <div className="mu-mapa">
+            Aqui va a ir el mapa
+            <MapContainer center={{ lat: '-0.091172', lng: '-78.438555' }} zoom={18}>
+              <TileLayer
+                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <MarcadoresMap
+                incidentes={incidentes}
+                onMarkerClick={handleAbrirModalDesdeMapa}
+              />
+
+            </MapContainer>
           </div>
         </section>
       </main>

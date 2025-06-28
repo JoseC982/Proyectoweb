@@ -129,7 +129,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 30px 30px 0 30px;
+  padding: 30px 30px 30px 30px;
   min-height: 80vh;
   gap: 32px;
 }
@@ -215,7 +215,7 @@
 }
 
 /* Sección del mapa */
-.mapa-section {
+.mu-mapa-section {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -266,6 +266,14 @@
   background: #e53935;
 }
 
+.mu-tit-mapa{
+  margin: 0;
+}
+.leaflet-container{
+  width: 90vw;
+  height: 90vh;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .menu-usuario-main {
@@ -274,7 +282,7 @@
     padding: 18px 5vw 0 5vw;
     gap: 0;
   }
-  .incidentes-section, .mapa-section {
+  .incidentes-section, .mu-mapa-section {
     width: 100%;
     margin: 0;
     padding: 0;
