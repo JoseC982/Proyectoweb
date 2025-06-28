@@ -117,7 +117,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Ruta para el menú de usuario, pasa el usuario autenticado como prop */}
-        <Route path="/menuUsuario" element={<MenuUsuario users={users} />} />
+        <Route path="/menuUsuario" element={<MenuUsuario users={users} notificaciones={notificaciones}/>} />
         {/* Ruta para la información del usuario, pasa el usuario y el setter como props */}
         <Route path="/informacion" element={<InformacionUsuario users={users} setUsers={setUsers} />} />
         {/* Ruta para generar un reporte */}

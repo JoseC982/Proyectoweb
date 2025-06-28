@@ -9,12 +9,9 @@ export default function MenuUsuario({ users }) {
   const navigate = useNavigate(); // Hook para navegar entre rutas
   // Estado para la lista de incidentes (se carga desde la API/db.json)
   const [incidentes, setIncidentes] = useState([]);
+
   // Estado para el incidente seleccionado en el combo
   const [incidenteSeleccionado, setIncidenteSeleccionado] = useState("");
-  // Estado para la ubicación seleccionada en el mapa
-  const [ubicacion, setUbicacion] = useState("");
-  // Estado para la hora del incidente
-  const [hora, setHora] = useState("");
   // Estado para el nombre de quien reporta (por defecto el usuario logueado)
   const [quienReporta, setQuienReporta] = useState(users ? users.name : "");
   // Estado para saber si se está registrando un nuevo incidente
@@ -23,6 +20,10 @@ export default function MenuUsuario({ users }) {
   const [open, setOpen] = useState(false);
   // Referencia al menú para detectar clics fuera de él
   const menuRef = useRef();
+  const [modalAbierto, setModalAbierto] = useState(false);
+
+  const [modalCrearReporte, setModalCrearReporte] = useState(false);
+
 
   // useEffect para cargar los incidentes desde la API/db.json al montar el componente
   useEffect(() => {
@@ -42,25 +43,52 @@ export default function MenuUsuario({ users }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Función para limpiar todos los campos del formulario
-  const limpiarCampos = () => {
-    setIncidenteSeleccionado("");
-    setUbicacion("");
-    setHora("");
-    setQuienReporta(users?.name);
+  // Estados para el formulario de reporte
+  const [descripcion, setDescripcion] = useState("");
+  const [ubicacion, setUbicacion] = useState("");
+  const [fecha, setFecha] = useState("");
+  const [hora, setHora] = useState("");
+
+  // ...otros estados y lógica...
+
+  // Función para abrir el modal de crear reporte
+  const handleAbrirModalCrearReporte = () => {
+    if (!incidenteSeleccionado) {
+      alert("Primero selecciona el tipo de reporte");
+      return;
+    }
+    setModalCrearReporte(true);
   };
 
-  // Función para guardar el reporte (aquí solo limpia y muestra alerta, deberías conectar con tu backend)
+  // Función para guardar el reporte (puedes adaptarla a tu lógica)
   const handleGuardarReporte = () => {
-    limpiarCampos();
-    setRegistrando(false);
-    alert("Incidente registrado correctamente");
+    // Construir el objeto reporte
+    const nuevoReporte = {
+      // id se genera automáticamente por el backend/db
+      userId: users.id,
+      incidentTypeId: incidenteSeleccionado,
+      description: descripcion,
+      location: ubicacion,
+      date: fecha,
+      time: hora,
+      status: "nuevo"
+    };
+    // Aquí puedes hacer la petición POST a tu backend/db.json
+    axios.post("http://localhost:3000/reports", nuevoReporte)
+      .then(() => {
+        alert("Reporte creado exitosamente");
+        setModalCrearReporte(false);
+        // Limpia los campos del formulario
+        setDescripcion("");
+        setUbicacion("");
+        setFecha("");
+        setHora("");
+      })
+      .catch(() => {
+        alert("Error al crear el reporte");
+      });
   };
-
-  // Función para simular la selección de una ubicación en el mapa
-  const handleSeleccionarUbicacion = () => {
-    setUbicacion("Ubicación seleccionada en el mapa");
-  };
+ 
 
   // Función para ir a la información del usuario
   const handleMiCuenta = () => {
@@ -112,139 +140,155 @@ export default function MenuUsuario({ users }) {
 
       {/* Cuerpo principal */}
       <main className="menu-usuario-main">
+        <h2 className="incidentes-titulo">Considera los siguientes incidentes ocurridos en la zona</h2>
+
         {/* Sección izquierda: incidentes */}
         <section className="incidentes-section">
-          {/* Si NO se está registrando, muestra el listado y detalles */}
-          {!registrando ? (
-            <>
-              <h2 className="incidentes-titulo">Considera los siguientes incidentes ocurridos en la zona</h2>
-              <div className="combo-incidentes">
-                <label>Tipo de incidente:</label>
-                <select
-                  value={incidenteSeleccionado}
-                  onChange={e => setIncidenteSeleccionado(e.target.value)}
-                  className="input-text"
-                >
-                  <option value="">Seleccione un incidente</option>
-                  {incidentes.map(inc => (
-                    <option key={inc.id} value={inc.id}>{inc.type}</option>
-                  ))}
-                </select>
+          <div className="combo-incidentes">
+            <select
+              value={incidenteSeleccionado}
+              onChange={e => setIncidenteSeleccionado(e.target.value)}
+              className="input-text"
+            >
+              <option value="">Seleccione un tipo incidente</option>
+              {incidentes.map(inc => (
+                <option key={inc.id} value={inc.id}>{inc.type}</option>
+              ))}
+            </select>
+          </div>
+          {/* Botón para abrir el modal con la información del incidente */}
+          {incidenteSeleccionado && incidenteObj && (
+            <button
+              className="btn-generar-reporte"
+              style={{ marginTop: "1rem" }}
+              onClick={() => setModalAbierto(true)}
+            >
+              Ver información del incidente
+            </button>
+          )}
+          {/* Contenedor derecho: botones adicionales */}
+          <div className="botones-adicionales">
+            <button className="btn-generar-reporte" onClick={() => alert("Botón 1")}>Ver todos los reportes</button>
+            <button className="btn-generar-reporte" onClick={handleAbrirModalCrearReporte}>Crear Reporte</button>
+            <button className="btn-generar-reporte" onClick={() => alert("Botón 3")}>Mis reportes</button>
+          </div>
+        </section>
+
+        {/* Modal para mostrar la información del incidente */}
+        {modalAbierto && incidenteObj && (
+          <div className="modal-overlay" style={{
+            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+            background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+          }}>
+            <div className="modal-content" style={{
+              background: "#fff", padding: "2rem", borderRadius: "10px", minWidth: "320px", maxWidth: "90vw", boxShadow: "0 2px 16px rgba(0,0,0,0.2)"
+            }}>
+              <h3>{incidenteObj.type}</h3>
+              <p><b>Descripción:</b> {incidenteObj.descripcion || "Sin descripción"}</p>
+              <p><b>Ubicación registrada:</b> {ubicacion || "No seleccionada"}</p>
+              <p><b>Hora del incidente:</b> {hora || "No registrada"}</p>
+              <p><b>Quien reporta:</b> {quienReporta}</p>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1.5rem" }}>
+                <button className="btn-generar-reporte" onClick={() => setModalAbierto(false)}>
+                  Cerrar
+                </button>
               </div>
-              {/* Si hay un incidente seleccionado, muestra sus detalles */}
-              {incidenteSeleccionado && incidenteObj && (
-                <div className="detalle-incidente">
-                  <h3>{incidenteObj.type}</h3>
-                  <p><b>Descripción:</b> {incidenteObj.descripcion || "Sin descripción"}</p>
-                  <p><b>Ubicación registrada:</b> {ubicacion || "No seleccionada"}</p>
-                  <p><b>Hora del incidente:</b> {hora || "No registrada"}</p>
-                  <p><b>Quien reporta:</b> {quienReporta}</p>
-                  <button
-                    className="btn-generar-reporte"
-                    disabled={!incidenteSeleccionado}
-                    onClick={() => {
-                      limpiarCampos();
-                      setRegistrando(true);
-                    }}
-                  >
-                    Crear reporte
+            </div>
+          </div>
+        )}
+        {/* Modal para crear un reporte */}
+        {modalCrearReporte && (
+          <div className="modal-overlay" style={{
+            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+            background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+          }}>
+            <div className="modal-content" style={{
+              background: "#fff", padding: "2rem", borderRadius: "10px", minWidth: "320px", maxWidth: "90vw", boxShadow: "0 2px 16px rgba(0,0,0,0.2)"
+            }}>
+              <h2>Crear Reporte</h2>
+              <form onSubmit={e => { e.preventDefault(); handleGuardarReporte(); }}>
+                {/* Tipo de incidente (no editable, solo muestra el seleccionado) */}
+                <div>
+                  <label>Tipo de incidente:</label>
+                  <input
+                    type="text"
+                    value={incidentes.find(inc => inc.id == incidenteSeleccionado)?.type || ""}
+                    disabled
+                    className="input-text"
+                  />
+                </div>
+                {/* Descripción */}
+                <div>
+                  <label>Descripción:</label>
+                  <textarea
+                    value={descripcion}
+                    onChange={e => setDescripcion(e.target.value)}
+                    className="input-text"
+                    required
+                  />
+                </div>
+                {/* Ubicación */}
+                <div>
+                  <label>Ubicación:</label>
+                  <input
+                    type="text"
+                    value={ubicacion}
+                    onChange={e => setUbicacion(e.target.value)}
+                    className="input-text"
+                    required
+                  />
+                </div>
+                {/* Fecha */}
+                <div>
+                  <label>Fecha:</label>
+                  <input
+                    type="date"
+                    value={fecha}
+                    onChange={e => setFecha(e.target.value)}
+                    className="input-text"
+                    required
+                  />
+                </div>
+                {/* Hora */}
+                <div>
+                  <label>Hora:</label>
+                  <input
+                    type="time"
+                    value={hora}
+                    onChange={e => setHora(e.target.value)}
+                    className="input-text"
+                    required
+                  />
+                </div>
+                {/* Estado (no editable, siempre "nuevo") */}
+                <div>
+                  <label>Estado:</label>
+                  <input
+                    type="text"
+                    value="nuevo"
+                    disabled
+                    className="input-text"
+                  />
+                </div>
+                {/* Botones */}
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1.5rem" }}>
+                  <button type="button" className="btn-generar-reporte" onClick={() => setModalCrearReporte(false)}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn-generar-reporte">
+                    Guardar Reporte
                   </button>
                 </div>
-              )}
-            </>
-          ) : (
-            // Si se está registrando, muestra el formulario de registro
-            <>
-              <h2 className="incidentes-titulo">Registra el Incidente</h2>
-              <div className="combo-incidentes">
-                <label>Tipo de incidente:</label>
-                <select
-                  value={incidenteSeleccionado}
-                  onChange={e => setIncidenteSeleccionado(e.target.value)}
-                  className="input-text"
-                >
-                  <option value="">Seleccione un incidente</option>
-                  {incidentes.map(inc => (
-                    <option key={inc.id} value={inc.id}>{inc.type}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="detalle-incidente">
-                <label>Descripción:</label>
-                <textarea
-                  value={incidenteObj ? (incidenteObj.descripcion || "Sin descripción") : ""}
-                  disabled
-                  className="input-text"
-                />
-              </div>
-              <div className="detalle-incidente">
-                <label>Ubicación registrada:</label>
-                <input
-                  type="text"
-                  value={ubicacion}
-                  className="input-text"
-                  placeholder="Selecciona en el mapa"
-                  readOnly
-                />
-              </div>
-              <div className="detalle-incidente">
-                <label>Hora del incidente:</label>
-                <input
-                  type="time"
-                  value={hora}
-                  onChange={e => setHora(e.target.value)}
-                  className="input-text"
-                />
-              </div>
-              <div className="detalle-incidente">
-                <label>Quien reporta:</label>
-                <input
-                  type="text"
-                  value={quienReporta}
-                  disabled
-                  className="input-text"
-                />
-              </div>
-              {/* Botones para guardar o cancelar el registro */}
-              <div className="botones-registro">
-                <button
-                  className="btn-generar-reporte"
-                  disabled={
-                    !incidenteSeleccionado ||
-                    !ubicacion ||
-                    !hora ||
-                    !quienReporta
-                  }
-                  onClick={handleGuardarReporte}
-                >
-                  Guardar reporte
-                </button>
-                <button
-                  className="btn-cancelar-reporte"
-                  onClick={() => {
-                    limpiarCampos();
-                    setRegistrando(false);
-                  }}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </>
-          )}
-        </section>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Sección derecha: mapa */}
         <section className="mapa-section">
           <h2>Mapa del incidente</h2>
-          <div
-            className="mapa-placeholder"
-            onClick={registrando ? handleSeleccionarUbicacion : undefined}
-          >
-            <span>
-              {ubicacion
-                ? "Ubicación seleccionada"
-                : "Haz clic para seleccionar ubicación"}
-            </span>
+          <div >
+            
           </div>
         </section>
       </main>
