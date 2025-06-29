@@ -22,7 +22,7 @@ const MarcadoresMap = ({ incidentes, onMarkerClick }) => (
         }}
       >
         <Tooltip direction="top" offset={[0, -32]} opacity={1} permanent={false}>
-          {incidente.type}
+          {incidente.type} Da clic para ver mas informacion
         </Tooltip>
       </Marker>
     ))}
