@@ -71,13 +71,6 @@ const ValidarAlertas = ({ reports, users, incidents, borrarReporte }) => {
     }
   };
 
-  // Función para manejar el cierre de sesión
-  const handleCerrarSesion = () => {
-    setMenuAbierto(false); // Cierra el menú
-    setMensaje("Sesión Cerrada"); // Muestra mensaje temporal
-    setTimeout(() => setMensaje(""), 2000); // Oculta mensaje después de 2 segundos
-  };
-
   // Renderizado del componente
   return (
     // Contenedor principal con fondo y altura mínima
@@ -107,7 +100,7 @@ const ValidarAlertas = ({ reports, users, incidents, borrarReporte }) => {
         {/* Menú de usuario con nombre y opciones */}
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
-          <span className="nombre-usuario">César M</span>
+          <span className="nombre-usuario">{users?.name}</span>
           {/* Botón para desplegar el menú de usuario */}
           <button
             className="icono-desplegar-btn"
@@ -119,15 +112,8 @@ const ValidarAlertas = ({ reports, users, incidents, borrarReporte }) => {
           {/* Menú desplegable de usuario */}
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
-              <button
-                className="menu-item"
-                onClick={() => setMenuAbierto(false)}
-              >
-                Mi cuenta
-              </button>
-              <button className="menu-item" onClick={handleCerrarSesion}>
-                Cerrar Sesión
-              </button>
+              <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
+              <button className="menu-item" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar Sesión</button>
             </div>
           )}
         </div>
