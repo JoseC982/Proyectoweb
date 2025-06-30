@@ -96,12 +96,12 @@ function App() {
     setNotificaciones(notificacionesTabla);
   }, [reports, usersList, incidents]);
 
-  // Función para silenciar un usuario (cambiar su estado a "Silenciado")
-  const silenciarUsuario = (user) => {
-    axios.put(`http://localhost:3000/users/${user.id}`, { ...user, estado: 'Silenciado' })
-      .then(() => fetchAllData()) // Recarga los datos después de actualizar
+  // Función para silenciar un usuario (cambiar su estado a "Silenciado" o "Activo")
+  const silenciarUsuario = (user, nuevoEstado) => {
+    axios.patch(`http://localhost:3000/users/${user.id}`, { ...user, estado: nuevoEstado })
+      .then(() => fetchAllData())
       .catch((err) => {
-        console.error('Error al silenciar usuario:', err);
+        console.error('Error al actualizar usuario:', err);
       });
   };
 
@@ -119,7 +119,11 @@ function App() {
     axios.delete(`http://localhost:3000/reports/${id}`)
       .then(() => fetchAllData()) // Recarga los datos después de borrar
       .catch((err) => {
-        console.error('Error al borrar reporte:', err);
+        if (err.response && err.response.status === 404) {
+          console.error('400: {"error": "ID inválido"}');
+        } else {
+          console.error('Error al borrar reporte:', err);
+        }
       });
   };
 
@@ -160,11 +164,11 @@ function App() {
         {/* Ruta para recuperar cuenta */}
         <Route path="/recuperarCuenta" element={<RecuperarCuenta />} />
         {/* Ruta para el menú de administración */}
-        <Route path="/menu-administracion" element={<MenuAdministracion users={users}/>} />
+        <Route path="/menu-administracion" element={<MenuAdministracion users={users} />} />
         <Route path="/gestion-usuarios" element={<GestionUsuarios users={usersList} silenciarUsuario={silenciarUsuario} borrarUsuario={borrarUsuario} />} />
         <Route path="/notificaciones-alertas" element={<NotificacionesAlertas users={users} notificaciones={notificaciones} />} />
         <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={users} usersList={usersList} incidents={incidents} borrarReporte={borrarReporte} />} />
-        <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm users={users} setUsers={setUsers}/>} />
+        <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm users={users} setUsers={setUsers} />} />
 
       </Routes>
     </BrowserRouter>

@@ -46,20 +46,21 @@ const GestionUsuarios = ({ silenciarUsuario, borrarUsuario }) => {
 
   // Función para silenciar al usuario seleccionado
   const handleSilenciar = async () => {
-    // Si no hay usuario seleccionado, no hace nada
     if (usuarioSeleccionado === null) return;
-    // Obtiene el usuario seleccionado usando el índice
     const user = users[usuarioSeleccionado];
-    // Solo silencia si el usuario no está ya silenciado
-    if (user.estado !== "Silenciado") {
-      // Llama a la función recibida por props para silenciar (PUT a la base de datos)
-      await silenciarUsuario(user);
-      // Muestra mensaje temporal de confirmación
-      setMensaje("USUARIO SILENCIADO");
-      // Borra el mensaje después de 2 segundos
-      setTimeout(() => setMensaje(""), 2000);
-    }
-    // Deselecciona el usuario
+    const nuevoEstado = user.estado === "Silenciado" ? "Activo" : "Silenciado";
+    // Llama a la función recibida por props para actualizar el usuario
+    await silenciarUsuario(user, nuevoEstado);
+    // Actualiza el estado local de users
+    setUsers(prevUsers =>
+      prevUsers.map((u, idx) =>
+        idx === usuarioSeleccionado ? { ...u, estado: nuevoEstado } : u
+      )
+    );
+    setMensaje(
+      nuevoEstado === "Silenciado" ? "USUARIO SILENCIADO" : "USUARIO ACTIVADO"
+    );
+    setTimeout(() => setMensaje(""), 2000);
     setUsuarioSeleccionado(null);
   };
 
@@ -71,6 +72,8 @@ const GestionUsuarios = ({ silenciarUsuario, borrarUsuario }) => {
     const user = users[usuarioSeleccionado];
     // Llama a la función recibida por props para borrar (DELETE a la base de datos)
     await borrarUsuario(user);
+    // Elimina el usuario del estado local
+    setUsers(prevUsers => prevUsers.filter((_, idx) => idx !== usuarioSeleccionado));
     // Muestra mensaje temporal de confirmación
     setMensaje("USUARIO ELIMINADO");
     // Borra el mensaje después de 2 segundos
@@ -117,7 +120,7 @@ const GestionUsuarios = ({ silenciarUsuario, borrarUsuario }) => {
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
               <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
-              <button className="menu-item" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar Sesión</button>
+              <button className="menu-item" onClick={() => { localStorage.removeItem("usuario"); navigate("/") }}>Cerrar Sesión</button>
             </div>
           )}
         </div>
@@ -159,8 +162,18 @@ const GestionUsuarios = ({ silenciarUsuario, borrarUsuario }) => {
         </div>
         {/* Botones de acción para silenciar o borrar usuario */}
         <div className="gestion-usuarios-botones">
-          <button className="btn-silenciar" onClick={handleSilenciar}>Silenciar usuario</button>
-          <button className="btn-borrar" onClick={handleBorrar}>Borrar usuario</button>
+          <button
+            className="btn-silenciar"
+            onClick={handleSilenciar}
+            disabled={usuarioSeleccionado === null}
+          >
+            {usuarioSeleccionado !== null && users[usuarioSeleccionado]?.estado === "Silenciado"
+              ? "Activar usuario"
+              : "Silenciar usuario"}
+          </button>
+          <button className="btn-borrar" onClick={handleBorrar} disabled={usuarioSeleccionado === null}>
+            Borrar usuario
+          </button>
         </div>
       </main>
     </div>
