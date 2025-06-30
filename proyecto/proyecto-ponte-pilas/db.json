@@ -363,6 +363,18 @@
       "date": "2025-06-28",
       "userId": "4",
       "status": "nuevo"
+    },
+    {
+      "id": "2eae",
+      "incidentTypeId": "",
+      "description": "Hubo una pelea de borrachos",
+      "location": "",
+      "lat": -0.20131546559682895,
+      "lng": -78.42929363250732,
+      "time": "10:12",
+      "date": "2025-06-28",
+      "userId": "ed26",
+      "status": "nuevo"
     }
   ]
 }
