@@ -163,7 +163,7 @@ function App() {
         <Route path="/menu-administracion" element={<MenuAdministracion users={users}/>} />
         <Route path="/gestion-usuarios" element={<GestionUsuarios users={usersList} silenciarUsuario={silenciarUsuario} borrarUsuario={borrarUsuario} />} />
         <Route path="/notificaciones-alertas" element={<NotificacionesAlertas users={users} notificaciones={notificaciones} />} />
-        <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={usersList} incidents={incidents} borrarReporte={borrarReporte} />} />
+        <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={users} usersList={usersList} incidents={incidents} borrarReporte={borrarReporte} />} />
         <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm users={users} setUsers={setUsers}/>} />
 
       </Routes>

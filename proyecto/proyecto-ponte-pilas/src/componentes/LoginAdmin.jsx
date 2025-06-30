@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 // Importa los estilos CSS específicos para la página de login
 import '../estilos/LoginAdmin.css'; // Para los estilos de la página
 // Importa el hook useState para manejar el estado local del componente
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // Importa la imagen del logo de la policía
 import policia from '../recursos/policia-logo.png'; // Importa la imagen del logo
 // Importa la imagen del logo de usuario
@@ -25,6 +25,8 @@ const LoginAdmin = ({ setUsers }) => {
     const [email, setEmail] = useState('');
     // Estado para el campo de contraseña
     const [password, setPassword] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
 
     // Función que maneja el inicio de sesión
     const handleLogin = () => {
@@ -45,28 +47,43 @@ const LoginAdmin = ({ setUsers }) => {
                     localStorage.setItem("usuario", JSON.stringify(user));
                     // Si el usuario es administrador, navega al menú de administración
                     if (user.role === "admin") {
-                        navigate("/menu-administracion");
                         // Muestra en consola el usuario enviado
+                        // Cambia el alert por el modal
+                        setModalMessage("Bienvenido Administrador");
+                        setShowModal(true);
+                        setTimeout(() => {
+                            setShowModal(false);
+                            navigate("/menu-administracion");
+                        }, 500); // Cierra el modal y navega después de 1.5 segundos
                         console.log("Este es el usuario que envio al hijo", user)
                     } else {
-                        // Si es usuario normal, muestra mensaje y navega al menú de usuario
-                        console.log(users);
-                        alert("¡Bienvenido (user)!");
-                        navigate("/menuUsuario");
-                        // Muestra en consola el usuario enviado
+                        // Cambia el alert por el modal
+                        setModalMessage("Bienvenido a Ponte Once");
+                        setShowModal(true);
+                        setTimeout(() => {
+                            setShowModal(false);
+                            navigate("/menuUsuario");
+                        }, 500); // Cierra el modal y navega después de 1.5 segundos
                         console.log("Este es el usuario que envio al hijo", user)
                     }
                 } else {
-                    // Si no existe el usuario, muestra alerta
-                    alert("No existe el usuario");
+                    setModalMessage("No existe el usuario");
+                    setShowModal(true);
                 }
             })
             .catch(error => {
-                // Si hay error en la petición, muestra alerta y el error en consola
-                alert("Error al conectar con el servidor");
+                setModalMessage("Error al conectar con el servidor");
+                setShowModal(true);
                 console.error(error);
             });
     };
+    // Cierra el modal automáticamente después de 2 segundos
+    useEffect(() => {
+        if (showModal) {
+            const timer = setTimeout(() => setShowModal(false), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [showModal]);
 
     // Renderiza el formulario de inicio de sesión
     return (
@@ -139,6 +156,28 @@ const LoginAdmin = ({ setUsers }) => {
                     </div>
                 </section>
             </div>
+            {showModal && (
+                <div style={{
+                    position: "fixed",
+                    top: 0, left: 0, width: "100vw", height: "100vh",
+                    background: "rgba(0,0,0,0.4)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        background: "#fff",
+                        padding: "2rem",
+                        borderRadius: "10px",
+                        minWidth: "320px",
+                        maxWidth: "90vw",
+                        boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+                        textAlign: "center"
+                    }}>
+                        <h2>{modalMessage}</h2>
+
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

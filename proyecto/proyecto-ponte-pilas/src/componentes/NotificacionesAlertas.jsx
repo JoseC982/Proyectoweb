@@ -19,6 +19,8 @@ const NotificacionesAlertas = ({ users,notificaciones }) => {
   const menuRef = useRef(null);
   // Hook para navegar entre rutas
   const navigate = useNavigate();
+    console.log("este es el nombre del usuario", users?.name);
+
 
   // Efecto para cerrar el menú si se hace clic fuera de él
   useEffect(() => {

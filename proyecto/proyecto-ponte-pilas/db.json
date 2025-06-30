@@ -423,6 +423,17 @@
       "date": "2025-06-29",
       "userId": "4",
       "status": "nuevo"
+    },
+    {
+      "incidentTypeId": "6",
+      "description": "2 personas en moto asaltaron un restaurante del sector",
+      "location": "Giovanny Calles y Cacha",
+      "lat": -0.08351323031645048,
+      "lng": -78.43673944473267,
+      "time": "12:00",
+      "date": "2025-06-29",
+      "userId": "ed26",
+      "id": "43b4"
     }
   ]
 }

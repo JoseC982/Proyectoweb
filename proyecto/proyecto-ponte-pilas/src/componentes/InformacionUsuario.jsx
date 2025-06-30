@@ -110,15 +110,19 @@ export default function InformacionUsuario({ users, setUsers }) {
         </div>
       </header>
       {/* Cuerpo principal con los datos del usuario */}
+      <h1 className="info-usuario-bienvenida">Bienvenido {datos.nombre}</h1>
       <main className="info-usuario-main">
+
+
         {/* Lado izquierdo con nombre, avatar y campos básicos */}
         <div className="info-usuario-left">
+
           {/* Bienvenida con el nombre actualizado */}
-          <h1>Bienvenido {datos.nombre}</h1>
-          <div className="icono-grande">
-            <span role="img" aria-label="avatar" style={{ fontSize: "5rem" }}>👤</span>
-          </div>
           <div className="info-campos">
+
+            <div className="icono-grande">
+              <span role="img" aria-label="avatar" style={{ fontSize: "5rem" }}>👤</span>
+            </div>
             <label>Nombre:</label>
             <input
               type="text"
@@ -149,16 +153,8 @@ export default function InformacionUsuario({ users, setUsers }) {
           </div>
         </div>
         <div className="info-usuario-right">
-          <label className="bio-label">Biografía:</label>
-          <textarea
-            name="bio"
-            value={datos.bio}
-            onChange={handleChange}
-            disabled={!edit}
-            className="bio-area"
-            placeholder="Agrega una breve biografía"
-          />
           <div className="info-campos">
+
             <label>Correo Electrónico:</label>
             <input
               type="email"
@@ -177,6 +173,15 @@ export default function InformacionUsuario({ users, setUsers }) {
               disabled={!edit}
               className="info-input"
               placeholder="********"
+            />
+            <label className="bio-label">Biografía:</label>
+            <textarea
+              name="bio"
+              value={datos.bio}
+              onChange={handleChange}
+              disabled={!edit}
+              className="bio-area"
+              placeholder="Agrega una breve biografía"
             />
           </div>
         </div>

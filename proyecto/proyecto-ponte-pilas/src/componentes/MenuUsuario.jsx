@@ -81,25 +81,25 @@ export default function MenuUsuario({ users, fetchAllData }) {
   // --- FUNCIONES DE MANIPULACIÓN DE REPORTES ---
   // Abre el modal para crear un nuevo reporte
   const abrirModalCrear = (e) => {
-  // Obtener la fecha local en formato YYYY-MM-DD
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  const fechaHoy = `${yyyy}-${mm}-${dd}`;
+    // Obtener la fecha local en formato YYYY-MM-DD
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const fechaHoy = `${yyyy}-${mm}-${dd}`;
 
-  setForm({
-    incidentTypeId: "",
-    description: "",
-    location: "",
-    lat: e ? e.latLng.lat() : null,
-    lng: e ? e.latLng.lng() : null,
-    time: "",
-    date: fechaHoy, // <-- ahora sí es la fecha de hoy local
-  });
-  setEditando(null);
-  setModalOpen(true);
-};
+    setForm({
+      incidentTypeId: "",
+      description: "",
+      location: "",
+      lat: e ? e.latLng.lat() : null,
+      lng: e ? e.latLng.lng() : null,
+      time: "",
+      date: fechaHoy, // <-- ahora sí es la fecha de hoy local
+    });
+    setEditando(null);
+    setModalOpen(true);
+  };
 
   // Abre el modal para editar un reporte existente
   const abrirModalEditar = (reporte) => {
@@ -208,20 +208,20 @@ export default function MenuUsuario({ users, fetchAllData }) {
   };
 
   function getMarkerIcon(color) {
-  return {
-    url: `data:image/svg+xml;utf-8,<svg width="32" height="32" viewBox="0 0 32 32" fill="${encodeURIComponent(color)}" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="12" /></svg>`,
-    scaledSize: {
-      width: 32,
-      height: 32
-    }
-  };
-}
+    return {
+      url: `data:image/svg+xml;utf-8,<svg width="32" height="32" viewBox="0 0 32 32" fill="${encodeURIComponent(color)}" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="12" /></svg>`,
+      scaledSize: {
+        width: 32,
+        height: 32
+      }
+    };
+  }
 
-// Busca el incidente por id y toma su color
-function getColorByIncidentId(id) {
-  const incidente = incidentes.find(i => String(i.id) === String(id));
-  return incidente?.color || "#bdbdbd";
-}
+  // Busca el incidente por id y toma su color
+  function getColorByIncidentId(id) {
+    const incidente = incidentes.find(i => String(i.id) === String(id));
+    return incidente?.color || "#bdbdbd";
+  }
 
   // Renderizado del componente
   return (
@@ -264,9 +264,9 @@ function getColorByIncidentId(id) {
             <div className="combo-selected" onClick={() => setComboAbierto(v => !v)}>
               {incidenteSeleccionado
                 ? <>
-                    <span className="color-circulo" style={{ background: getColorByIncidentId(incidenteSeleccionado) }}></span>
-                    {incidentes.find(i => String(i.id) === incidenteSeleccionado)?.type}
-                  </>
+                  <span className="color-circulo" style={{ background: getColorByIncidentId(incidenteSeleccionado) }}></span>
+                  {incidentes.find(i => String(i.id) === incidenteSeleccionado)?.type}
+                </>
                 : <span>Selecciona un tipo de reporte</span>}
               <span className="combo-arrow">▼</span>
             </div>
@@ -281,11 +281,14 @@ function getColorByIncidentId(id) {
               </ul>
             )}
           </div>
-          <button className="btn-panel" onClick={() => setFiltro("mios")}>Mis reportes</button>
-          <button className="btn-panel" onClick={() => { setFiltro("todos"); setIncidenteSeleccionado(""); }}>Todos los reportes</button>
+          <div className="mu-btn-filtro">
+            <button className="btn-panel" onClick={() => setFiltro("mios")}>Mis reportes</button>
+            <button className="btn-panel" onClick={() => { setFiltro("todos"); setIncidenteSeleccionado(""); }}>Todos los reportes</button>
+          </div>
+
         </div>
         <div>
-          <h3 style={{ textAlign: "center" }}>Selecciona la ubicacion en el mapa para crear el reporte</h3>
+          <h3 className="mu-titulo-mapa">Selecciona la ubicacion en el mapa para crear el reporte</h3>
         </div>
         <div className="menu-usuario-mapa">
           <button className="btn-tu-ubicacion" onClick={handleTuUbicacion}>

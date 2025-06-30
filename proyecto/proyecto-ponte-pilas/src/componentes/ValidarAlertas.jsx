@@ -6,7 +6,7 @@ import LogMegafono from "../recursos/MenuAdm/LogMegafono.png";
 import { useNavigate } from "react-router-dom";
 
 // Componente funcional que recibe los reportes, usuarios, incidentes y la función para borrar reportes como props
-const ValidarAlertas = ({ reports, users, incidents, borrarReporte }) => {
+const ValidarAlertas = ({ reports, usersList, users, incidents, borrarReporte }) => {
   // Estado para controlar si el menú de usuario está abierto o cerrado
   const [menuAbierto, setMenuAbierto] = useState(false);
   // Estado para mostrar mensajes temporales (ej: "Alerta Rechazada")
@@ -17,6 +17,7 @@ const ValidarAlertas = ({ reports, users, incidents, borrarReporte }) => {
   const menuRef = useRef(null);
   // Hook para navegar entre rutas
   const navigate = useNavigate();
+  console.log("este es el nombre del usuario", users?.name);
 
   // Obtiene el reporte actual a mostrar según el índice
   const reporteActual = reports && reports.length > 0 ? reports[index] : null;
@@ -25,7 +26,7 @@ const ValidarAlertas = ({ reports, users, incidents, borrarReporte }) => {
     incidente = null;
   // Si hay un reporte actual, busca el usuario y el incidente correspondientes
   if (reporteActual) {
-    usuario = users.find((u) => String(u.id) === String(reporteActual.userId));
+    usuario = usersList.find((u) => String(u.id) === String(reporteActual.userId));
     incidente = incidents.find(
       (i) => String(i.id) === String(reporteActual.incidentTypeId)
     );
