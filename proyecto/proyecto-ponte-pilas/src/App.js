@@ -32,6 +32,12 @@ function App() {
   // Estado para almacenar la lista de notificaciones procesadas
   const [notificaciones, setNotificaciones] = useState([]);
 
+  // Cargar notificaciones una sola vez al inicio
+  useEffect(() => {
+    axios.get("http://localhost:3000/reports")
+      .then(res => setNotificaciones(res.data))
+      .catch(() => setNotificaciones([]));
+  }, []);
 
   // useEffect se ejecuta una vez al montar el componente para cargar los datos
   useEffect(() => {
@@ -73,6 +79,22 @@ function App() {
         console.error('Error al obtener datos:', err);
       });
   };
+
+  // Deriva notificaciones cada vez que cambian los datos base
+  useEffect(() => {
+    const notificacionesTabla = reports.map((rep) => {
+      const usuario = usersList.find(u => String(u.id) === String(rep.userId));
+      const incidente = incidents.find(i => String(i.id) === String(rep.incidentTypeId));
+      return {
+        nombre: usuario ? usuario.name : 'Desconocido',
+        tipo: incidente ? incidente.type : 'Otro',
+        descripcion: rep.description,
+        fechaHora: rep.date + ' ' + rep.time,
+        ubicacion: rep.location
+      };
+    });
+    setNotificaciones(notificacionesTabla);
+  }, [reports, usersList, incidents]);
 
   // Función para silenciar un usuario (cambiar su estado a "Silenciado")
   const silenciarUsuario = (user) => {
@@ -117,7 +139,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Ruta para el menú de usuario, pasa el usuario autenticado como prop */}
-        <Route path="/menuUsuario" element={<MenuUsuario users={users} />} />
+        <Route path="/menuUsuario" element={
+          <MenuUsuario users={users} fetchAllData={fetchAllData} />
+        } />
         {/* Ruta para la información del usuario, pasa el usuario y el setter como props */}
         <Route path="/informacion" element={<InformacionUsuario users={users} setUsers={setUsers} />} />
         {/* Ruta para generar un reporte */}
@@ -138,7 +162,7 @@ function App() {
         {/* Ruta para el menú de administración */}
         <Route path="/menu-administracion" element={<MenuAdministracion users={users}/>} />
         <Route path="/gestion-usuarios" element={<GestionUsuarios users={usersList} silenciarUsuario={silenciarUsuario} borrarUsuario={borrarUsuario} />} />
-        <Route path="/notificaciones-alertas" element={<NotificacionesAlertas notificaciones={notificaciones} />} />
+        <Route path="/notificaciones-alertas" element={<NotificacionesAlertas users={users} notificaciones={notificaciones} />} />
         <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={usersList} incidents={incidents} borrarReporte={borrarReporte} />} />
         <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm users={users} setUsers={setUsers}/>} />
 

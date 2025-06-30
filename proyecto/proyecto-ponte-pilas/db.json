@@ -363,6 +363,66 @@
       "date": "2025-06-28",
       "userId": "4",
       "status": "nuevo"
+    },
+    {
+      "id": "5d6e",
+      "incidentTypeId": "9",
+      "description": "Niño desaparecido en el centro comercial de mayoristas y negocios andinos",
+      "location": "Centro Comercial de Mayoristas y negocios andinos",
+      "lat": -0.2806815164837391,
+      "lng": -78.53239745267855,
+      "time": "15:02",
+      "date": "2025-06-29",
+      "userId": "4",
+      "status": "nuevo"
+    },
+    {
+      "id": "1558",
+      "incidentTypeId": "1",
+      "description": "Personas sospechosas en lugar familiar en el parque",
+      "location": "Parque metropolitano del sur",
+      "lat": -0.342634066195065,
+      "lng": -78.51791381835938,
+      "time": "15:10",
+      "date": "2025-06-29",
+      "userId": "4",
+      "status": "nuevo"
+    },
+    {
+      "id": "5c40",
+      "incidentTypeId": "5",
+      "description": "incidente en bomba de gasolina ",
+      "location": "Gasolinera PetroComercial",
+      "lat": -0.28303090858360236,
+      "lng": -78.49106687769418,
+      "time": "12:30",
+      "date": "2025-06-29",
+      "userId": "4",
+      "status": "nuevo"
+    },
+    {
+      "id": "74e5",
+      "incidentTypeId": "8",
+      "description": "persona desmayada en la estación El Recreo",
+      "location": "Estacion el Recreo",
+      "lat": -0.2526847277643311,
+      "lng": -78.52246284484863,
+      "time": "15:20",
+      "date": "2025-06-29",
+      "userId": "4",
+      "status": "nuevo"
+    },
+    {
+      "id": "8a89",
+      "incidentTypeId": "3",
+      "description": "Personas sospechas con armas blancas",
+      "location": "El tejar",
+      "lat": -0.2159495009236846,
+      "lng": -78.51430892944336,
+      "time": "18:20",
+      "date": "2025-06-29",
+      "userId": "4",
+      "status": "nuevo"
     }
   ]
 }

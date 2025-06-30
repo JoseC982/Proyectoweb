@@ -6,7 +6,7 @@ import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps
 import "../estilos/MenuUsuario.css"; // Importa los estilos
 
 // Componente principal
-export default function MenuUsuario({ users }) {
+export default function MenuUsuario({ users, fetchAllData }) {
   const navigate = useNavigate(); // Hook para navegar entre rutas
   // Estado para la lista de incidentes (se carga desde la API/db.json)
   const [incidentes, setIncidentes] = useState([]);
@@ -71,26 +71,35 @@ export default function MenuUsuario({ users }) {
   }, []);
 
   // Filtro de reportes
-  const reportesFiltrados = filtro === "mios"
-    ? reportes.filter(r => String(r.userId) === String(users.id))
-    : reportes;
-
+  let reportesFiltrados = reportes;
+  if (filtro === "mios") {
+    reportesFiltrados = reportes.filter(r => String(r.userId) === String(users.id));
+  } else if (filtro === "combo" && incidenteSeleccionado) {
+    reportesFiltrados = reportes.filter(r => String(r.incidentTypeId) === incidenteSeleccionado);
+  }
 
   // --- FUNCIONES DE MANIPULACIÓN DE REPORTES ---
   // Abre el modal para crear un nuevo reporte
   const abrirModalCrear = (e) => {
-    setForm({
-      incidentTypeId: "",
-      description: "",
-      location: "",
-      lat: e ? e.latLng.lat() : null,
-      lng: e ? e.latLng.lng() : null,
-      time: "",
-      date: new Date().toISOString().slice(0, 10),
-    });
-    setEditando(null);
-    setModalOpen(true);
-  };
+  // Obtener la fecha local en formato YYYY-MM-DD
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const fechaHoy = `${yyyy}-${mm}-${dd}`;
+
+  setForm({
+    incidentTypeId: "",
+    description: "",
+    location: "",
+    lat: e ? e.latLng.lat() : null,
+    lng: e ? e.latLng.lng() : null,
+    time: "",
+    date: fechaHoy, // <-- ahora sí es la fecha de hoy local
+  });
+  setEditando(null);
+  setModalOpen(true);
+};
 
   // Abre el modal para editar un reporte existente
   const abrirModalEditar = (reporte) => {
@@ -107,19 +116,22 @@ export default function MenuUsuario({ users }) {
     setModalOpen(true);
   };
 
+  // Validación: todos los campos deben estar llenos para crear/editar
+  const formCompleto = form.incidentTypeId && form.description && form.location && form.lat !== null && form.lng !== null && form.time && form.date;
+
   // Guarda (crea o edita) un reporte
   const guardarReporte = () => {
+    if (!formCompleto) return;
     if (editando) {
-      // Editar reporte
       axios.put(`http://localhost:3000/reports/${editando}`, {
         ...form,
         userId: users.id,
       }).then(res => {
         setReportes(prev => prev.map(r => r.id === editando ? res.data : r));
         setModalOpen(false);
+        if (fetchAllData) fetchAllData(); // <--- Cambia aquí
       });
     } else {
-      // Crear nuevo reporte
       axios.post("http://localhost:3000/reports", {
         ...form,
         userId: users.id,
@@ -127,6 +139,7 @@ export default function MenuUsuario({ users }) {
       }).then(res => {
         setReportes(prev => [...prev, res.data]);
         setModalOpen(false);
+        if (fetchAllData) fetchAllData(); // <--- Cambia aquí
       });
     }
   };
@@ -254,17 +267,13 @@ function getColorByIncidentId(id) {
                     <span className="color-circulo" style={{ background: getColorByIncidentId(incidenteSeleccionado) }}></span>
                     {incidentes.find(i => String(i.id) === incidenteSeleccionado)?.type}
                   </>
-                : "Todos los tipos de reporte"}
+                : <span>Selecciona un tipo de reporte</span>}
               <span className="combo-arrow">▼</span>
             </div>
             {comboAbierto && (
               <ul className="combo-lista">
-                <li onClick={() => { setIncidenteSeleccionado(""); setComboAbierto(false); }}>
-                  <span className="color-circulo" style={{ background: "#bdbdbd" }}></span>
-                  Todos los de reporte
-                </li>
                 {incidentes.map(inc => (
-                  <li key={inc.id} onClick={() => { setIncidenteSeleccionado(String(inc.id)); setComboAbierto(false); }}>
+                  <li key={inc.id} onClick={() => { setIncidenteSeleccionado(String(inc.id)); setFiltro("combo"); setComboAbierto(false); }}>
                     <span className="color-circulo" style={{ background: inc.color || "#bdbdbd" }}></span>
                     {inc.type}
                   </li>
@@ -273,8 +282,10 @@ function getColorByIncidentId(id) {
             )}
           </div>
           <button className="btn-panel" onClick={() => setFiltro("mios")}>Mis reportes</button>
-          <button className="btn-panel" onClick={() => setFiltro("todos")}>Todos los reportes</button>
-          <button className="btn-panel btn-crear" onClick={() => abrirModalCrear()}>+ Crear reporte</button>
+          <button className="btn-panel" onClick={() => { setFiltro("todos"); setIncidenteSeleccionado(""); }}>Todos los reportes</button>
+        </div>
+        <div>
+          <h3 style={{ textAlign: "center" }}>Selecciona la ubicacion en el mapa para crear el reporte</h3>
         </div>
         <div className="menu-usuario-mapa">
           <button className="btn-tu-ubicacion" onClick={handleTuUbicacion}>
@@ -303,20 +314,18 @@ function getColorByIncidentId(id) {
                 />
               )}
               {/* Marcadores de reportes */}
-              {reportesFiltrados
-                .filter(r => !incidenteSeleccionado || String(r.incidentTypeId) === incidenteSeleccionado)
-                .map(reporte => {
-                  const color = getColorByIncidentId(reporte.incidentTypeId);
-                  return (
-                    <Marker
-                      key={reporte.id}
-                      position={{ lat: Number(reporte.lat), lng: Number(reporte.lng) }}
-                      onClick={() => setMarkerSeleccionado(reporte)}
-                      onRightClick={() => handleMarkerRightClick(reporte)}
-                      icon={getMarkerIcon(color)}
-                    />
-                  );
-                })}
+              {reportesFiltrados.map(reporte => {
+                const color = getColorByIncidentId(reporte.incidentTypeId);
+                return (
+                  <Marker
+                    key={reporte.id}
+                    position={{ lat: Number(reporte.lat), lng: Number(reporte.lng) }}
+                    onClick={() => setMarkerSeleccionado(reporte)}
+                    onRightClick={() => handleMarkerRightClick(reporte)}
+                    icon={getMarkerIcon(color)}
+                  />
+                );
+              })}
               {/* Tooltip/InfoWindow */}
               {markerSeleccionado && (
                 <InfoWindow
@@ -385,13 +394,22 @@ function getColorByIncidentId(id) {
               onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
             />
             <div className="modal-botones">
-              <button className="btn-panel btn-crear" onClick={guardarReporte}>
+              <button
+                className="btn-panel btn-crear"
+                onClick={guardarReporte}
+                disabled={!formCompleto}
+              >
                 {editando ? "Actualizar" : "Crear"}
               </button>
               <button className="btn-panel btn-cancelar" onClick={() => setModalOpen(false)}>
                 Cancelar
               </button>
             </div>
+            {!formCompleto && (
+              <div style={{ color: "red", marginTop: 8, fontSize: 14 }}>
+                Todos los campos son obligatorios.
+              </div>
+            )}
           </div>
         </div>
       )}
