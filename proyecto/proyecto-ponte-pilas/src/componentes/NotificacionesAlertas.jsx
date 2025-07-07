@@ -23,6 +23,12 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
   const [columnaFiltro, setColumnaFiltro] = useState("");
   const [valorFiltro, setValorFiltro] = useState("");
 
+  // Modal para crear un nuevo tipo de incidente
+  const [modalNuevoTipo, setModalNuevoTipo] = useState(false);
+  const [nuevoTipoNombre, setNuevoTipoNombre] = useState("");
+  const [nuevoTipoColor, setNuevoTipoColor] = useState("#000000");
+  const [nuevoTipoIcon, setNuevoTipoIcon] = useState("");
+
   // Modal de edición
   const [modalEditar, setModalEditar] = useState(false);
   const [reporteEditar, setReporteEditar] = useState(null);
@@ -38,7 +44,9 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
 
   // Opciones únicas para el segundo combobox
   const opcionesFiltro = columnaFiltro
-    ? [...new Set(notificaciones.map(n => n[columnaFiltro]).filter(Boolean))]
+    ? columnaFiltro === "tipo"
+      ? incidents.map(i => i.type) // Mostrar todos los tipos de incidentes
+      : [...new Set(notificaciones.map(n => n[columnaFiltro]).filter(Boolean))]
     : [];
 
   // Filtrado de notificaciones
@@ -95,6 +103,29 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
     });
     setModalEditar(false);
     window.location.reload(); // O puedes llamar a fetchAllData si lo tienes disponible por props
+  };
+
+  // Función para crear un nuevo tipo de incidente
+  const crearNuevoTipo = () => {
+    if (!nuevoTipoNombre.trim()) return;
+    axios.post("http://localhost:3000/incidents", {
+      type: nuevoTipoNombre,
+      color: nuevoTipoColor,
+      icon: nuevoTipoIcon
+    })
+      .then(() => {
+        setModalNuevoTipo(false);
+        setNuevoTipoNombre("");
+        setNuevoTipoColor("#000000");
+        setNuevoTipoIcon("");
+        // Recargar incidentes
+        axios.get("http://localhost:3000/incidents")
+          .then(res => setIncidents(res.data))
+          .catch(() => setIncidents([]));
+      })
+      .catch(() => {
+        alert("Error al crear el tipo de incidente");
+      });
   };
 
   return (
@@ -157,6 +188,21 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
           </div>
         )}
         <button className="btn-regresar" onClick={() => navigate("/menu-administracion")}>REGRESAR</button>
+        <button
+          className="btn-nuevo-tipo"
+          style={{
+            background: "linear-gradient(90deg,#ff512f,#dd2476)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            padding: "0.5rem 1.2rem",
+            fontWeight: "bold",
+            cursor: "pointer"
+          }}
+          onClick={() => setModalNuevoTipo(true)}
+        >
+          Crear nuevo tipo de reporte
+        </button>
         <div className="notificaciones-alertas-tabla-container">
           <table className="notificaciones-alertas-tabla">
             <thead>
@@ -194,6 +240,58 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
             </tbody>
           </table>
         </div>
+        {/* Modal para crear nuevo tipo de incidente */}
+        {modalNuevoTipo && (
+          <div className="modal-overlay" style={{
+            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+            background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+          }}>
+            <div className="modal-content" style={{
+              background: "#fff", padding: "2rem", borderRadius: "10px", minWidth: "320px", maxWidth: "90vw", boxShadow: "0 2px 16px rgba(0,0,0,0.2)"
+            }}>
+              <h3>Crear nuevo tipo de incidente</h3>
+              <form onSubmit={e => { e.preventDefault(); crearNuevoTipo(); }}>
+                <div style={{ marginBottom: "1rem" }}>
+                  <label>Nombre del tipo:</label>
+                  <input
+                    type="text"
+                    value={nuevoTipoNombre}
+                    onChange={e => setNuevoTipoNombre(e.target.value)}
+                    required
+                    style={{ width: "100%", padding: "0.5rem", marginTop: "0.3rem" }}
+                  />
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                  <label>Color:</label>
+                  <input
+                    type="color"
+                    value={nuevoTipoColor}
+                    onChange={e => setNuevoTipoColor(e.target.value)}
+                    style={{ marginLeft: "1rem" }}
+                  />
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                  <label>Icono (URL o nombre de archivo):</label>
+                  <input
+                    type="text"
+                    value={nuevoTipoIcon}
+                    onChange={e => setNuevoTipoIcon(e.target.value)}
+                    style={{ width: "100%", padding: "0.5rem", marginTop: "0.3rem" }}
+                  />
+                </div>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+                  <button type="submit" className="btn-editar-reporte">
+                    Guardar
+                  </button>
+                  <button type="button" className="btn-editar-reporte" onClick={() => setModalNuevoTipo(false)}>
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Modal para editar el tipo de alerta */}
         {modalEditar && (
           <div className="modal-overlay" style={{

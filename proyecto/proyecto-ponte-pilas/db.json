@@ -180,6 +180,12 @@
       "type": "Otros",
       "icon": "iconoOtros.png",
       "color": "#bdbdbd"
+    },
+    {
+      "id": "0321",
+      "type": "Incendio",
+      "color": "#f83030",
+      "icon": "https://cdn-icons-png.flaticon.com/512/63/63763.png"
     }
   ],
   "reports": [
@@ -331,7 +337,7 @@
     },
     {
       "id": "d8ea",
-      "incidentTypeId": "10",
+      "incidentTypeId": "0321",
       "description": "Incendios en una casa",
       "location": "Carcelen",
       "lat": -0.2919947382429402,
@@ -414,7 +420,7 @@
     },
     {
       "id": "43b5",
-      "incidentTypeId": "10",
+      "incidentTypeId": "6",
       "description": "2 personas en moto asaltaron un restaurante del sector de calderon",
       "location": "Giovanny Calles y Cacha",
       "lat": -0.08351323031645048,
