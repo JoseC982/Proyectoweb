@@ -1,69 +1,116 @@
-// Importa los hooks de React y otros módulos necesarios
 import React, { useState, useRef, useEffect } from "react";
-// Importa los estilos CSS específicos para este componente
 import "../estilos/NotificacionesAlertas.css";
-// Importa la imagen de fondo del header
 import LogFondo from "../recursos/MenuAdm/LogFondo.png";
-// Importa la imagen de fondo principal de la sección
 import LogNotiAlerta from "../recursos/MenuAdm/LogNotiAlerta.png";
-// Importa el hook para navegación entre rutas
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-// Componente funcional que recibe las notificaciones como prop
-const NotificacionesAlertas = ({ users,notificaciones }) => {
-  // Estado para controlar si el menú de usuario está abierto o cerrado
+const encabezados = [
+  { value: "nombre", label: "Nombre de usuario" },
+  { value: "tipo", label: "Tipo de alerta" },
+  { value: "descripcion", label: "Descripcion" },
+  { value: "fechaHora", label: "Fecha y Hora" },
+  { value: "ubicacion", label: "Ubicación" }
+];
+
+const NotificacionesAlertas = ({ users, notificaciones }) => {
   const [menuAbierto, setMenuAbierto] = useState(false);
-  // Estado para mostrar mensajes temporales (ej: "Sesión Cerrada")
   const [mensaje] = useState("");
-  // Referencia al contenedor del menú de usuario para detectar clics fuera
   const menuRef = useRef(null);
-  // Hook para navegar entre rutas
   const navigate = useNavigate();
-    console.log("este es el nombre del usuario", users?.name);
 
+  // Estados para los filtros
+  const [columnaFiltro, setColumnaFiltro] = useState("");
+  const [valorFiltro, setValorFiltro] = useState("");
 
-  // Efecto para cerrar el menú si se hace clic fuera de él
+  // Modal de edición
+  const [modalEditar, setModalEditar] = useState(false);
+  const [reporteEditar, setReporteEditar] = useState(null);
+  const [nuevoTipo, setNuevoTipo] = useState("");
+
+  // Incidentes (tipos de alerta) para el combobox de edición
+  const [incidents, setIncidents] = useState([]);
   useEffect(() => {
-    // Función que detecta clics fuera del menú
+    axios.get("http://localhost:3000/incidents")
+      .then(res => setIncidents(res.data))
+      .catch(() => setIncidents([]));
+  }, []);
+
+  // Opciones únicas para el segundo combobox
+  const opcionesFiltro = columnaFiltro
+    ? [...new Set(notificaciones.map(n => n[columnaFiltro]).filter(Boolean))]
+    : [];
+
+  // Filtrado de notificaciones
+  const notificacionesFiltradas =
+    columnaFiltro && valorFiltro
+      ? notificaciones.filter(n => n[columnaFiltro] === valorFiltro)
+      : notificaciones;
+
+  useEffect(() => {
     function handleClickOutside(event) {
-      // Si el menú está abierto y el clic no fue dentro del menú, lo cierra
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuAbierto(false);
       }
     }
-    // Agrega el event listener al montar el componente
     document.addEventListener("mousedown", handleClickOutside);
-    // Limpia el event listener al desmontar el componente
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // Renderizado del componente
+  // Si se cambia la columna, limpia el valor del filtro
+  useEffect(() => {
+    setValorFiltro("");
+  }, [columnaFiltro]);
+
+  // Maneja la apertura del modal de edición
+  const handleEditarReporte = (notificacion, idx) => {
+    setReporteEditar({ ...notificacion, idx });
+    setNuevoTipo(""); // Limpiar selección
+    setModalEditar(true);
+  };
+
+  // Guarda el cambio de tipo de alerta
+  const guardarNuevoTipo = async () => {
+    if (!nuevoTipo || !reporteEditar) return;
+    // Busca el id del incidente seleccionado
+    const incidente = incidents.find(i => i.type === nuevoTipo);
+    if (!incidente) return;
+    // Busca el reporte original por los datos de la notificación
+    // (puedes necesitar el id real del reporte, aquí se asume que tienes acceso a él)
+    // Si tu notificaciones tienen el id del reporte, úsalo directamente:
+    // Ejemplo: notificaciones[idx].id
+    // Aquí se asume que tienes acceso al id real del reporte:
+    const reportesRes = await axios.get("http://localhost:3000/reports");
+    const reporteOriginal = reportesRes.data.find(r =>
+      r.description === reporteEditar.descripcion &&
+      r.location === reporteEditar.ubicacion &&
+      (r.date + ' ' + r.time) === reporteEditar.fechaHora
+    );
+    if (!reporteOriginal) return;
+    // Actualiza el tipo de incidente
+    await axios.patch(`http://localhost:3000/reports/${reporteOriginal.id}`, {
+      incidentTypeId: incidente.id
+    });
+    setModalEditar(false);
+    window.location.reload(); // O puedes llamar a fetchAllData si lo tienes disponible por props
+  };
+
   return (
-    // Contenedor principal con fondo y altura mínima
     <div className="notificaciones-alertas-fondo" style={{ position: "relative", minHeight: "100vh" }}>
-      {/* Si hay mensaje, lo muestra como mensaje flotante */}
-      {mensaje && (
-        <div className="mensaje-sesion-cerrada">{mensaje}</div>
-      )}
-      {/* Imagen de fondo principal */}
+      {mensaje && <div className="mensaje-sesion-cerrada">{mensaje}</div>}
       <img src={LogNotiAlerta} alt="Fondo" className="notificaciones-alertas-bg" />
-      {/* Header superior con logo y menú de usuario */}
       <header className="menu-admin-header">
         <div className="menu-admin-logo">
-          {/* Logo de la ciudad */}
           <img src={LogFondo} alt="Logo Quito" className="logo-quito" />
-          {/* Título de la app */}
           <span className="ponte-once">
             <span className="ponte">¡PONTE</span> <span className="once">ONCE!</span>
           </span>
         </div>
-        {/* Menú de usuario con nombre y opciones */}
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
           <span className="nombre-usuario">{users?.name}</span>
-          {/* Botón para desplegar el menú de usuario */}
           <button
             className="icono-desplegar-btn"
             onClick={() => setMenuAbierto((v) => !v)}
@@ -71,59 +118,118 @@ const NotificacionesAlertas = ({ users,notificaciones }) => {
           >
             <span className="icono-desplegar">▼</span>
           </button>
-          {/* Menú desplegable de usuario */}
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
               <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
-              <button className="menu-item" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar Sesión</button>
+              <button className="menu-item" onClick={() => { localStorage.removeItem("usuario"); navigate("/") }}>Cerrar Sesión</button>
             </div>
           )}
         </div>
       </header>
-      {/* Cuerpo principal de la sección */}
       <main className="notificaciones-alertas-main">
-        {/* Título de la sección */}
         <h1 className="notificaciones-alertas-titulo">Notificaciones de Alertas</h1>
-        {/* Botón para regresar al menú de administración */}
+        {/* Primer ComboBox */}
+        <div style={{ margin: "1rem 0" }}>
+          <select
+            className="combo-filtro-notificaciones"
+            value={columnaFiltro}
+            onChange={e => setColumnaFiltro(e.target.value)}
+          >
+            <option value="">Filtrar por...</option>
+            {encabezados.map(e => (
+              <option key={e.value} value={e.value}>{e.label}</option>
+            ))}
+          </select>
+        </div>
+        {/* Segundo ComboBox, solo si hay columna seleccionada */}
+        {columnaFiltro && (
+          <div style={{ margin: "1rem 0" }}>
+            <select
+              className="combo-filtro-notificaciones"
+              value={valorFiltro}
+              onChange={e => setValorFiltro(e.target.value)}
+            >
+              <option value="">Selecciona un valor...</option>
+              {opcionesFiltro.map((op, idx) => (
+                <option key={idx} value={op}>{op}</option>
+              ))}
+            </select>
+          </div>
+        )}
         <button className="btn-regresar" onClick={() => navigate("/menu-administracion")}>REGRESAR</button>
-        {/* Contenedor de la tabla de notificaciones */}
         <div className="notificaciones-alertas-tabla-container">
-          {/* Contenedor de la tabla de notificaciones, permite aplicar estilos y scroll si es necesario */}
           <table className="notificaciones-alertas-tabla">
-            {/* Encabezado de la tabla con los títulos de cada columna */}
             <thead>
               <tr>
-                <th>Nombre de usuario</th> {/* Columna para el nombre del usuario que generó la alerta */}
-                <th>Tipo de alerta</th> {/* Columna para el tipo de alerta (ej: Robo, Accidente, etc.) */}
-                <th>Descripcion</th> {/* Columna para la descripción de la alerta */}
-                <th>Fecha y Hora</th> {/* Columna para la fecha y hora en que se generó la alerta */}
-                <th>Ubicación</th> {/* Columna para la ubicación asociada a la alerta */}
+                <th>Nombre de usuario</th>
+                <th>Tipo de alerta</th>
+                <th>Descripcion</th>
+                <th>Fecha y Hora</th>
+                <th>Ubicación</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {/* Si existen notificaciones y el arreglo tiene elementos, las muestra en filas */}
-              {notificaciones && notificaciones.length > 0 ? (
-                // Mapea cada notificación a una fila de la tabla
-                notificaciones.map((n, idx) => (
-                  <tr key={idx}> {/* Cada fila tiene una clave única basada en el índice */}
-                    <td>{n.nombre}</td> {/* Celda con el nombre del usuario */}
-                    <td>{n.tipo}</td> {/* Celda con el tipo de alerta */}
-                    <td>{n.descripcion}</td> {/* Celda con la descripción de la alerta */}
-                    <td>{n.fechaHora}</td> {/* Celda con la fecha y hora de la alerta */}
-                    <td>{n.ubicacion}</td> {/* Celda con la ubicación de la alerta */}
+              {notificacionesFiltradas && notificacionesFiltradas.length > 0 ? (
+                notificacionesFiltradas.map((n, idx) => (
+                  <tr key={idx}>
+                    <td>{n.nombre}</td>
+                    <td>{n.tipo}</td>
+                    <td>{n.descripcion}</td>
+                    <td>{n.fechaHora}</td>
+                    <td>{n.ubicacion}</td>
+                    <td>
+                      <button
+                        className="btn-editar-reporte"
+                        onClick={() => handleEditarReporte(n, idx)}
+                      >
+                        Editar reporte
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
-                // Si no hay notificaciones, muestra una fila con mensaje centrado y colspan=5
-                <tr><td colSpan={5} style={{textAlign:'center'}}>No hay notificaciones</td></tr>
+                <tr><td colSpan={6} style={{ textAlign: 'center' }}>No hay notificaciones</td></tr>
               )}
             </tbody>
           </table>
         </div>
+        {/* Modal para editar el tipo de alerta */}
+        {modalEditar && (
+          <div className="modal-overlay" style={{
+            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+            background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+          }}>
+            <div className="modal-content" style={{
+              background: "#fff", padding: "2rem", borderRadius: "10px", minWidth: "320px", maxWidth: "90vw", boxShadow: "0 2px 16px rgba(0,0,0,0.2)"
+            }}>
+              <h3>Editar tipo de alerta</h3>
+              <div style={{ margin: "1rem 0" }}>
+                <select
+                  value={nuevoTipo}
+                  onChange={e => setNuevoTipo(e.target.value)}
+                  className="combo-filtro-notificaciones"
+                >
+                  <option value="">Selecciona un tipo...</option>
+                  {incidents.map(inc => (
+                    <option key={inc.id} value={inc.type}>{inc.type}</option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+                <button className="btn-editar-reporte" onClick={guardarNuevoTipo} disabled={!nuevoTipo}>
+                  Guardar
+                </button>
+                <button className="btn-editar-reporte" onClick={() => setModalEditar(false)}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
 };
 
-// Exporta el componente para su uso en otras partes de la app
 export default NotificacionesAlertas;

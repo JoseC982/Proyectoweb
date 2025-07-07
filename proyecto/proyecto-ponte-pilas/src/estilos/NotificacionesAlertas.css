@@ -60,6 +60,19 @@
 .btn-regresar:hover {
   transform: scale(1.05);
 }
+.btn-editar-reporte {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 8px 18px;
+  margin-left: 3px;
+  margin-right: 3px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-editar-reporte:hover { background: #0d47a1; }
 
 .notificaciones-alertas-tabla-container {
   width: 100%;

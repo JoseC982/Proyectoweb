@@ -206,7 +206,7 @@
     {
       "id": "3",
       "userId": "4f2d",
-      "incidentTypeId": 10,
+      "incidentTypeId": "10",
       "description": "Sugerencia:",
       "location": "Calle 10 de Agosto",
       "date": "2025-06-11",
