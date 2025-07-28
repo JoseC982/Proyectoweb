@@ -49,7 +49,7 @@
       "email": "jose1@gmail.com",
       "pass": "1234",
       "role": "user",
-      "estado": "Activo",
+      "estado": "Silenciado",
       "fechaNacimiento": "1998-08-09",
       "bio": "Hola me llamo Jose",
       "username": "joscd"
@@ -447,15 +447,15 @@
       "id": "43b4"
     },
     {
-      "id": "43b5",
-      "incidentTypeId": "6",
-      "description": "2 personas en moto asaltaron un restaurante del sector de calderon",
+      "incidentTypeId": "3",
+      "description": "2 personas en moto adsdasdasdas",
       "location": "Giovanny Calles y Cacha",
       "lat": -0.08351323031645048,
       "lng": -78.43673944473267,
       "time": "12:50",
-      "date": "2025-06-29",
-      "userId": "ed26"
+      "date": "2025-06-28",
+      "userId": "ed26",
+      "id": "43b5"
     },
     {
       "id": "e770",

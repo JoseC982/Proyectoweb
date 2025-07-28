@@ -1,5 +1,13 @@
 const { response } = require("express");
 const User = require("../models/users.models");
+require("dotenv").config();             // Importa el módulo dotenv para cargar variables de entorno
+const jwt = require("jsonwebtoken");    // Importa la biblioteca jwt para generar tokens
+const bcrypt = require("bcryptjs");     // Importa la biblioteca bcrypt para encriptar contraseñas
+
+// Aqui se crea el token
+const generateToken = (id) => {      // Al token se le puede enviar los atributos que creamos necesarios
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' })
+}   //aqui se añade el tiempo de expiracion
 
 // Crear un usuario
 module.exports.createUser = async (req, res) => {
@@ -9,42 +17,61 @@ module.exports.createUser = async (req, res) => {
     if (!name || !email || !pass || !role || !estado || !fechaNacimiento || !username) {
         console.log(req.body);
         return res.status(400).json({ error: "Datos incompletos" });
-    }
+    } else {
 
-    try {
         // Verificar si el correo ya existe
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ error: "Correo ya registrado" });
+        } else {
+            const salt = await bcrypt.genSalt(10);      //aunque las contraseñas sean iguales, el hash es distinto, añadiendo asi una capa mas de seguridad
+            const hashedPassword = await bcrypt.hash(pass, salt);
+            try {
+                // Crear usuario
+                const newUser = await User.create({
+                    name,
+                    email,
+                    pass: hashedPassword,
+                    role,
+                    estado,
+                    fechaNacimiento,
+                    bio,
+                    username
+                });
+
+                res.status(201).json({
+                    id: newUser.id.toString(),
+                    name: newUser.name,
+                    email: newUser.email,
+                    pass: newUser.pass,
+                    role: newUser.role,
+                    estado: newUser.estado,
+                    fechaNacimiento: newUser.fechaNacimiento ? newUser.fechaNacimiento.toISOString().split('T')[0] : "",
+                    bio: newUser.bio,
+                    username: newUser.username
+                });
+
+            } catch (err) {
+                res.status(400).json({ error: "Error al crear usuario" });
+            }
         }
-
-        // Crear usuario
-        const newUser = await User.create({
-            name,
-            email,
-            pass,
-            role,
-            estado,
-            fechaNacimiento,
-            bio,
-            username
-        });
-
-        res.status(201).json({
-            id: newUser.id.toString(),
-            name: newUser.name,
-            email: newUser.email,
-            pass: newUser.pass,
-            role: newUser.role,
-            estado: newUser.estado,
-            fechaNacimiento: newUser.fechaNacimiento ? newUser.fechaNacimiento.toISOString().split('T')[0] : "",
-            bio: newUser.bio,
-            username: newUser.username
-        });
-    } catch (err) {
-        res.status(400).json({ error: "Error al crear usuario" });
     }
 };
+
+
+// Login de usuario
+// Login
+/*module.exports.loginUser = async (req, res) => {
+    const { email, password } = req.body;
+    const userFound = await User.findOne({ where: { email: email }});
+    console.log(password, userFound.password);
+    if (userFound && (await bcrypt.compare(password, userFound.password))) {
+        console.log(password, userFound.password);
+        res.json({ message: 'Login User', email: userFound.email, nombre: userFound.nombre, token: generateToken(userFound._id) })
+    } else {
+        res.status(400).json({ message: 'Login Failed' })
+    }
+}*/
 
 // Obtener todos los usuarios
 module.exports.getAllUsers = async (_, res) => {
