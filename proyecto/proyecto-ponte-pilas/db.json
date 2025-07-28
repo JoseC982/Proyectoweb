@@ -114,10 +114,32 @@
       "email": "nuevo@email.com",
       "pass": "1234",
       "role": "user",
-      "estado": "Activo",
+      "estado": "Silenciado",
       "fechaNacimiento": "YYYY-MM-DD",
       "bio": "nueva biografía",
       "username": "nuevoUsername"
+    },
+    {
+      "id": "952b",
+      "name": "Nuevo Usuario",
+      "email": "nuevo@correo.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2000-01-01",
+      "bio": "Mi biografía",
+      "username": "nuevoUser"
+    },
+    {
+      "id": "4b84",
+      "name": "Nuevo Usuario",
+      "email": "nuevo@correo.com",
+      "pass": "1234",
+      "role": "user",
+      "estado": "Activo",
+      "fechaNacimiento": "2000-01-01",
+      "bio": "Mi biografía",
+      "username": "nuevoUser"
     }
   ],
   "incidents": [
@@ -184,6 +206,12 @@
     {
       "id": "0321",
       "type": "Incendio",
+      "color": "#f83030",
+      "icon": "https://cdn-icons-png.flaticon.com/512/63/63763.png"
+    },
+    {
+      "id": "f422",
+      "type": "Maltrato Animal",
       "color": "#f83030",
       "icon": "https://cdn-icons-png.flaticon.com/512/63/63763.png"
     }
@@ -428,6 +456,18 @@
       "time": "12:50",
       "date": "2025-06-29",
       "userId": "ed26"
+    },
+    {
+      "id": "e770",
+      "incidentTypeId": "3",
+      "description": "pelea",
+      "location": "Andalucia ",
+      "lat": -0.20999618367828893,
+      "lng": -78.48896480875035,
+      "time": "12:14",
+      "date": "2025-07-07",
+      "userId": "ed26",
+      "status": "nuevo"
     }
   ]
 }
