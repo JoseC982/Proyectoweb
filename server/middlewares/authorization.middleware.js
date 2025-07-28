@@ -10,7 +10,7 @@
 
 require("dotenv").config();
 const jwt = require('jsonwebtoken');
-const User = require('../models/user.model');
+const User = require('../models/users.models');
 module.exports.protect = async (req, res, next) => {
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -23,9 +23,18 @@ module.exports.protect = async (req, res, next) => {
             //se verifica el token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);      // verifica si el token no ha sido modificado y que coincide con la firma del servidor
             //agregamos a cada petición información del usuario - excepto el password (recuperado con base en el _id //contenido en el payload del token)
-            req.user = await User.findOne({ _id: decoded.id }).select('-password'); // aqui se esta creando un usuario en el middleware, con la informacion del usuario a excepcion del password, se busca mediante el id que se obtiene del token
-            //se continua con la ejecución del siguiente controlador
-            next();
+            req.user = await User.findOne({
+                where: { id: decoded.id },
+                attributes: { exclude: ['pass'] }
+            });
+            console.log(req.user);
+            if (req.user.role === 'admin') {
+                //se continua con la ejecución del siguiente controlador
+                next();
+            }else{
+                res.status(401).json({ message: 'Not authorized!' });
+            }
+            //si el token no es válido, no se continua con la ejecución del siguiente controlador
         } catch (error) {
             res.status(401).json({ message: 'Not authorized!' });
         }

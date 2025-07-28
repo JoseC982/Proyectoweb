@@ -5,8 +5,8 @@ const jwt = require("jsonwebtoken");    // Importa la biblioteca jwt para genera
 const bcrypt = require("bcryptjs");     // Importa la biblioteca bcrypt para encriptar contraseñas
 
 // Aqui se crea el token
-const generateToken = (id) => {      // Al token se le puede enviar los atributos que creamos necesarios
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' })
+const generateToken = (id, role) => {      // Al token se le puede enviar los atributos que creamos necesarios
+    return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '30d' })
 }   //aqui se añade el tiempo de expiracion
 
 // Crear un usuario
@@ -60,18 +60,19 @@ module.exports.createUser = async (req, res) => {
 
 
 // Login de usuario
-// Login
-/*module.exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
+module.exports.loginUser = async (req, res) => {
+    const { email, pass } = req.body;
     const userFound = await User.findOne({ where: { email: email }});
-    console.log(password, userFound.password);
-    if (userFound && (await bcrypt.compare(password, userFound.password))) {
-        console.log(password, userFound.password);
-        res.json({ message: 'Login User', email: userFound.email, nombre: userFound.nombre, token: generateToken(userFound._id) })
+    console.log(pass, userFound.pass);
+    if (userFound && (await bcrypt.compare(pass, userFound.pass))) {
+        console.log(pass, userFound.pass);
+        console.log(userFound.role);
+        res.json({ message: 'Login User', email: userFound.email, nombre: userFound.nombre, token: generateToken(userFound.id, userFound.role) })
+        console.log("se creo el token", token)
     } else {
         res.status(400).json({ message: 'Login Failed' })
     }
-}*/
+}
 
 // Obtener todos los usuarios
 module.exports.getAllUsers = async (_, res) => {
