@@ -63,15 +63,33 @@ module.exports.createUser = async (req, res) => {
 // Login de usuario
 module.exports.loginUser = async (req, res) => {
     const { email, pass } = req.body;
-    const userFound = await User.findOne({ where: { email: email }});
-    console.log(pass, userFound.pass);
-    if (userFound && (await bcrypt.compare(pass, userFound.pass))) {
-        console.log(pass, userFound.pass);
-        console.log(userFound.role);
-        res.json({ message: 'Login User', email: userFound.email, nombre: userFound.nombre, token: generateToken(userFound.id, userFound.role) })
-        console.log("se creo el token", token)
-    } else {
-        res.status(400).json({ message: 'Login Failed' })
+    
+    try {
+        const userFound = await User.findOne({ where: { email: email }});
+        
+        if (userFound && (await bcrypt.compare(pass, userFound.pass))) {
+            console.log('Login exitoso para:', userFound.email);
+            
+            // ✅ CORREGIR: Devolver user y token como espera el frontend
+            res.json({ 
+                user: {
+                    id: userFound.id,
+                    name: userFound.name,  // ✅ 'name' no 'nombre'
+                    email: userFound.email,
+                    role: userFound.role,
+                    estado: userFound.estado,
+                    fechaNacimiento: userFound.fechaNacimiento,
+                    bio: userFound.bio,
+                    username: userFound.username
+                },
+                token: generateToken(userFound.id, userFound.role)
+            });
+        } else {
+            res.status(401).json({ message: 'Credenciales incorrectas' });
+        }
+    } catch (error) {
+        console.error('Error en login:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
     }
 }
 
@@ -240,3 +258,37 @@ const loginUsuario = async (email, password) => {
         }
     }
 };
+
+// ✅ NUEVO: Cambiar contraseña del usuario
+module.exports.cambiarPassword = async (req, res) => {
+    const { id } = req.params;
+    const { currentPassword, newPassword } = req.body;
+    
+    try {
+        // Buscar el usuario
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        console.log('Usuario encontrado:', user.email);
+        
+        // Verificar la contraseña actual
+        const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.pass);
+        if (!isCurrentPasswordValid) {
+            return res.status(400).json({ message: 'Contraseña actual incorrecta' });
+        }
+        
+        // Cifrar la nueva contraseña
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        
+        // Actualizar la contraseña
+        await user.update({ pass: hashedNewPassword });
+        
+        res.json({ 
+            message: 'Contraseña actualizada exitosamente'
+        });
+    } catch (error) {
+        console.error('Error al cambiar contraseña:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+}

@@ -2,11 +2,7 @@ const express = require('express');
 const app = express();
 const port = 8000;
 const cors = require('cors');
-app.use(cors({
-    origin: 'http://localhost:3000', // Permite peticiones desde tu frontend
-    credentials: true
-}));
-
+app.use(cors()); // Permite solicitudes desde otros dominios, útil para desarrollo
 //app es una instancia de express
 //put, get, delete, son rutas que se pueden definir en express
 //app.use() es un middleware, se va a ejecutar antes de todas las rutas

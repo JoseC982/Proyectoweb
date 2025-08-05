@@ -27,56 +27,120 @@ const LoginAdmin = ({ setUsers }) => {
     const [password, setPassword] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    // ✅ URL base del backend
+    const baseURL = "http://localhost:8000/";
 
     // Función que maneja el inicio de sesión
     const handleLogin = () => {
-        // Muestra en consola el email ingresado (solo para depuración)
-        console.log(email);
-        // Realiza una petición GET para buscar el usuario por email y contraseña
-        axios.get(`http://localhost:3000/users?email=${email}&pass=${password}`)
+        // Validar que los campos no estén vacíos
+        if (!email || !password) {
+            setModalMessage("Por favor completa todos los campos");
+            setShowModal(true);
+            return;
+        }
+
+        setIsLoading(true);
+        
+        // ✅ Petición POST al endpoint de login del backend
+        axios.post(`${baseURL}users/login`, {
+            email: email,
+            pass: password
+        })
             .then(response => {
-                // Obtiene la respuesta (array de usuarios encontrados)
-                const users = response.data;
-                // Si existe al menos un usuario con esas credenciales
-                if (users.length > 0) {
-                    // Toma el primer usuario encontrado
-                    const user = users[0];
-                    // Actualiza el estado global del usuario en App.js
-                    setUsers(user);
-                    // Guarda el usuario en localStorage para persistencia
-                    localStorage.setItem("usuario", JSON.stringify(user));
-                    // Si el usuario es administrador, navega al menú de administración
-                    if (user.role === "admin") {
-                        // Muestra en consola el usuario enviado
-                        // Cambia el alert por el modal
-                        setModalMessage("Bienvenido Administrador");
-                        setShowModal(true);
-                        setTimeout(() => {
-                            setShowModal(false);
-                            navigate("/menu-administracion");
-                        }, 500); // Cierra el modal y navega después de 1.5 segundos
-                        console.log("Este es el usuario que envio al hijo", user)
-                    } else {
-                        // Cambia el alert por el modal
-                        setModalMessage("Bienvenido a Ponte Once");
-                        setShowModal(true);
-                        setTimeout(() => {
-                            setShowModal(false);
-                            navigate("/menuUsuario");
-                        }, 500); // Cierra el modal y navega después de 1.5 segundos
-                        console.log("Este es el usuario que envio al hijo", user)
-                    }
-                } else {
-                    setModalMessage("No existe el usuario");
+                // ✅ El backend devuelve { user, token }
+                const { user, token } = response.data;
+                
+                // ✅ Guardar el token en localStorage
+                localStorage.setItem("token", token);
+                
+                // ✅ Guardar el usuario en localStorage
+                localStorage.setItem("usuario", JSON.stringify(user));
+                
+                // Actualizar el estado global del usuario en App.js
+                setUsers(user);
+                
+                // ✅ Configurar axios para usar el token en futuras peticiones
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                
+                // Navegación según el rol del usuario
+                if (user.role === "admin") {
+                    setModalMessage("Bienvenido Administrador");
                     setShowModal(true);
+                    setTimeout(() => {
+                        setShowModal(false);
+                        navigate("/menu-administracion");
+                    }, 1500);
+                    console.log("Usuario admin logueado:", user);
+                } else {
+                    setModalMessage("Bienvenido a Ponte Pilas");
+                    setShowModal(true);
+                    setTimeout(() => {
+                        setShowModal(false);
+                        navigate("/menuUsuario");
+                    }, 1500);
+                    console.log("Usuario normal logueado:", user);
                 }
             })
             .catch(error => {
-                setModalMessage("Error al conectar con el servidor");
+                console.error('Error en login:', error);
+                
+                // ✅ Manejo específico de errores del backend
+                if (error.response) {
+                    // El servidor respondió con un código de error
+                    const status = error.response.status;
+                    const message = error.response.data?.message || error.response.data?.error;
+                    
+                    if (status === 401) {
+                        setModalMessage("Credenciales incorrectas");
+                    } else if (status === 404) {
+                        setModalMessage("Usuario no encontrado");
+                    } else {
+                        setModalMessage(message || "Error al iniciar sesión");
+                    }
+                } else if (error.request) {
+                    // El servidor no respondió
+                    setModalMessage("Error de conexión con el servidor");
+                } else {
+                    // Error en la configuración de la petición
+                    setModalMessage("Error inesperado");
+                }
+                
                 setShowModal(true);
-                console.error(error);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     };
+
+    // ✅ Función para verificar si ya hay una sesión activa al cargar la página
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const usuario = localStorage.getItem("usuario");
+        
+        if (token && usuario) {
+            try {
+                const parsedUser = JSON.parse(usuario);
+                setUsers(parsedUser);
+                
+                // Configurar axios para usar el token
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                
+                // Redirigir según el rol
+                if (parsedUser.role === "admin") {
+                    navigate("/menu-administracion");
+                } else {
+                    navigate("/menuUsuario");
+                }
+            } catch (error) {
+                // Si hay error al parsear, limpiar localStorage
+                localStorage.removeItem("token");
+                localStorage.removeItem("usuario");
+            }
+        }
+    }, [setUsers, navigate]);
+
     // Cierra el modal automáticamente después de 2 segundos
     useEffect(() => {
         if (showModal) {
@@ -84,6 +148,13 @@ const LoginAdmin = ({ setUsers }) => {
             return () => clearTimeout(timer);
         }
     }, [showModal]);
+
+    // ✅ Función para manejar el Enter en los inputs
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    };
 
     // Renderiza el formulario de inicio de sesión
     return (
@@ -117,7 +188,9 @@ const LoginAdmin = ({ setUsers }) => {
                             placeholder="Correo electrónico"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
+                            onKeyPress={handleKeyPress}
                             className="input-text"
+                            disabled={isLoading}
                         />
                     </div>
                     {/* Campo para la contraseña */}
@@ -127,7 +200,9 @@ const LoginAdmin = ({ setUsers }) => {
                             placeholder="Contraseña"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
+                            onKeyPress={handleKeyPress}
                             className="input-text"
+                            disabled={isLoading}
                         />
                         {/* Botón para mostrar/ocultar la contraseña */}
                         <button
@@ -135,17 +210,24 @@ const LoginAdmin = ({ setUsers }) => {
                             className="eye-button"
                             onClick={() => setShowPassword(!showPassword)}
                             tabIndex={-1}
+                            disabled={isLoading}
                         >
                             {showPassword ? "🙈" : "👁️"}
                         </button>
                     </div>
                     {/* Botones de acción y enlaces */}
                     <div className="button-container">
-                        <button className="button" onClick={handleLogin}>
-                            Iniciar sesión
+                        <button 
+                            className="button" 
+                            onClick={handleLogin}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
                         </button>
                         <Link to="/">
-                            <button className="button">Volver a Inicio</button>
+                            <button className="button" disabled={isLoading}>
+                                Volver a Inicio
+                            </button>
                         </Link>
                         <span>
                             <Link to="/recuperarCuenta">¿Olvidaste tu contraseña?</Link>
@@ -174,11 +256,11 @@ const LoginAdmin = ({ setUsers }) => {
                         textAlign: "center"
                     }}>
                         <h2>{modalMessage}</h2>
-
                     </div>
                 </div>
             )}
         </div>
     );
 }
+
 export default LoginAdmin;
