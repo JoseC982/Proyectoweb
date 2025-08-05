@@ -32,9 +32,12 @@ function App() {
   // Estado para almacenar la lista de notificaciones procesadas
   const [notificaciones, setNotificaciones] = useState([]);
 
+  const baseURL = "http://localhost:8000/";
+
   // Cargar notificaciones una sola vez al inicio
   useEffect(() => {
-    axios.get("http://localhost:3000/reports")
+    //axios.get("http://localhost:3000/reports")
+    axios.get(baseURL+"reports")
       .then(res => setNotificaciones(res.data))
       .catch(() => setNotificaciones([]));
   }, []);
