@@ -1,6 +1,11 @@
 const express = require('express');
 const app = express();
 const port = 8000;
+const cors = require('cors');
+app.use(cors({
+    origin: 'http://localhost:3000', // Permite peticiones desde tu frontend
+    credentials: true
+}));
 
 //app es una instancia de express
 //put, get, delete, son rutas que se pueden definir en express
