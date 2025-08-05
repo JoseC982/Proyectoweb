@@ -1,5 +1,6 @@
 const { response } = require("express");
 const User = require("../models/users.models");
+const Report = require("../models/reports.models"); 
 require("dotenv").config();             // Importa el módulo dotenv para cargar variables de entorno
 const jwt = require("jsonwebtoken");    // Importa la biblioteca jwt para generar tokens
 const bcrypt = require("bcryptjs");     // Importa la biblioteca bcrypt para encriptar contraseñas
@@ -74,10 +75,12 @@ module.exports.loginUser = async (req, res) => {
     }
 }
 
-// Obtener todos los usuarios
+// Obtener todos los usuarios (excluyendo las contraseñas)
 module.exports.getAllUsers = async (_, res) => {
     try {
-        const users = await User.findAll();
+        const users = await User.findAll({
+            attributes: { exclude: ['pass'] }
+        });
         console.log(users.length)
         res.status(200).json(users);
     } catch (err) {
@@ -85,18 +88,19 @@ module.exports.getAllUsers = async (_, res) => {
     }
 };
 
-// Obtener un usuario por id 
+/// Obtener un usuario por id se excluye la contraseña
 module.exports.getUserXId = async (req, res) => {
-    // Primero valido si el id se encuentra en la lista (podria hacerse midiendo la lista de objetos users.length?)
     try {
-        const user = await User.findOne({ where: { id: req.params.id } });
+        const user = await User.findOne({ 
+            where: { id: req.params.id },
+            attributes: { exclude: ['pass'] } // ✅ Excluir contraseña de la respuesta
+        });
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
         res.json(user);
     } catch {
         res.status(500).json({ message: 'No se pudo obtener el usuario con esa id' });
-
     }
 }
 
@@ -130,42 +134,78 @@ module.exports.updUserEstado = async (req, res) => {
 // actualizar (parcialmente: info perfil usuario) un usuario por id
 module.exports.updUserPerfil = async (req, res) => {
     try {
+        let updateData = { ...req.body };
+
+        // ✅ Si se está actualizando la contraseña, cifrarla
+        if (updateData.pass) {
+            console.log('Cifrando nueva contraseña...');
+            const salt = await bcrypt.genSalt(10);
+            updateData.pass = await bcrypt.hash(updateData.pass, salt);
+            console.log('Contraseña cifrada correctamente');
+        }
+
         // Se actualiza el usuario
-        const [updatedRowCount] = await User.update(req.body, {
+        const [updatedRowCount] = await User.update(updateData, {
             where: { id: req.params.id }
-        })
-        console.log(updatedRowCount);
+        });
+        console.log('Filas actualizadas:', updatedRowCount);
 
-        // Se verifica si se ha actualizado algun registro
+        // Se verifica si se ha actualizado algún registro
         if (updatedRowCount) {
-            // Recupera la información actualizada del usuario
-            console.log("se cambio");
+            console.log("Usuario actualizado exitosamente");
 
-            const updatedUser = await User.findOne({ where: { id: req.params.id } });
-            res.json(updatedUser);
+            // Recupera la información actualizada del usuario (sin la contraseña)
+            const updatedUser = await User.findOne({ 
+                where: { id: req.params.id },
+                attributes: { exclude: ['pass'] } // ✅ Excluir contraseña de la respuesta
+            });
+            
+            res.json({
+                message: "Usuario actualizado exitosamente",
+                user: updatedUser
+            });
         } else {
             res.status(404).json({ message: "Usuario no encontrado" });
         }
     }
     catch (err) {
-        res.status(500).json({ message: 'No se pudo actualizar el usuario', err: err });
+        console.error('Error al actualizar usuario:', err);
+        res.status(500).json({ 
+            message: 'No se pudo actualizar el usuario', 
+            error: err.message 
+        });
     }
-
 }
 
-// Eliminar usuario por ID
+// Eliminar usuario por ID (se modifico para que elimine los reportes asociados y asi no haya conflictos en la bdd)
 module.exports.delUserXId = async (req, res) => {
     try {
-        const user = await User.findOne({ where: { id: req.params.id } });
+        const userId = req.params.id;
+        
+        // Verificar si el usuario existe
+        const user = await User.findOne({ where: { id: userId } });
         if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" })
+            return res.status(404).json({ message: "Usuario no encontrado" });
         }
-        await User.destroy({ where: { id: req.params.id } });
-        res.json(user);
+
+        // 1. Primero eliminar todos los reportes del usuario
+        const deletedReports = await Report.destroy({
+            where: { userId: userId }
+        });
+
+        // 2. Luego eliminar el usuario
+        await User.destroy({ where: { id: userId } });
+
+        // Respuesta con información de lo que se eliminó
+        res.json({
+            message: "Usuario eliminado exitosamente",
+            deletedUser: user,
+            deletedReportsCount: deletedReports
+        });
 
     } catch (err) {
+        console.error('Error al eliminar usuario:', err);
         res.status(500).json({ message: "No se pudo eliminar el usuario" });
-
     }
 }
 
