@@ -1,70 +1,154 @@
-// Importa los hooks de React y otros módulos necesarios
 import React, { useState, useRef, useEffect } from "react";
-// Importa los estilos CSS específicos para este componente
 import "../estilos/MenuAdministracion.css";
-// Importa la imagen de fondo del header
 import LogFondo from "../recursos/MenuAdm/LogFondo.png";
-// Importa la imagen para la opción de gestión de usuarios
 import LogGestionUsuario from "../recursos/MenuAdm/LogGestionUsuario.png";
-// Importa la imagen para la opción de notificaciones de alertas
 import LogNotiAlerta from "../recursos/MenuAdm/LogNotiAlerta.png";
-// Importa la imagen para la opción de validar alertas
 import LogValidarAlerta from "../recursos/MenuAdm/LogValidarAlerta.png";
-// Importa el hook para navegación entre rutas
 import { useNavigate } from "react-router-dom";
 
-// Componente funcional del menú de administración
 const MenuAdministracion = ({users}) => {
-  console.log(users); // Muestra el usuario actual en la consola
-  // Hook para navegar entre rutas
+  console.log(users);
   const navigate = useNavigate();
-  // Estado para controlar si el menú de usuario está abierto o cerrado
   const [menuAbierto, setMenuAbierto] = useState(false);
-  // Estado para mostrar mensajes temporales (ej: "Sesión Cerrada")
-  const [mensaje] = useState("");
-  // Referencia al contenedor del menú de usuario para detectar clics fuera
+  const [mensaje, setMensaje] = useState("");
   const menuRef = useRef(null);
-  
-  // Efecto para cerrar el menú si se hace clic fuera de él
+
+  // ✅ Validar que el usuario sea admin y esté autenticado
   useEffect(() => {
-    // Función que detecta clics fuera del menú
+    const token = localStorage.getItem('token');
+    
+    // Verificar que hay token
+    if (!token) {
+      setMensaje("⚠️ Sesión expirada");
+      setTimeout(() => {
+        navigate('/loginAdmin');
+      }, 2000);
+      return;
+    }
+
+    // Verificar que hay usuario
+    if (!users) {
+      setMensaje("⚠️ Error: No hay información de usuario");
+      setTimeout(() => {
+        navigate('/loginAdmin');
+      }, 2000);
+      return;
+    }
+
+    // Verificar que es admin
+    if (users.role !== 'admin') {
+      setMensaje("⚠️ Acceso denegado: Solo administradores");
+      setTimeout(() => {
+        logout();
+      }, 2000);
+      return;
+    }
+
+    // Verificar que está activo
+    if (users.estado !== 'Activo') {
+      setMensaje("⚠️ Cuenta inactiva");
+      setTimeout(() => {
+        logout();
+      }, 2000);
+      return;
+    }
+
+  }, [users, navigate]);
+
+  // ✅ Función de logout mejorada
+  const logout = () => {
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("token");
+    setMensaje("✅ Sesión cerrada");
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+  };
+
+  // ✅ Función para navegar con verificación de token
+  const navigateWithAuth = (route) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMensaje("⚠️ Sesión expirada");
+      setTimeout(() => logout(), 1000);
+      return;
+    }
+    navigate(route);
+  };
+
+  useEffect(() => {
     function handleClickOutside(event) {
-      // Si el menú está abierto y el clic no fue dentro del menú, lo cierra
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuAbierto(false);
       }
     }
-    // Agrega el event listener al montar el componente
     document.addEventListener("mousedown", handleClickOutside);
-    // Limpia el event listener al desmontar el componente
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // Renderizado del componente
+  // Si no hay usuario válido, no renderizar
+  if (!users || users.role !== 'admin') {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f5f5f5'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          padding: '2rem',
+          backgroundColor: 'white',
+          borderRadius: '10px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+        }}>
+          <h2>🔄 Verificando permisos...</h2>
+          {mensaje && <p style={{color: 'red'}}>{mensaje}</p>}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    // Contenedor principal del menú de administración
     <div className="menu-admin-fondo">
-      {/* Si hay mensaje, lo muestra como mensaje flotante */}
+      {/* Mensaje flotante */}
       {mensaje && (
-        <div className="mensaje-sesion-cerrada">{mensaje}</div>
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: mensaje.includes('✅') ? '#d4edda' : '#f8d7da',
+          color: mensaje.includes('✅') ? '#155724' : '#721c24',
+          padding: '15px 20px',
+          borderRadius: '5px',
+          border: `1px solid ${mensaje.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`,
+          zIndex: 1000,
+          fontWeight: 'bold'
+        }}>
+          {mensaje}
+        </div>
       )}
-      {/* Header superior con logo y menú de usuario */}
+
       <header className="menu-admin-header">
         <div className="menu-admin-logo">
-          {/* Logo de la ciudad */}
           <img src={LogFondo} alt="Logo Quito" className="logo-quito" />
-          {/* Título de la app */}
           <span className="ponte-once">
             <span className="ponte">¡PONTE</span> <span className="once">ONCE!</span>
           </span>
         </div>
-        {/* Menú de usuario con nombre y opciones */}
+        
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
-          <span className="nombre-usuario">{users?.name}</span>
-          {/* Botón para desplegar el menú de usuario */}
+          <span className="nombre-usuario">
+            {users?.name}
+            <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '5px' }}>
+              (Admin)
+            </span>
+          </span>
+          
           <button
             className="icono-desplegar-btn"
             onClick={() => setMenuAbierto((v) => !v)}
@@ -72,34 +156,73 @@ const MenuAdministracion = ({users}) => {
           >
             <span className="icono-desplegar">▼</span>
           </button>
-          {/* Menú desplegable de usuario */}
+
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
-              <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
-              <button className="menu-item" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar Sesión</button>
+              <button 
+                className="menu-item" 
+                onClick={() => { 
+                  setMenuAbierto(false); 
+                  navigateWithAuth('/informacion-usuarioAdm'); 
+                }}
+              >
+                Mi cuenta
+              </button>
+              <button 
+                className="menu-item" 
+                onClick={() => {
+                  setMenuAbierto(false);
+                  logout();
+                }}
+              >
+                Cerrar Sesión
+              </button>
             </div>
           )}
         </div>
       </header>
-      {/* Cuerpo principal del menú de administración */}
+
       <main className="menu-admin-main">
-        {/* Título principal */}
-        <h1 className="menu-admin-titulo">Menú de Administrador</h1>
-        {/* Opciones principales del menú de administración */}
+        <h1 className="menu-admin-titulo">
+          Menú de Administrador
+          <span style={{ 
+            fontSize: '0.6em', 
+            color: '#666', 
+            display: 'block', 
+            fontWeight: 'normal' 
+          }}>
+            Bienvenido, {users.name}
+          </span>
+        </h1>
+
         <div className="menu-admin-opciones">
-          {/* Opción: Gestión de Usuarios */}
           <div className="opcion-admin">
-            <button className="btn-opcion rojo-morado" onClick={() => navigate('/gestion-usuarios')}>Gestión de Usuarios</button>
+            <button 
+              className="btn-opcion rojo-morado" 
+              onClick={() => navigateWithAuth('/gestion-usuarios')}
+            >
+              Gestión de Usuarios
+            </button>
             <img src={LogGestionUsuario} alt="Gestión de Usuarios" className="img-opcion" />
           </div>
-          {/* Opción: Notificaciones de Alertas */}
+
           <div className="opcion-admin">
-            <button className="btn-opcion rojo-morado" onClick={() => navigate('/notificaciones-alertas')}>Notificaciones de Alertas</button>
+            <button 
+              className="btn-opcion rojo-morado" 
+              onClick={() => navigateWithAuth('/notificaciones-alertas')}
+            >
+              Notificaciones de Alertas
+            </button>
             <img src={LogNotiAlerta} alt="Notificaciones de Alertas" className="img-opcion" />
           </div>
-          {/* Opción: Validar Alertas */}
+
           <div className="opcion-admin">
-            <button className="btn-opcion rojo-morado" onClick={() => navigate('/validar-alertas')}>Validar Alertas</button>
+            <button 
+              className="btn-opcion rojo-morado" 
+              onClick={() => navigateWithAuth('/validar-alertas')}
+            >
+              Validar Alertas
+            </button>
             <img src={LogValidarAlerta} alt="Validar Alertas" className="img-opcion" />
           </div>
         </div>
@@ -108,5 +231,4 @@ const MenuAdministracion = ({users}) => {
   );
 };
 
-// Exporta el componente para su uso en otras partes de la app
 export default MenuAdministracion;

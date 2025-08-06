@@ -4,6 +4,10 @@ const Report = require("../models/reports.models");
 require("dotenv").config();             // Importa el módulo dotenv para cargar variables de entorno
 const jwt = require("jsonwebtoken");    // Importa la biblioteca jwt para generar tokens
 const bcrypt = require("bcryptjs");     // Importa la biblioteca bcrypt para encriptar contraseñas
+const { transporter } = require('../config/emailConfig');
+// ✅ Almacén de códigos de verificación en memoria
+const verifyCodes = new Map(); // { email: { code, expires, userId } }
+
 
 // Aqui se crea el token
 const generateToken = (id, role) => {      // Al token se le puede enviar los atributos que creamos necesarios
@@ -70,11 +74,19 @@ module.exports.loginUser = async (req, res) => {
         if (userFound && (await bcrypt.compare(pass, userFound.pass))) {
             console.log('Login exitoso para:', userFound.email);
             
+            // ✅ Generar el token
+            const token = generateToken(userFound.id, userFound.role);
+            
+            // ✅ IMPRIMIR TOKEN EN CONSOLA DEL SERVIDOR
+            console.log('🔑 Token generado para:', userFound.email);
+            console.log('🔑 Token completo:', token);
+            console.log('🔑 Primeros 20 caracteres del token:', token.substring(0, 20) + '...');
+            
             // ✅ CORREGIR: Devolver user y token como espera el frontend
             res.json({ 
                 user: {
                     id: userFound.id,
-                    name: userFound.name,  // ✅ 'name' no 'nombre'
+                    name: userFound.name,
                     email: userFound.email,
                     role: userFound.role,
                     estado: userFound.estado,
@@ -82,7 +94,7 @@ module.exports.loginUser = async (req, res) => {
                     bio: userFound.bio,
                     username: userFound.username
                 },
-                token: generateToken(userFound.id, userFound.role)
+                token: token
             });
         } else {
             res.status(401).json({ message: 'Credenciales incorrectas' });
@@ -126,28 +138,32 @@ module.exports.getUserXId = async (req, res) => {
 // actualizar (parcialmente: estado) un usuario por id
 module.exports.updUserEstado = async (req, res) => {
     try {
-        // Se actualiza el usuario
-        const [updatedRowCount] = await User.update(req.body, {
-            where: { id: req.params.id }
-        })
-        console.log(updatedRowCount);
-
-        // Se verifica si se ha actualizado algun registro
-        if (updatedRowCount) {
-            // Recupera la información actualizada del usuario
-            console.log("se cambio");
-
-            const updatedUser = await User.findOne({ where: { id: req.params.id } });
-            res.json(updatedUser);
-        } else {
-            res.status(404).json({ message: "Usuario no encontrado" });
+        const { id } = req.params;
+        const { estado } = req.body;
+        
+        console.log('Actualizando estado del usuario:', id, 'a:', estado);
+        
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
         }
+        
+        await user.update({ estado });
+        
+        res.json({ 
+            message: "Estado actualizado correctamente",
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                estado: user.estado
+            }
+        });
+    } catch (err) {
+        console.error('Error actualizando estado:', err);
+        res.status(500).json({ message: "Error interno del servidor" });
     }
-    catch (err) {
-        res.status(500).json({ message: 'No se pudo actualizar el usuario', err: err });
-    }
-
-}
+};
 
 // actualizar (parcialmente: info perfil usuario) un usuario por id
 module.exports.updUserPerfil = async (req, res) => {
@@ -227,7 +243,7 @@ module.exports.delUserXId = async (req, res) => {
     }
 }
 
-
+/*
 // Función para realizar el login del usuario
 const loginUsuario = async (email, password) => {
     try {
@@ -257,7 +273,7 @@ const loginUsuario = async (email, password) => {
             throw new Error('Error al intentar conectar con el servidor');
         }
     }
-};
+};*/
 
 // ✅ NUEVO: Cambiar contraseña del usuario
 module.exports.cambiarPassword = async (req, res) => {
@@ -292,3 +308,118 @@ module.exports.cambiarPassword = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor' });
     }
 }
+
+// ✅ Enviar código de verificación por email
+module.exports.enviarCodigoRecuperacion = async (req, res) => {
+    const { email } = req.body;
+    
+    try {
+        if (!email || !email.trim()) {
+            return res.status(400).json({ message: 'Email es requerido' });
+        }
+
+        const user = await User.findOne({ where: { email: email.trim() } });
+        
+        if (!user) {
+            return res.json({ 
+                message: 'Si el email existe, recibirás un código de verificación' 
+            });
+        }
+
+        // Generar código de 6 dígitos
+        const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiryTime = Date.now() + 900000; // 15 minutos
+
+        // Guardar código
+        verifyCodes.set(email.trim(), {
+            code: verifyCode,
+            expires: expiryTime,
+            userId: user.id
+        });
+
+        // Limpiar códigos expirados
+        for (const [key, value] of verifyCodes.entries()) {
+            if (value.expires < Date.now()) {
+                verifyCodes.delete(key);
+            }
+        }
+
+        // Enviar email con código
+        const mailOptions = {
+            from: 'tu_email@gmail.com', // Cambia por tu email
+            to: email,
+            subject: '🔐 Código de Recuperación - Ponte Once',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background: #007bff; color: white; padding: 20px; text-align: center;">
+                        <h1>🚨 Ponte Once - Recuperación de Contraseña</h1>
+                    </div>
+                    <div style="padding: 20px; text-align: center;">
+                        <h2>Hola ${user.name},</h2>
+                        <p>Tu código de recuperación es:</p>
+                        <h1 style="color: #007bff; font-size: 3em; margin: 20px 0;">${verifyCode}</h1>
+                        <p><strong>Este código expira en 15 minutos.</strong></p>
+                        <p>Si no solicitaste esto, puedes ignorar este email.</p>
+                    </div>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        
+        res.json({ 
+            message: 'Si el email existe, recibirás un código de verificación'
+        });
+        
+    } catch (error) {
+        console.error('Error enviando código:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
+// ✅ Verificar código y cambiar contraseña
+module.exports.verificarCodigoYCambiarPassword = async (req, res) => {
+    const { email, code, newPassword } = req.body;
+    
+    try {
+        if (!email || !code || !newPassword) {
+            return res.status(400).json({ message: 'Todos los campos son requeridos' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ 
+                message: 'La contraseña debe tener al menos 6 caracteres' 
+            });
+        }
+
+        // Verificar código
+        const codeData = verifyCodes.get(email.trim());
+        
+        if (!codeData || codeData.code !== code || codeData.expires < Date.now()) {
+            return res.status(400).json({ 
+                message: 'Código inválido o expirado' 
+            });
+        }
+
+        // Buscar usuario
+        const user = await User.findByPk(codeData.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Actualizar contraseña
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await user.update({ pass: hashedPassword });
+
+        // Eliminar código usado
+        verifyCodes.delete(email.trim());
+
+        res.json({ 
+            message: 'Contraseña actualizada exitosamente' 
+        });
+        
+    } catch (error) {
+        console.error('Error verificando código:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};

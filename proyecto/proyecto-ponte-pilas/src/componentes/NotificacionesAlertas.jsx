@@ -13,11 +13,19 @@ const encabezados = [
   { value: "ubicacion", label: "Ubicación" }
 ];
 
-const NotificacionesAlertas = ({ users, notificaciones }) => {
+const NotificacionesAlertas = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [mensaje] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Estados para los datos
+  const [reports, setReports] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [incidents, setIncidents] = useState([]);
+  const [notificaciones, setNotificaciones] = useState([]);
 
   // Estados para los filtros
   const [columnaFiltro, setColumnaFiltro] = useState("");
@@ -34,27 +42,268 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
   const [reporteEditar, setReporteEditar] = useState(null);
   const [nuevoTipo, setNuevoTipo] = useState("");
 
-  // Incidentes (tipos de alerta) para el combobox de edición
-  const [incidents, setIncidents] = useState([]);
+  // ✅ URL del backend
+  const baseURL = "http://localhost:8000/";
+
+  // ✅ Función para obtener el token
+  const getToken = () => {
+    return localStorage.getItem('token');
+  };
+
+  // ✅ Función para hacer peticiones autenticadas
+  const authenticatedRequest = async (method, url, data = null) => {
+    const token = getToken();
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const config = {
+      method,
+      url: `${baseURL}${url}`,
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    if (data) config.data = data;
+
+    return axios(config);
+  };
+
+  // ✅ Verificar autenticación usando localStorage
+  const verifyAdminAuth = () => {
+    const token = getToken();
+    const userData = localStorage.getItem('usuario');
+    
+    if (!token) {
+      setMensaje("⚠️ Sesión expirada");
+      setTimeout(() => navigate('/loginAdmin'), 2000);
+      return false;
+    }
+
+    if (!userData) {
+      setMensaje("⚠️ No hay información de usuario");
+      setTimeout(() => navigate('/loginAdmin'), 2000);
+      return false;
+    }
+
+    try {
+      const user = JSON.parse(userData);
+
+      if (user.role !== 'admin') {
+        setMensaje("⚠️ Acceso denegado: Solo administradores");
+        setTimeout(() => logout(), 2000);
+        return false;
+      }
+
+      if (user.estado !== 'Activo') {
+        setMensaje("⚠️ Cuenta inactiva");
+        setTimeout(() => logout(), 2000);
+        return false;
+      }
+
+      setCurrentUser(user);
+      return true;
+    } catch (error) {
+      console.error('Error parseando datos de usuario:', error);
+      setMensaje("⚠️ Error en datos de usuario");
+      setTimeout(() => logout(), 2000);
+      return false;
+    }
+  };
+
+  // ✅ Función para obtener todos los reportes
+  const fetchReports = async () => {
+    try {
+      const response = await authenticatedRequest('GET', 'reports');
+      return response.data;
+    } catch (error) {
+      console.error('Error obteniendo reportes:', error);
+      throw error;
+    }
+  };
+
+  // ✅ Función para obtener todos los usuarios
+  const fetchUsers = async () => {
+    try {
+      const response = await authenticatedRequest('GET', 'users');
+      return response.data;
+    } catch (error) {
+      console.error('Error obteniendo usuarios:', error);
+      throw error;
+    }
+  };
+
+  // ✅ Función para obtener todos los incidentes
+  const fetchIncidents = async () => {
+    try {
+      const response = await axios.get(`${baseURL}incidents/list`);
+      return response.data;
+    } catch (error) {
+      console.error('Error obteniendo incidentes:', error);
+      throw error;
+    }
+  };
+
+  // ✅ Función para cargar todos los datos y crear notificaciones
+  const loadAllData = async () => {
+    try {
+      const [reportsData, usersData, incidentsData] = await Promise.all([
+        fetchReports(),
+        fetchUsers(),
+        fetchIncidents()
+      ]);
+
+      setReports(reportsData);
+      setUsers(usersData);
+      setIncidents(incidentsData);
+
+      // Crear notificaciones combinando datos
+      const notificacionesData = reportsData.map(report => {
+        const user = usersData.find(u => u.id === report.userId);
+        const incident = incidentsData.find(i => i.id === report.incidentTypeId);
+        
+        return {
+          id: report.id,
+          nombre: user ? user.name : 'Usuario desconocido',
+          tipo: incident ? incident.type : 'Tipo desconocido',
+          descripcion: report.description,
+          fechaHora: `${report.date} ${report.time}`,
+          ubicacion: report.location,
+          status: report.status,
+          userId: report.userId,
+          incidentTypeId: report.incidentTypeId
+        };
+      });
+
+      setNotificaciones(notificacionesData);
+
+    } catch (error) {
+      console.error('Error cargando datos:', error);
+      if (error.response?.status === 401) {
+        setMensaje("⚠️ Sesión expirada");
+        setTimeout(() => logout(), 2000);
+      } else {
+        setMensaje("❌ Error al cargar datos");
+        setTimeout(() => setMensaje(""), 3000);
+      }
+    }
+  };
+
+  // ✅ Función para crear un nuevo tipo de incidente
+  const crearNuevoTipo = async () => {
+    if (!nuevoTipoNombre.trim()) {
+      setMensaje("❌ El nombre del tipo es requerido");
+      setTimeout(() => setMensaje(""), 3000);
+      return;
+    }
+
+    try {
+      await authenticatedRequest('POST', 'incidents/create', {
+        type: nuevoTipoNombre,
+        color: nuevoTipoColor,
+        icon: nuevoTipoIcon || "default-icon"
+      });
+
+      setModalNuevoTipo(false);
+      setNuevoTipoNombre("");
+      setNuevoTipoColor("#000000");
+      setNuevoTipoIcon("");
+      
+      setMensaje("✅ Tipo de incidente creado exitosamente");
+      setTimeout(() => setMensaje(""), 3000);
+      
+      // Recargar datos
+      await loadAllData();
+
+    } catch (error) {
+      console.error('Error creando tipo de incidente:', error);
+      setMensaje("❌ Error al crear el tipo de incidente");
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
+  // ✅ Función para guardar cambio de tipo de reporte
+  const guardarNuevoTipo = async () => {
+    if (!nuevoTipo || !reporteEditar) {
+      setMensaje("❌ Debe seleccionar un tipo de incidente");
+      setTimeout(() => setMensaje(""), 3000);
+      return;
+    }
+
+    try {
+      // Buscar el id del incidente seleccionado
+      const incidente = incidents.find(i => i.type === nuevoTipo);
+      if (!incidente) {
+        setMensaje("❌ Incidente no encontrado");
+        setTimeout(() => setMensaje(""), 3000);
+        return;
+      }
+
+      // Actualizar el reporte
+      await authenticatedRequest('PUT', `reports/${reporteEditar.id}`, {
+        incidentTypeId: incidente.id
+      });
+
+      setModalEditar(false);
+      setMensaje("✅ Tipo de reporte actualizado exitosamente");
+      setTimeout(() => setMensaje(""), 3000);
+      
+      // Recargar datos
+      await loadAllData();
+
+    } catch (error) {
+      console.error('Error actualizando reporte:', error);
+      setMensaje("❌ Error al actualizar el reporte");
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
+  // ✅ Función de logout
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('userBasicInfo');
+    setMensaje("✅ Sesión cerrada");
+    setTimeout(() => navigate('/loginAdmin'), 1000);
+  };
+
+  // ✅ Función para navegar con verificación de token
+  const navigateWithAuth = (route) => {
+    const token = getToken();
+    if (!token) {
+      setMensaje("⚠️ Sesión expirada");
+      setTimeout(() => logout(), 1000);
+      return;
+    }
+    navigate(route);
+  };
+
+  // Maneja la apertura del modal de edición
+  const handleEditarReporte = (notificacion) => {
+    setReporteEditar(notificacion);
+    setNuevoTipo(""); // Limpiar selección
+    setModalEditar(true);
+  };
+
+  // ✅ Cargar datos al montar el componente
   useEffect(() => {
-    axios.get("http://localhost:3000/incidents")
-      .then(res => setIncidents(res.data))
-      .catch(() => setIncidents([]));
+    const initializeComponent = async () => {
+      setLoading(true);
+      
+      const isAuthenticated = verifyAdminAuth();
+      if (isAuthenticated) {
+        await loadAllData();
+      }
+      
+      setLoading(false);
+    };
+
+    initializeComponent();
   }, []);
 
-  // Opciones únicas para el segundo combobox
-  const opcionesFiltro = columnaFiltro
-    ? columnaFiltro === "tipo"
-      ? incidents.map(i => i.type) // Mostrar todos los tipos de incidentes
-      : [...new Set(notificaciones.map(n => n[columnaFiltro]).filter(Boolean))]
-    : [];
-
-  // Filtrado de notificaciones
-  const notificacionesFiltradas =
-    columnaFiltro && valorFiltro
-      ? notificaciones.filter(n => n[columnaFiltro] === valorFiltro)
-      : notificaciones;
-
+  // Cerrar menú al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -72,66 +321,70 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
     setValorFiltro("");
   }, [columnaFiltro]);
 
-  // Maneja la apertura del modal de edición
-  const handleEditarReporte = (notificacion, idx) => {
-    setReporteEditar({ ...notificacion, idx });
-    setNuevoTipo(""); // Limpiar selección
-    setModalEditar(true);
-  };
+  // Opciones únicas para el segundo combobox
+  const opcionesFiltro = columnaFiltro
+    ? columnaFiltro === "tipo"
+      ? incidents.map(i => i.type)
+      : [...new Set(notificaciones.map(n => n[columnaFiltro]).filter(Boolean))]
+    : [];
 
-  // Guarda el cambio de tipo de alerta
-  const guardarNuevoTipo = async () => {
-    if (!nuevoTipo || !reporteEditar) return;
-    // Busca el id del incidente seleccionado
-    const incidente = incidents.find(i => i.type === nuevoTipo);
-    if (!incidente) return;
-    // Busca el reporte original por los datos de la notificación
-    // (puedes necesitar el id real del reporte, aquí se asume que tienes acceso a él)
-    // Si tu notificaciones tienen el id del reporte, úsalo directamente:
-    // Ejemplo: notificaciones[idx].id
-    // Aquí se asume que tienes acceso al id real del reporte:
-    const reportesRes = await axios.get("http://localhost:3000/reports");
-    const reporteOriginal = reportesRes.data.find(r =>
-      r.description === reporteEditar.descripcion &&
-      r.location === reporteEditar.ubicacion &&
-      (r.date + ' ' + r.time) === reporteEditar.fechaHora
+  // Filtrado de notificaciones
+  const notificacionesFiltradas =
+    columnaFiltro && valorFiltro
+      ? notificaciones.filter(n => n[columnaFiltro] === valorFiltro)
+      : notificaciones;
+
+  // ✅ Mostrar loading mientras verifica
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f5f5f5'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          padding: '2rem',
+          backgroundColor: 'white',
+          borderRadius: '10px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+        }}>
+          <h2>🔄 Cargando notificaciones...</h2>
+          <p>Verificando permisos y obteniendo datos</p>
+        </div>
+      </div>
     );
-    if (!reporteOriginal) return;
-    // Actualiza el tipo de incidente
-    await axios.patch(`http://localhost:3000/reports/${reporteOriginal.id}`, {
-      incidentTypeId: incidente.id
-    });
-    setModalEditar(false);
-    window.location.reload(); // O puedes llamar a fetchAllData si lo tienes disponible por props
-  };
+  }
 
-  // Función para crear un nuevo tipo de incidente
-  const crearNuevoTipo = () => {
-    if (!nuevoTipoNombre.trim()) return;
-    axios.post("http://localhost:3000/incidents", {
-      type: nuevoTipoNombre,
-      color: nuevoTipoColor,
-      icon: nuevoTipoIcon
-    })
-      .then(() => {
-        setModalNuevoTipo(false);
-        setNuevoTipoNombre("");
-        setNuevoTipoColor("#000000");
-        setNuevoTipoIcon("");
-        // Recargar incidentes
-        axios.get("http://localhost:3000/incidents")
-          .then(res => setIncidents(res.data))
-          .catch(() => setIncidents([]));
-      })
-      .catch(() => {
-        alert("Error al crear el tipo de incidente");
-      });
-  };
+  // ✅ Si no hay usuario autenticado, no renderizar
+  if (!currentUser) {
+    return null;
+  }
 
   return (
     <div className="notificaciones-alertas-fondo" style={{ position: "relative", minHeight: "100vh" }}>
-      {mensaje && <div className="mensaje-sesion-cerrada">{mensaje}</div>}
+      {/* ✅ Mensaje temporal mejorado */}
+      {mensaje && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: mensaje.includes('✅') ? '#d4edda' : '#f8d7da',
+          color: mensaje.includes('✅') ? '#155724' : '#721c24',
+          padding: '15px 20px',
+          borderRadius: '5px',
+          border: `1px solid ${mensaje.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`,
+          zIndex: 1000,
+          fontWeight: 'bold'
+        }}>
+          {mensaje}
+        </div>
+      )}
+
       <img src={LogNotiAlerta} alt="Fondo" className="notificaciones-alertas-bg" />
+      
       <header className="menu-admin-header">
         <div className="menu-admin-logo">
           <img src={LogFondo} alt="Logo Quito" className="logo-quito" />
@@ -139,9 +392,16 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
             <span className="ponte">¡PONTE</span> <span className="once">ONCE!</span>
           </span>
         </div>
+        
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
-          <span className="nombre-usuario">{users?.name}</span>
+          <span className="nombre-usuario">
+            {currentUser?.name}
+            <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '5px' }}>
+              (Admin)
+            </span>
+          </span>
+          
           <button
             className="icono-desplegar-btn"
             onClick={() => setMenuAbierto((v) => !v)}
@@ -149,16 +409,35 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
           >
             <span className="icono-desplegar">▼</span>
           </button>
+
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
-              <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
-              <button className="menu-item" onClick={() => { localStorage.removeItem("usuario"); navigate("/") }}>Cerrar Sesión</button>
+              <button 
+                className="menu-item" 
+                onClick={() => { 
+                  setMenuAbierto(false); 
+                  navigateWithAuth('/informacion-usuarioAdm'); 
+                }}
+              >
+                Mi cuenta
+              </button>
+              <button 
+                className="menu-item" 
+                onClick={() => {
+                  setMenuAbierto(false);
+                  logout();
+                }}
+              >
+                Cerrar Sesión
+              </button>
             </div>
           )}
         </div>
       </header>
+
       <main className="notificaciones-alertas-main">
         <h1 className="notificaciones-alertas-titulo">Notificaciones de Alertas</h1>
+        
         {/* Primer ComboBox */}
         <div style={{ margin: "1rem 0" }}>
           <select
@@ -172,6 +451,7 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
             ))}
           </select>
         </div>
+
         {/* Segundo ComboBox, solo si hay columna seleccionada */}
         {columnaFiltro && (
           <div style={{ margin: "1rem 0" }}>
@@ -187,7 +467,14 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
             </select>
           </div>
         )}
-        <button className="btn-regresar" onClick={() => navigate("/menu-administracion")}>REGRESAR</button>
+
+        <button 
+          className="btn-regresar" 
+          onClick={() => navigateWithAuth("/menu-administracion")}
+        >
+          REGRESAR
+        </button>
+        
         <button
           className="btn-nuevo-tipo"
           style={{
@@ -197,12 +484,14 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
             borderRadius: "8px",
             padding: "0.5rem 1.2rem",
             fontWeight: "bold",
-            cursor: "pointer"
+            cursor: "pointer",
+            marginLeft: "1rem"
           }}
           onClick={() => setModalNuevoTipo(true)}
         >
           Crear nuevo tipo de reporte
         </button>
+
         <div className="notificaciones-alertas-tabla-container">
           <table className="notificaciones-alertas-tabla">
             <thead>
@@ -212,22 +501,31 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
                 <th>Descripcion</th>
                 <th>Fecha y Hora</th>
                 <th>Ubicación</th>
+                <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {notificacionesFiltradas && notificacionesFiltradas.length > 0 ? (
                 notificacionesFiltradas.map((n, idx) => (
-                  <tr key={idx}>
+                  <tr key={n.id || idx}>
                     <td>{n.nombre}</td>
                     <td>{n.tipo}</td>
                     <td>{n.descripcion}</td>
                     <td>{n.fechaHora}</td>
                     <td>{n.ubicacion}</td>
                     <td>
+                      <span style={{
+                        color: n.status === 'nuevo' ? '#dc3545' : '#28a745',
+                        fontWeight: 'bold'
+                      }}>
+                        {n.status}
+                      </span>
+                    </td>
+                    <td>
                       <button
                         className="btn-editar-reporte"
-                        onClick={() => handleEditarReporte(n, idx)}
+                        onClick={() => handleEditarReporte(n)}
                       >
                         Editar reporte
                       </button>
@@ -235,11 +533,12 @@ const NotificacionesAlertas = ({ users, notificaciones }) => {
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan={6} style={{ textAlign: 'center' }}>No hay notificaciones</td></tr>
+                <tr><td colSpan={7} style={{ textAlign: 'center' }}>No hay notificaciones</td></tr>
               )}
             </tbody>
           </table>
         </div>
+
         {/* Modal para crear nuevo tipo de incidente */}
         {modalNuevoTipo && (
           <div className="modal-overlay" style={{

@@ -18,5 +18,8 @@ module.exports=function(app){
     app.delete("/users/:id", protect, validateOwnResource, User.delUserXId);
     // ✅ NUEVO: Ruta para cambiar contraseña
     app.patch("/users/:id/cambiarPassword", protect, validateOwnResource, User.cambiarPassword);
+    // ✅ NUEVAS RUTAS para recuperación de contraseña
+app.post("/users/enviar-codigo-recuperacion", User.enviarCodigoRecuperacion);
+app.post("/users/verificar-codigo-cambiar-password", User.verificarCodigoYCambiarPassword);
 
 }

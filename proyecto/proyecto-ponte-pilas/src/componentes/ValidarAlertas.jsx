@@ -4,46 +4,248 @@ import LogFondo from "../recursos/MenuAdm/LogFondo.png";
 import LogValidarAlerta from "../recursos/MenuAdm/LogValidarAlerta.png";
 import LogMegafono from "../recursos/MenuAdm/LogMegafono.png";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-// Componente funcional que recibe los reportes, usuarios, incidentes y la función para borrar reportes como props
-const ValidarAlertas = ({ reports, usersList, users, incidents, borrarReporte }) => {
-  // Estado para controlar si el menú de usuario está abierto o cerrado
+const ValidarAlertas = () => {
+  // Estados del componente
   const [menuAbierto, setMenuAbierto] = useState(false);
-  // Estado para mostrar mensajes temporales (ej: "Alerta Rechazada")
   const [mensaje, setMensaje] = useState("");
-  // Estado para saber qué reporte se está mostrando actualmente
   const [index, setIndex] = useState(0);
-  // Referencia al contenedor del menú de usuario para detectar clics fuera
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Estados para los datos
+  const [reports, setReports] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [incidents, setIncidents] = useState([]);
+  
+  // Referencias y hooks
   const menuRef = useRef(null);
-  // Hook para navegar entre rutas
   const navigate = useNavigate();
-  console.log("este es el nombre del usuario", users?.name);
+
+  // ✅ URL del backend
+  const baseURL = "http://localhost:8000/";
+
+  // ✅ Función para obtener el token
+  const getToken = () => {
+    return localStorage.getItem('token');
+  };
+
+  // ✅ Función para hacer peticiones autenticadas
+  const authenticatedRequest = async (method, url, data = null) => {
+    const token = getToken();
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const config = {
+      method,
+      url: `${baseURL}${url}`,
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    if (data) config.data = data;
+
+    return axios(config);
+  };
+
+  // ✅ Verificar autenticación usando localStorage
+  const verifyAdminAuth = () => {
+    const token = getToken();
+    const userData = localStorage.getItem('usuario');
+    
+    if (!token) {
+      setMensaje("⚠️ Sesión expirada");
+      setTimeout(() => navigate('/loginAdmin'), 2000);
+      return false;
+    }
+
+    if (!userData) {
+      setMensaje("⚠️ No hay información de usuario");
+      setTimeout(() => navigate('/loginAdmin'), 2000);
+      return false;
+    }
+
+    try {
+      const user = JSON.parse(userData);
+
+      if (user.role !== 'admin') {
+        setMensaje("⚠️ Acceso denegado: Solo administradores");
+        setTimeout(() => logout(), 2000);
+        return false;
+      }
+
+      if (user.estado !== 'Activo') {
+        setMensaje("⚠️ Cuenta inactiva");
+        setTimeout(() => logout(), 2000);
+        return false;
+      }
+
+      setCurrentUser(user);
+      return true;
+    } catch (error) {
+      console.error('Error parseando datos de usuario:', error);
+      setMensaje("⚠️ Error en datos de usuario");
+      setTimeout(() => logout(), 2000);
+      return false;
+    }
+  };
+
+  // ✅ Función para obtener todos los reportes
+  const fetchReports = async () => {
+    try {
+      const response = await authenticatedRequest('GET', 'reports');
+      return response.data;
+    } catch (error) {
+      console.error('Error obteniendo reportes:', error);
+      throw error;
+    }
+  };
+
+  // ✅ Función para obtener todos los usuarios
+  const fetchUsers = async () => {
+    try {
+      const response = await authenticatedRequest('GET', 'users');
+      return response.data;
+    } catch (error) {
+      console.error('Error obteniendo usuarios:', error);
+      throw error;
+    }
+  };
+
+  // ✅ Función para obtener todos los incidentes
+  const fetchIncidents = async () => {
+    try {
+      const response = await axios.get(`${baseURL}incidents/list`);
+      return response.data;
+    } catch (error) {
+      console.error('Error obteniendo incidentes:', error);
+      throw error;
+    }
+  };
+
+  // ✅ Función para cargar todos los datos
+  const loadAllData = async () => {
+    try {
+      const [reportsData, usersData, incidentsData] = await Promise.all([
+        fetchReports(),
+        fetchUsers(),
+        fetchIncidents()
+      ]);
+
+      setReports(reportsData);
+      setUsers(usersData);
+      setIncidents(incidentsData);
+
+      // Reset index si no hay reportes
+      if (reportsData.length === 0) {
+        setIndex(0);
+      }
+
+    } catch (error) {
+      console.error('Error cargando datos:', error);
+      if (error.response?.status === 401) {
+        setMensaje("⚠️ Sesión expirada");
+        setTimeout(() => logout(), 2000);
+      } else {
+        setMensaje("❌ Error al cargar datos");
+        setTimeout(() => setMensaje(""), 3000);
+      }
+    }
+  };
+
+  // ✅ Función para rechazar/eliminar reporte
+  const borrarReporte = async (reportId) => {
+    try {
+      await authenticatedRequest('DELETE', `reports/${reportId}`);
+      
+      // Actualizar la lista local de reportes
+      const nuevosReportes = reports.filter(r => r.id !== reportId);
+      setReports(nuevosReportes);
+
+      // Ajustar el índice si es necesario
+      if (index >= nuevosReportes.length && nuevosReportes.length > 0) {
+        setIndex(nuevosReportes.length - 1);
+      } else if (nuevosReportes.length === 0) {
+        setIndex(0);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error eliminando reporte:', error);
+      if (error.response?.status === 404) {
+        setMensaje("❌ Reporte no encontrado");
+      } else if (error.response?.status === 401) {
+        setMensaje("⚠️ Sesión expirada");
+        setTimeout(() => logout(), 2000);
+      } else {
+        setMensaje("❌ Error al eliminar reporte");
+      }
+      setTimeout(() => setMensaje(""), 3000);
+      return false;
+    }
+  };
+
+  // ✅ Función de logout
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('userBasicInfo');
+    setMensaje("✅ Sesión cerrada");
+    setTimeout(() => navigate('/loginAdmin'), 1000);
+  };
+
+  // ✅ Función para navegar con verificación de token
+  const navigateWithAuth = (route) => {
+    const token = getToken();
+    if (!token) {
+      setMensaje("⚠️ Sesión expirada");
+      setTimeout(() => logout(), 1000);
+      return;
+    }
+    navigate(route);
+  };
 
   // Obtiene el reporte actual a mostrar según el índice
   const reporteActual = reports && reports.length > 0 ? reports[index] : null;
+  
   // Variables para guardar el usuario y el incidente del reporte actual
-  let usuario = null,
-    incidente = null;
-  // Si hay un reporte actual, busca el usuario y el incidente correspondientes
+  let usuario = null, incidente = null;
+  
   if (reporteActual) {
-    usuario = usersList.find((u) => String(u.id) === String(reporteActual.userId));
+    usuario = users.find((u) => String(u.id) === String(reporteActual.userId));
     incidente = incidents.find(
       (i) => String(i.id) === String(reporteActual.incidentTypeId)
     );
   }
 
-  // Efecto para cerrar el menú si se hace clic fuera de él
+  // ✅ Cargar datos al montar el componente
   useEffect(() => {
-    // Función que detecta clics fuera del menú
+    const initializeComponent = async () => {
+      setLoading(true);
+      
+      const isAuthenticated = verifyAdminAuth();
+      if (isAuthenticated) {
+        await loadAllData();
+      }
+      
+      setLoading(false);
+    };
+
+    initializeComponent();
+  }, []);
+
+  // Cerrar menú al hacer clic fuera
+  useEffect(() => {
     function handleClickOutside(event) {
-      // Si el menú está abierto y el clic no fue dentro del menú, lo cierra
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuAbierto(false);
       }
     }
-    // Agrega el event listener al montar el componente
     document.addEventListener("mousedown", handleClickOutside);
-    // Limpia el event listener al desmontar el componente
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -51,58 +253,100 @@ const ValidarAlertas = ({ reports, usersList, users, incidents, borrarReporte })
 
   // Función para ir al siguiente reporte
   const handleNext = () => {
-    if (reports.length === 0) return; // Si no hay reportes, no hace nada
-    setIndex((prev) => (prev + 1 < reports.length ? prev + 1 : prev)); // Avanza al siguiente si existe
-  };
-  // Función para ir al reporte anterior
-  const handlePrev = () => {
-    if (reports.length === 0) return; // Si no hay reportes, no hace nada
-    setIndex((prev) => (prev - 1 >= 0 ? prev - 1 : prev)); // Retrocede si no está en el primero
+    if (reports.length === 0) return;
+    setIndex((prev) => (prev + 1 < reports.length ? prev + 1 : prev));
   };
 
-  // Función para rechazar (eliminar) el reporte actual
+  // Función para ir al reporte anterior
+  const handlePrev = () => {
+    if (reports.length === 0) return;
+    setIndex((prev) => (prev - 1 >= 0 ? prev - 1 : prev));
+  };
+
+  // ✅ Función para rechazar el reporte actual (mejorada)
   const handleRechazar = async () => {
-    if (!reporteActual) return; // Si no hay reporte, no hace nada
-    await borrarReporte(reporteActual.id); // Llama a la función para borrar el reporte
-    setMensaje("Alerta Rechazada"); // Muestra mensaje temporal
-    setTimeout(() => setMensaje(""), 2000); // Oculta mensaje después de 2 segundos
-    // Si era el último reporte y no es el primero, retrocede el índice
-    if (index === reports.length - 1 && index > 0) {
-      setIndex(index - 1);
+    if (!reporteActual) return;
+    
+    // Confirmar antes de eliminar
+    if (!window.confirm(`¿Estás seguro de que quieres rechazar esta alerta?`)) {
+      return;
+    }
+
+    const exito = await borrarReporte(reporteActual.id);
+    if (exito) {
+      setMensaje("✅ Alerta Rechazada");
+      setTimeout(() => setMensaje(""), 2000);
     }
   };
 
-  // Renderizado del componente
+  // ✅ Mostrar loading mientras verifica
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f5f5f5'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          padding: '2rem',
+          backgroundColor: 'white',
+          borderRadius: '10px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+        }}>
+          <h2>🔄 Cargando validación de alertas...</h2>
+          <p>Verificando permisos y obteniendo datos</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ Si no hay usuario autenticado, no renderizar
+  if (!currentUser) {
+    return null;
+  }
+
   return (
-    // Contenedor principal con fondo y altura mínima
-    <div
-      className="validar-alertas-fondo"
-      style={{ position: "relative", minHeight: "100vh" }}
-    >
-      {/* Imagen de fondo principal */}
-      <img
-        src={LogValidarAlerta}
-        alt="Fondo"
-        className="validar-alertas-bg"
-      />
-      {/* Si hay mensaje, lo muestra como mensaje flotante */}
-      {mensaje && <div className="mensaje-validar-alerta">{mensaje}</div>}
-      {/* Header superior con logo y menú de usuario */}
+    <div className="validar-alertas-fondo" style={{ position: "relative", minHeight: "100vh" }}>
+      {/* ✅ Mensaje temporal mejorado */}
+      {mensaje && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: mensaje.includes('✅') ? '#d4edda' : '#f8d7da',
+          color: mensaje.includes('✅') ? '#155724' : '#721c24',
+          padding: '15px 20px',
+          borderRadius: '5px',
+          border: `1px solid ${mensaje.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`,
+          zIndex: 1000,
+          fontWeight: 'bold'
+        }}>
+          {mensaje}
+        </div>
+      )}
+
+      <img src={LogValidarAlerta} alt="Fondo" className="validar-alertas-bg" />
+      
       <header className="menu-admin-header">
         <div className="menu-admin-logo">
-          {/* Logo de la ciudad */}
           <img src={LogFondo} alt="Logo Quito" className="logo-quito" />
-          {/* Título de la app */}
           <span className="ponte-once">
-            <span className="ponte">¡PONTE</span>{" "}
-            <span className="once">ONCE!</span>
+            <span className="ponte">¡PONTE</span> <span className="once">ONCE!</span>
           </span>
         </div>
-        {/* Menú de usuario con nombre y opciones */}
+        
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
-          <span className="nombre-usuario">{users?.name}</span>
-          {/* Botón para desplegar el menú de usuario */}
+          <span className="nombre-usuario">
+            {currentUser?.name}
+            <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '5px' }}>
+              (Admin)
+            </span>
+          </span>
+          
           <button
             className="icono-desplegar-btn"
             onClick={() => setMenuAbierto((v) => !v)}
@@ -110,95 +354,103 @@ const ValidarAlertas = ({ reports, usersList, users, incidents, borrarReporte })
           >
             <span className="icono-desplegar">▼</span>
           </button>
-          {/* Menú desplegable de usuario */}
+
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
-              <button className="menu-item" onClick={() => { setMenuAbierto(false); navigate('/informacion-usuarioAdm'); }}>Mi cuenta</button>
-              <button className="menu-item" onClick={() => {localStorage.removeItem("usuario"); navigate("/")}}>Cerrar Sesión</button>
+              <button 
+                className="menu-item" 
+                onClick={() => { 
+                  setMenuAbierto(false); 
+                  navigateWithAuth('/informacion-usuarioAdm'); 
+                }}
+              >
+                Mi cuenta
+              </button>
+              <button 
+                className="menu-item" 
+                onClick={() => {
+                  setMenuAbierto(false);
+                  logout();
+                }}
+              >
+                Cerrar Sesión
+              </button>
             </div>
           )}
         </div>
       </header>
-      {/* Cuerpo principal de la sección */}
+
       <main className="validar-alertas-main">
-        {/* Contenedor del título y el megáfono */}
         <div className="validar-alertas-titulo-container">
-          {/* Imagen de megáfono decorativa para la sección */}
-          <img
-            src={LogMegafono}
-            alt="Megáfono"
-            className="validar-alertas-megafono"
-          />
-          {/* Título principal de la sección */}
+          <img src={LogMegafono} alt="Megáfono" className="validar-alertas-megafono" />
           <h1 className="validar-alertas-titulo">Validación de alertas</h1>
         </div>
-        {/* Si existe un reporte actual, muestra la tarjeta con la información */}
+        
         {reporteActual ? (
           <div className="validar-alertas-card">
-            {/* Botón para ir al reporte anterior, deshabilitado si es el primero */}
             <button
               className="validar-alertas-arrow left"
-              onClick={handlePrev} // Llama a la función para retroceder
-              disabled={index === 0} // Deshabilita si está en el primer reporte
+              onClick={handlePrev}
+              disabled={index === 0}
             >
-              &#9664; {/* Flecha izquierda (carácter unicode) */}
+              &#9664;
             </button>
-            {/* Contenedor de la información del reporte actual */}
+            
             <div className="validar-alertas-info">
-              {/* Muestra el nombre del usuario asociado al reporte, o 'Desconocido' si no se encuentra */}
               <div>
                 <b>Nombre de usuario:</b> {usuario ? usuario.name : "Desconocido"}
               </div>
-              {/* Muestra el tipo de alerta, o 'Otro' si no se encuentra el incidente */}
               <div>
                 <b>Tipo de alerta:</b> {incidente ? incidente.type : "Otro"}
               </div>
-              {/* Muestra la fecha y hora del reporte */}
               <div>
                 <b>Fecha y hora:</b> {reporteActual.date + " " + reporteActual.time}
               </div>
-              {/* Muestra la descripción del reporte */}
               <div>
                 <b>Descripción:</b> {reporteActual.description}
               </div>
-              {/* Muestra la ubicación del reporte */}
               <div>
                 <b>Ubicación:</b> {reporteActual.location}
               </div>
+              <div>
+                <b>Estado:</b> 
+                <span style={{
+                  color: reporteActual.status === 'nuevo' ? '#dc3545' : '#28a745',
+                  fontWeight: 'bold',
+                  marginLeft: '5px'
+                }}>
+                  {reporteActual.status}
+                </span>
+              </div>
             </div>
-            {/* Botón para ir al siguiente reporte, deshabilitado si es el último */}
+            
             <button
               className="validar-alertas-arrow right"
-              onClick={handleNext} // Llama a la función para avanzar
-              disabled={index === reports.length - 1} // Deshabilita si está en el último reporte
+              onClick={handleNext}
+              disabled={index === reports.length - 1}
             >
-              &#9654; {/* Flecha derecha (carácter unicode) */}
+              &#9654;
             </button>
           </div>
         ) : (
-          // Si no hay reportes, muestra un mensaje centrado
-          <div
-            className="validar-alertas-card"
-            style={{ textAlign: "center", width: "100%" }}
-          >
+          <div className="validar-alertas-card" style={{ textAlign: "center", width: "100%" }}>
             No hay alertas para validar
           </div>
         )}
-        {/* Botones de acción debajo de la tarjeta */}
+        
         <div className="validar-alertas-botones">
-          {/* Botón para rechazar (eliminar) el reporte actual, deshabilitado si no hay reporte */}
           <button
             className="btn-rechazar"
-            onClick={handleRechazar} // Llama a la función para rechazar
-            disabled={!reporteActual} // Deshabilita si no hay reporte actual
+            onClick={handleRechazar}
+            disabled={!reporteActual}
           >
             Rechazar <span className="icon-cross">❌</span>
           </button>
         </div>
-        {/* Botón para regresar al menú de administración */}
+        
         <button
           className="btn-regresar"
-          onClick={() => navigate("/menu-administracion")}
+          onClick={() => navigateWithAuth("/menu-administracion")}
         >
           REGRESAR
         </button>
@@ -207,5 +459,4 @@ const ValidarAlertas = ({ reports, usersList, users, incidents, borrarReporte })
   );
 };
 
-// Exporta el componente para su uso en otras partes de la app
 export default ValidarAlertas;
