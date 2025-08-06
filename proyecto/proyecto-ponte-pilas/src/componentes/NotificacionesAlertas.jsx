@@ -37,10 +37,20 @@ const NotificacionesAlertas = () => {
   const [nuevoTipoColor, setNuevoTipoColor] = useState("#000000");
   const [nuevoTipoIcon, setNuevoTipoIcon] = useState("");
 
-  // Modal de edición
+  // Modal de edición de reporte
   const [modalEditar, setModalEditar] = useState(false);
   const [reporteEditar, setReporteEditar] = useState(null);
   const [nuevoTipo, setNuevoTipo] = useState("");
+
+  // ✅ NUEVO: Estados para gestión de tipos de incidentes
+  const [mostrarIncidentes, setMostrarIncidentes] = useState(false);
+  const [modalEditarIncidente, setModalEditarIncidente] = useState(false);
+  const [incidenteEditar, setIncidenteEditar] = useState(null);
+  const [editarIncidenteData, setEditarIncidenteData] = useState({
+    type: "",
+    color: "#000000",
+    icon: ""
+  });
 
   // ✅ URL del backend
   const baseURL = "http://localhost:8000/";
@@ -224,6 +234,74 @@ const NotificacionesAlertas = () => {
     }
   };
 
+  // ✅ NUEVO: Función para abrir modal de edición de incidente
+  const abrirModalEditarIncidente = (incidente) => {
+    setIncidenteEditar(incidente);
+    setEditarIncidenteData({
+      type: incidente.type,
+      color: incidente.color,
+      icon: incidente.icon
+    });
+    setModalEditarIncidente(true);
+  };
+
+  // ✅ NUEVO: Función para guardar cambios en incidente
+  const guardarCambiosIncidente = async () => {
+    if (!editarIncidenteData.type.trim()) {
+      setMensaje("❌ El nombre del tipo es requerido");
+      setTimeout(() => setMensaje(""), 3000);
+      return;
+    }
+
+    try {
+      await authenticatedRequest('PUT', `incidents/${incidenteEditar.id}/update`, editarIncidenteData);
+
+      setModalEditarIncidente(false);
+      setIncidenteEditar(null);
+      setEditarIncidenteData({
+        type: "",
+        color: "#000000",
+        icon: ""
+      });
+      
+      setMensaje("✅ Tipo de incidente actualizado exitosamente");
+      setTimeout(() => setMensaje(""), 3000);
+      
+      // Recargar datos
+      await loadAllData();
+
+    } catch (error) {
+      console.error('Error actualizando tipo de incidente:', error);
+      setMensaje("❌ Error al actualizar el tipo de incidente");
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
+  // ✅ NUEVO: Función para eliminar incidente
+  const eliminarIncidente = async (incidente) => {
+    const confirmacion = window.confirm(
+      `¿Estás seguro de eliminar el tipo de incidente "${incidente.type}"?\n\n` +
+      `ADVERTENCIA: También se eliminarán todos los reportes asociados a este tipo.`
+    );
+
+    if (!confirmacion) return;
+
+    try {
+      await authenticatedRequest('DELETE', `incidents/${incidente.id}/delete`);
+      
+      setMensaje("✅ Tipo de incidente eliminado exitosamente");
+      setTimeout(() => setMensaje(""), 3000);
+      
+      // Recargar datos
+      await loadAllData();
+
+    } catch (error) {
+      console.error('Error eliminando tipo de incidente:', error);
+      setMensaje("❌ Error al eliminar el tipo de incidente");
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
   // ✅ Función para guardar cambio de tipo de reporte
   const guardarNuevoTipo = async () => {
     if (!nuevoTipo || !reporteEditar) {
@@ -280,7 +358,7 @@ const NotificacionesAlertas = () => {
     navigate(route);
   };
 
-  // Maneja la apertura del modal de edición
+  // Maneja la apertura del modal de edición de reporte
   const handleEditarReporte = (notificacion) => {
     setReporteEditar(notificacion);
     setNuevoTipo(""); // Limpiar selección
@@ -438,105 +516,246 @@ const NotificacionesAlertas = () => {
       <main className="notificaciones-alertas-main">
         <h1 className="notificaciones-alertas-titulo">Notificaciones de Alertas</h1>
         
-        {/* Primer ComboBox */}
-        <div style={{ margin: "1rem 0" }}>
-          <select
-            className="combo-filtro-notificaciones"
-            value={columnaFiltro}
-            onChange={e => setColumnaFiltro(e.target.value)}
+        {/* ✅ NUEVO: Botón para alternar entre vista de reportes e incidentes */}
+        <div style={{ margin: "1rem 0", display: "flex", gap: "1rem", alignItems: "center" }}>
+          <button
+            className={`btn-toggle ${!mostrarIncidentes ? 'active' : ''}`}
+            style={{
+              background: !mostrarIncidentes ? "linear-gradient(90deg,#ff512f,#dd2476)" : "#ccc",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "0.5rem 1.2rem",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+            onClick={() => setMostrarIncidentes(false)}
           >
-            <option value="">Filtrar por...</option>
-            {encabezados.map(e => (
-              <option key={e.value} value={e.value}>{e.label}</option>
-            ))}
-          </select>
+            Ver Reportes
+          </button>
+          <button
+            className={`btn-toggle ${mostrarIncidentes ? 'active' : ''}`}
+            style={{
+              background: mostrarIncidentes ? "linear-gradient(90deg,#ff512f,#dd2476)" : "#ccc",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "0.5rem 1.2rem",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+            onClick={() => setMostrarIncidentes(true)}
+          >
+            Gestionar Tipos de Incidentes
+          </button>
         </div>
 
-        {/* Segundo ComboBox, solo si hay columna seleccionada */}
-        {columnaFiltro && (
-          <div style={{ margin: "1rem 0" }}>
-            <select
-              className="combo-filtro-notificaciones"
-              value={valorFiltro}
-              onChange={e => setValorFiltro(e.target.value)}
-            >
-              <option value="">Selecciona un valor...</option>
-              {opcionesFiltro.map((op, idx) => (
-                <option key={idx} value={op}>{op}</option>
-              ))}
-            </select>
-          </div>
+        {/* Filtros (solo se muestran en la vista de reportes) */}
+        {!mostrarIncidentes && (
+          <>
+            {/* ✅ CORREGIDO: Filtros en línea horizontal con estilos más específicos */}
+            <div style={{ 
+              margin: "1rem 0", 
+              display: "flex", 
+              flexDirection: "row",
+              gap: "1rem", 
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "wrap",
+              width: "100%"
+            }}>
+              {/* Primer ComboBox */}
+              <select
+                className="combo-filtro-notificaciones"
+                value={columnaFiltro}
+                onChange={e => setColumnaFiltro(e.target.value)}
+                style={{ 
+                  minWidth: "200px",
+                  maxWidth: "250px",
+                  display: "inline-block",
+                  marginBottom: "0"
+                }}
+              >
+                <option value="">Filtrar por...</option>
+                {encabezados.map(e => (
+                  <option key={e.value} value={e.value}>{e.label}</option>
+                ))}
+              </select>
+
+              {/* ✅ CORREGIDO: Segundo ComboBox con estilos más específicos */}
+              {columnaFiltro && (
+                <select
+                  className="combo-filtro-notificaciones"
+                  value={valorFiltro}
+                  onChange={e => setValorFiltro(e.target.value)}
+                  style={{ 
+                    minWidth: "200px",
+                    maxWidth: "250px",
+                    display: "inline-block",
+                    marginBottom: "0",
+                    marginLeft: "0"
+                  }}
+                >
+                  <option value="">Selecciona un valor...</option>
+                  {opcionesFiltro.map((op, idx) => (
+                    <option key={idx} value={op}>{op}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </>
         )}
 
-        <button 
-          className="btn-regresar" 
-          onClick={() => navigateWithAuth("/menu-administracion")}
-        >
-          REGRESAR
-        </button>
-        
-        <button
-          className="btn-nuevo-tipo"
-          style={{
-            background: "linear-gradient(90deg,#ff512f,#dd2476)",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "0.5rem 1.2rem",
-            fontWeight: "bold",
-            cursor: "pointer",
-            marginLeft: "1rem"
-          }}
-          onClick={() => setModalNuevoTipo(true)}
-        >
-          Crear nuevo tipo de reporte
-        </button>
+        {/* ✅ MODIFICADO: Botones condicionales según la vista */}
+        <div style={{ display: "flex", gap: "1rem", margin: "1rem 0" }}>
+          <button 
+            className="btn-regresar" 
+            onClick={() => navigateWithAuth("/menu-administracion")}
+          >
+            REGRESAR
+          </button>
+          
+          {/* ✅ NUEVO: Botón solo visible en vista de tipos de incidentes */}
+          {mostrarIncidentes && (
+            <button
+              className="btn-nuevo-tipo"
+              style={{
+                background: "linear-gradient(90deg,#ff512f,#dd2476)",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                padding: "0.5rem 1.2rem",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
+              onClick={() => setModalNuevoTipo(true)}
+            >
+              Crear nuevo tipo de reporte
+            </button>
+          )}
+        </div>
 
+
+        {/* ✅ TABLA CONDICIONAL: Reportes o Incidentes */}
         <div className="notificaciones-alertas-tabla-container">
-          <table className="notificaciones-alertas-tabla">
-            <thead>
-              <tr>
-                <th>Nombre de usuario</th>
-                <th>Tipo de alerta</th>
-                <th>Descripcion</th>
-                <th>Fecha y Hora</th>
-                <th>Ubicación</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {notificacionesFiltradas && notificacionesFiltradas.length > 0 ? (
-                notificacionesFiltradas.map((n, idx) => (
-                  <tr key={n.id || idx}>
-                    <td>{n.nombre}</td>
-                    <td>{n.tipo}</td>
-                    <td>{n.descripcion}</td>
-                    <td>{n.fechaHora}</td>
-                    <td>{n.ubicacion}</td>
-                    <td>
-                      <span style={{
-                        color: n.status === 'nuevo' ? '#dc3545' : '#28a745',
-                        fontWeight: 'bold'
-                      }}>
-                        {n.status}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className="btn-editar-reporte"
-                        onClick={() => handleEditarReporte(n)}
-                      >
-                        Editar reporte
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr><td colSpan={7} style={{ textAlign: 'center' }}>No hay notificaciones</td></tr>
-              )}
-            </tbody>
-          </table>
+          {!mostrarIncidentes ? (
+            // TABLA DE REPORTES (ORIGINAL)
+            <table className="notificaciones-alertas-tabla">
+              <thead>
+                <tr>
+                  <th>Nombre de usuario</th>
+                  <th>Tipo de alerta</th>
+                  <th>Descripcion</th>
+                  <th>Fecha y Hora</th>
+                  <th>Ubicación</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {notificacionesFiltradas && notificacionesFiltradas.length > 0 ? (
+                  notificacionesFiltradas.map((n, idx) => (
+                    <tr key={n.id || idx}>
+                      <td>{n.nombre}</td>
+                      <td>{n.tipo}</td>
+                      <td>{n.descripcion}</td>
+                      <td>{n.fechaHora}</td>
+                      <td>{n.ubicacion}</td>
+                      <td>
+                        <span style={{
+                          color: n.status === 'nuevo' ? '#dc3545' : '#28a745',
+                          fontWeight: 'bold'
+                        }}>
+                          {n.status}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className="btn-editar-reporte"
+                          onClick={() => handleEditarReporte(n)}
+                        >
+                          Editar reporte
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan={7} style={{ textAlign: 'center' }}>No hay notificaciones</td></tr>
+                )}
+              </tbody>
+            </table>
+          ) : (
+            // ✅ NUEVA TABLA DE TIPOS DE INCIDENTES
+            <table className="notificaciones-alertas-tabla">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tipo de Incidente</th>
+                  <th>Color</th>
+                  <th>Icono</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {incidents && incidents.length > 0 ? (
+                  incidents.map((incidente) => (
+                    <tr key={incidente.id}>
+                      <td>{incidente.id}</td>
+                      <td>{incidente.type}</td>
+                      <td>
+                        <div style={{
+                          width: '20px',
+                          height: '20px',
+                          backgroundColor: incidente.color,
+                          borderRadius: '50%',
+                          display: 'inline-block',
+                          border: '1px solid #ccc'
+                        }}></div>
+                        <span style={{ marginLeft: '10px' }}>{incidente.color}</span>
+                      </td>
+                      <td>{incidente.icon}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button
+                            className="btn-editar-reporte"
+                            style={{
+                              background: "#007bff",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "4px",
+                              padding: "0.3rem 0.6rem",
+                              cursor: "pointer",
+                              fontSize: "0.8rem"
+                            }}
+                            onClick={() => abrirModalEditarIncidente(incidente)}
+                          >
+                            ✏️ Editar
+                          </button>
+                          <button
+                            className="btn-eliminar-incidente"
+                            style={{
+                              background: "#dc3545",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "4px",
+                              padding: "0.3rem 0.6rem",
+                              cursor: "pointer",
+                              fontSize: "0.8rem"
+                            }}
+                            onClick={() => eliminarIncidente(incidente)}
+                          >
+                            🗑️ Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan={5} style={{ textAlign: 'center' }}>No hay tipos de incidentes</td></tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Modal para crear nuevo tipo de incidente */}
@@ -591,7 +810,67 @@ const NotificacionesAlertas = () => {
           </div>
         )}
 
-        {/* Modal para editar el tipo de alerta */}
+        {/* ✅ NUEVO: Modal para editar tipo de incidente */}
+        {modalEditarIncidente && (
+          <div className="modal-overlay" style={{
+            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+            background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
+          }}>
+            <div className="modal-content" style={{
+              background: "#fff", padding: "2rem", borderRadius: "10px", minWidth: "320px", maxWidth: "90vw", boxShadow: "0 2px 16px rgba(0,0,0,0.2)"
+            }}>
+              <h3>Editar tipo de incidente</h3>
+              <form onSubmit={e => { e.preventDefault(); guardarCambiosIncidente(); }}>
+                <div style={{ marginBottom: "1rem" }}>
+                  <label>Nombre del tipo:</label>
+                  <input
+                    type="text"
+                    value={editarIncidenteData.type}
+                    onChange={e => setEditarIncidenteData({...editarIncidenteData, type: e.target.value})}
+                    required
+                    style={{ width: "100%", padding: "0.5rem", marginTop: "0.3rem" }}
+                  />
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                  <label>Color:</label>
+                  <input
+                    type="color"
+                    value={editarIncidenteData.color}
+                    onChange={e => setEditarIncidenteData({...editarIncidenteData, color: e.target.value})}
+                    style={{ marginLeft: "1rem" }}
+                  />
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                  <label>Icono (URL o nombre de archivo):</label>
+                  <input
+                    type="text"
+                    value={editarIncidenteData.icon}
+                    onChange={e => setEditarIncidenteData({...editarIncidenteData, icon: e.target.value})}
+                    style={{ width: "100%", padding: "0.5rem", marginTop: "0.3rem" }}
+                  />
+                </div>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+                  <button type="submit" className="btn-editar-reporte">
+                    Guardar Cambios
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn-editar-reporte" 
+                    onClick={() => {
+                      setModalEditarIncidente(false);
+                      setIncidenteEditar(null);
+                      setEditarIncidenteData({type: "", color: "#000000", icon: ""});
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal para editar el tipo de alerta de un reporte */}
         {modalEditar && (
           <div className="modal-overlay" style={{
             position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
