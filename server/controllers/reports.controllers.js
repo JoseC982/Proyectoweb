@@ -1,16 +1,39 @@
+/**
+ * CONTROLADOR DE REPORTES
+ * Maneja todas las operaciones CRUD relacionadas con los reportes de incidentes
+ * 
+ * Los reportes son las denuncias/alertas que crean los usuarios sobre eventos
+ * que observan en la ciudad. Incluye información de ubicación, descripción,
+ * fecha/hora y tipo de incidente.
+ * 
+ * Funcionalidades implementadas:
+ * - Consulta de reportes con filtros diversos
+ * - Creación, edición y eliminación de reportes
+ * - Filtros por usuario, tipo de incidente y rango de fechas
+ * - Validaciones de permisos y propiedad de recursos
+ */
+
 const Report = require('../models/reports.models');
 
-// E1. Obtener todos los reportes (con filtros opcionales)
+/**
+ * CONTROLADOR PARA OBTENER TODOS LOS REPORTES
+ * Permite filtrar reportes por usuario, tipo de incidente y rango de fechas
+ * Los filtros se pasan como query parameters en la URL
+ */
 exports.getAllReports = async (req, res) => {
   try {
+    // Extraer parámetros de filtro desde query params
     const { userId, incidentTypeId, from, to } = req.query;
     const where = {};
+    
+    // Aplicar filtros según los parámetros recibidos
     if (userId) where.userId = userId;
     if (incidentTypeId) where.incidentTypeId = incidentTypeId;
     if (from && to) where.date = { $between: [from, to] };
     else if (from) where.date = { $gte: from };
     else if (to) where.date = { $lte: to };
 
+    // Ejecutar consulta con los filtros aplicados
     const reports = await Report.findAll({ where });
     res.json(reports);
   } catch (error) {
@@ -18,9 +41,13 @@ exports.getAllReports = async (req, res) => {
   }
 };
 
-// E2. Obtener reporte por ID
+/**
+ * CONTROLADOR PARA OBTENER REPORTE POR ID
+ * Busca y devuelve un reporte específico usando su ID único
+ */
 exports.getReportById = async (req, res) => {
   try {
+    // Buscar reporte por clave primaria (ID)
     const report = await Report.findByPk(req.params.id);
     if (!report) return res.status(404).json({ error: 'Reporte no encontrado' });
     res.json(report);
