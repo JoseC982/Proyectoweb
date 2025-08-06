@@ -27,6 +27,13 @@ export default function MenuUsuario({ users, fetchAllData }) {
   const [comboAbierto, setComboAbierto] = useState(false); // Estado para mostrar/ocultar el menú de incidentes
   const menuRef = useRef(null); // <--- Añade el ref para el menú
 
+  // ✅ NUEVO: Estado para el modal de confirmación de eliminación
+  const [modalEliminarOpen, setModalEliminarOpen] = useState(false);
+  const [reporteAEliminar, setReporteAEliminar] = useState(null);
+
+  // ✅ URL base del backend
+  const baseURL = "http://localhost:8000/";
+
   // Para el formulario de crear/editar reporte
   const [form, setForm] = useState({
     incidentTypeId: "",
@@ -59,16 +66,30 @@ export default function MenuUsuario({ users, fetchAllData }) {
     }
   }, []);
 
-  // Cargar incidentes y reportes desde la API/db.json
+  // ✅ Cargar incidentes y reportes desde el backend
   useEffect(() => {
-    axios.get("http://localhost:3000/incidents")
+    // ✅ Cargar tipos de incidentes (ruta pública)
+    axios.get(`${baseURL}incidents/list`)
       .then(res => setIncidentes(res.data)) // Guarda los incidentes en el estado
-      .catch(() => setIncidentes([])); // Si hay error, deja el array vacío
+      .catch((err) => {
+        console.error('Error al cargar incidentes:', err);
+        setIncidentes([]); // Si hay error, deja el array vacío
+      });
 
-    axios.get("http://localhost:3000/reports")
+    // ✅ Cargar reportes (ruta protegida)
+    axios.get(`${baseURL}reports`)
       .then(res => setReportes(res.data)) // Guarda los reportes en el estado
-      .catch(() => setReportes([])); // Si hay error, deja el array vacío
-  }, []);
+      .catch((err) => {
+        console.error('Error al cargar reportes:', err);
+        setReportes([]); // Si hay error, deja el array vacío
+        // Si es error 401, limpiar sesión
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+          navigate("/loginAdmin");
+        }
+      });
+  }, [navigate, baseURL]);
 
   // Filtro de reportes
   let reportesFiltrados = reportes;
@@ -119,36 +140,92 @@ export default function MenuUsuario({ users, fetchAllData }) {
   // Validación: todos los campos deben estar llenos para crear/editar
   const formCompleto = form.incidentTypeId && form.description && form.location && form.lat !== null && form.lng !== null && form.time && form.date;
 
-  // Guarda (crea o edita) un reporte
+  // ✅ Guarda (crea o edita) un reporte - BACKEND
   const guardarReporte = () => {
     if (!formCompleto) return;
+
+    const reporteData = {
+      ...form,
+      userId: users.id,
+    };
+
     if (editando) {
-      axios.put(`http://localhost:3000/reports/${editando}`, {
-        ...form,
-        userId: users.id,
-      }).then(res => {
-        setReportes(prev => prev.map(r => r.id === editando ? res.data : r));
-        setModalOpen(false);
-        if (fetchAllData) fetchAllData(); // <--- Cambia aquí
-      });
+      // ✅ Actualizar reporte existente
+      axios.put(`${baseURL}reports/${editando}`, reporteData)
+        .then(res => {
+          setReportes(prev => prev.map(r => r.id === editando ? res.data : r));
+          setModalOpen(false);
+          if (fetchAllData) fetchAllData(); // Actualizar datos globales
+        })
+        .catch((err) => {
+          console.error('Error al actualizar reporte:', err);
+          if (err.response && err.response.status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            navigate("/loginAdmin");
+          }
+        });
     } else {
-      axios.post("http://localhost:3000/reports", {
-        ...form,
-        userId: users.id,
-        status: "nuevo",
-      }).then(res => {
-        setReportes(prev => [...prev, res.data]);
-        setModalOpen(false);
-        if (fetchAllData) fetchAllData(); // <--- Cambia aquí
-      });
+      // ✅ Crear nuevo reporte
+      axios.post(`${baseURL}reports`, {
+        ...reporteData,
+        status: "nuevo", // Campo adicional
+      })
+        .then(res => {
+          setReportes(prev => [...prev, res.data]);
+          setModalOpen(false);
+          if (fetchAllData) fetchAllData(); // Actualizar datos globales
+        })
+        .catch((err) => {
+          console.error('Error al crear reporte:', err);
+          if (err.response && err.response.status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            navigate("/loginAdmin");
+          }
+        });
     }
   };
 
-  // Elimina un reporte
-  const eliminarReporte = (id) => {
-    axios.delete(`http://localhost:3000/reports/${id}`).then(() => {
-      setReportes(prev => prev.filter(r => r.id !== id));
-    });
+  // ✅ NUEVO: Abre el modal de confirmación para eliminar
+  const abrirModalEliminar = (reporte) => {
+    setReporteAEliminar(reporte);
+    setModalEliminarOpen(true);
+  };
+
+  // ✅ NUEVO: Cancela la eliminación
+  const cancelarEliminacion = () => {
+    setReporteAEliminar(null);
+    setModalEliminarOpen(false);
+  };
+
+  // ✅ MODIFICADO: Confirma y elimina un reporte - BACKEND
+  const confirmarEliminacion = () => {
+    if (!reporteAEliminar) return;
+
+    axios.delete(`${baseURL}reports/${reporteAEliminar.id}`)
+      .then(() => {
+        setReportes(prev => prev.filter(r => r.id !== reporteAEliminar.id));
+        setMarkerSeleccionado(null); // Cerrar InfoWindow si está abierto
+        if (fetchAllData) fetchAllData(); // Actualizar datos globales
+        // Cerrar modal de confirmación
+        setModalEliminarOpen(false);
+        setReporteAEliminar(null);
+      })
+      .catch((err) => {
+        console.error('Error al eliminar reporte:', err);
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+          navigate("/loginAdmin");
+        } else if (err.response && err.response.status === 404) {
+          // Reporte ya no existe, eliminarlo del estado local
+          setReportes(prev => prev.filter(r => r.id !== reporteAEliminar.id));
+          setMarkerSeleccionado(null);
+          setModalEliminarOpen(false);
+          setReporteAEliminar(null);
+        }
+      });
   };
 
   // --- FUNCIONES DE MANIPULACIÓN DEL MAPA ---
@@ -201,8 +278,13 @@ export default function MenuUsuario({ users, fetchAllData }) {
     navigate("/informacion");
   };
 
-  // Función para manejar el cierre de sesión
+  // ✅ Función para manejar el cierre de sesión
   const handleCerrarSesion = () => {
+    // Limpiar localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    // Limpiar axios headers
+    delete axios.defaults.headers.common['Authorization'];
     setMenuAbierto(false);
     navigate("/");
   };
@@ -221,6 +303,12 @@ export default function MenuUsuario({ users, fetchAllData }) {
   function getColorByIncidentId(id) {
     const incidente = incidentes.find(i => String(i.id) === String(id));
     return incidente?.color || "#bdbdbd";
+  }
+
+  // ✅ Verificar autenticación
+  if (!users) {
+    navigate("/loginAdmin");
+    return null;
   }
 
   // Renderizado del componente
@@ -344,7 +432,7 @@ export default function MenuUsuario({ users, fetchAllData }) {
                     {String(markerSeleccionado.userId) === String(users.id) && (
                       <div style={{ marginTop: 8 }}>
                         <button className="btn-panel" onClick={() => abrirModalEditar(markerSeleccionado)}>Editar</button>
-                        <button className="btn-panel btn-eliminar" onClick={() => eliminarReporte(markerSeleccionado.id)}>Eliminar</button>
+                        <button className="btn-panel btn-eliminar" onClick={() => abrirModalEliminar(markerSeleccionado)}>Eliminar</button>
                       </div>
                     )}
                   </div>
@@ -416,6 +504,25 @@ export default function MenuUsuario({ users, fetchAllData }) {
           </div>
         </div>
       )}
+
+      {/* ✅ NUEVO: Modal de confirmación para eliminar reporte */}
+      {modalEliminarOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Confirmar eliminación</h2>
+            <p>Está a punto de borrar un reporte generado por usted, ¿está seguro?</p>
+            <div className="modal-botones">
+              <button className="btn-panel btn-eliminar" onClick={confirmarEliminacion}>
+                Confirmar
+              </button>
+              <button className="btn-panel" onClick={cancelarEliminacion}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Tabla de reportes propios */}
       {filtro === "mios" && (
         <div className="tabla-reportes">
@@ -441,7 +548,7 @@ export default function MenuUsuario({ users, fetchAllData }) {
                   <td>{r.time}</td>
                   <td>
                     <button className="btn-panel" onClick={() => abrirModalEditar(r)}>Editar</button>
-                    <button className="btn-panel btn-eliminar" onClick={() => eliminarReporte(r.id)}>Eliminar</button>
+                    <button className="btn-panel btn-eliminar" onClick={() => abrirModalEliminar(r)}>Eliminar</button>
                   </td>
                 </tr>
               ))}
@@ -452,4 +559,3 @@ export default function MenuUsuario({ users, fetchAllData }) {
     </div>
   );
 }
-
