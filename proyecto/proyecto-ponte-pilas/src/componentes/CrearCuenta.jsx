@@ -1,33 +1,51 @@
-// Importa React y el hook useState para manejar el estado local
+/**
+ * COMPONENTE CREAR CUENTA - REGISTRO DE USUARIOS
+ * Formulario completo para el registro de nuevos usuarios en el sistema
+ * 
+ * Funcionalidades principales:
+ * - Registro de usuarios con validación de campos
+ * - Detección automática de primer usuario (se convierte en admin)
+ * - Validación de email único y contraseñas seguras
+ * - Interfaz responsive con toggle de visibilidad de contraseña
+ * - Navegación automática después del registro exitoso
+ * 
+ * Campos del formulario:
+ * - Información personal: nombre, email, fecha de nacimiento
+ * - Credenciales: nombre de usuario, contraseña
+ * - Biografía opcional del usuario
+ */
+
+// Importa React y hooks necesarios para estado y efectos
 import React, { useState, useEffect } from "react";
-// Importa useNavigate y Link de react-router-dom para navegación
+// Importa herramientas de navegación de React Router
 import { useNavigate, Link } from "react-router-dom";
-// Importa los estilos CSS para el formulario de registro
+// Importa estilos compartidos con el componente de login
 import '../estilos/LoginAdmin.css';
-// Importa la imagen del logo de la policía
-import policia from '../recursos/policia-logo.png';
-// Importa la imagen del logo de usuario
-import user_logo from '../recursos/user-logo.png';
-// Importa axios para hacer peticiones HTTP
+// Importa recursos gráficos para la interfaz
+import policia from '../recursos/policia-logo.png';    // Logo institucional de la policía
+import user_logo from '../recursos/user-logo.png';     // Icono genérico de usuario
+// Importa axios para comunicación con el backend
 import axios from "axios";
 
-// Define el componente funcional CrearCuenta
+/**
+ * DEFINICIÓN DEL COMPONENTE CREAR CUENTA
+ * Maneja todo el flujo de registro de nuevos usuarios
+ */
 const CrearCuenta = () => {
-    // Hook para navegar entre rutas
+    // Hook de navegación para redireccionar después del registro
     const navigate = useNavigate();
-    // Estado para mostrar/ocultar la contraseña
-    const [showPassword, setShowPassword] = useState(false);
-    // Estado para el campo de email
-    const [email, setEmail] = useState('');
-    // Estado para el campo de contraseña
-    const [password, setPassword] = useState('');
-    // Estado para el campo de nombre
-    const [name, setName] = useState('');
-    // Estado para el campo de fecha de nacimiento
-    const [fecha, setFecha] = useState('');
-    // Estado para el campo de nombre de usuario
-    const [username, setUsername] = useState('');
-    // Estado para el campo de biografía
+    
+    /**
+     * ESTADOS DEL FORMULARIO
+     * Cada campo del formulario tiene su propio estado para un control granular
+     */
+    const [showPassword, setShowPassword] = useState(false);  // Mostrar/ocultar contraseña
+    const [email, setEmail] = useState('');                   // Email del usuario
+    const [password, setPassword] = useState('');             // Contraseña
+    const [name, setName] = useState('');                     // Nombre completo
+    const [fecha, setFecha] = useState('');                   // Fecha de nacimiento
+    const [username, setUsername] = useState('');             // Nombre de usuario único
+    const [bio, setBio] = useState('');                       // Biografía opcional
     const [bio, setBio] = useState('');
 
     // ✅ Estados para modal y manejo de errores

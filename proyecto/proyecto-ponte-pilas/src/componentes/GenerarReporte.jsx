@@ -1,18 +1,41 @@
+/**
+ * COMPONENTE GENERAR REPORTE - FORMULARIO DE CREACIÓN DE REPORTES
+ * Permite a usuarios autenticados crear nuevos reportes de incidentes
+ * 
+ * Funcionalidades principales:
+ * - Formulario completo para reportar incidentes ciudadanos
+ * - Selección de tipo de incidente desde catálogo predefinido
+ * - Captura de ubicación con coordenadas GPS
+ * - Integración con Google Maps para selección de ubicación
+ * - Validación de campos obligatorios
+ * - Protección de rutas (solo usuarios autenticados)
+ * 
+ * Campos del formulario:
+ * - Tipo de incidente (selección desde catálogo)
+ * - Descripción detallada del evento
+ * - Ubicación (dirección y coordenadas)
+ * - Fecha y hora del incidente
+ * - Información del usuario reportante (automática)
+ */
+
 import React, { useState, useEffect } from "react";
-// Importa los estilos CSS para este componente
+// Importa estilos específicos del componente
 import "../estilos/GenerarReporte.css";
-// Importa los hooks de React Router para navegación y para obtener el estado enviado por la ruta
+// Importa hooks de React Router para navegación y estado de ubicación
 import { useLocation, useNavigate } from "react-router-dom";
-// Importa axios para hacer peticiones HTTP
+// Importa axios para comunicación con el backend
 import axios from "axios";
 
-// Componente principal para generar un reporte
+/**
+ * DEFINICIÓN DEL COMPONENTE GENERAR REPORTE
+ * Maneja la creación de nuevos reportes de incidentes
+ */
 export default function GenerarReporte() {
-  // Obtiene la información pasada por navegación (el reporte seleccionado)
+  // Obtiene información del estado de navegación (datos del reporte si viene de edición)
   const location = useLocation();
-  // Hook para navegar entre páginas
+  // Hook para navegación programática
   const navigate = useNavigate();
-  // Extrae el reporte seleccionado del estado de navegación
+  // Extrae datos del reporte si viene de una edición/navegación
   const reporte = location.state?.reporte;
 
   // ✅ NUEVO: Estados para verificación de autenticación

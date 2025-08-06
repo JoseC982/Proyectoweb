@@ -1,18 +1,48 @@
+/**
+ * COMPONENTE GESTIÓN USUARIOS - ADMINISTRACIÓN DE USUARIOS
+ * Panel administrativo para la gestión completa de usuarios del sistema
+ * 
+ * Funcionalidades principales:
+ * - Visualización de todos los usuarios registrados en el sistema
+ * - Acciones administrativas: silenciar/activar y eliminar usuarios
+ * - Filtrado y búsqueda de usuarios específicos
+ * - Protección de rutas (solo administradores)
+ * - Interfaz intuitiva con confirmaciones de acciones críticas
+ * 
+ * Operaciones disponibles:
+ * - Listar usuarios con información completa
+ * - Cambiar estado de usuarios (Activo/Silenciado)
+ * - Eliminar usuarios del sistema
+ * - Ver detalles completos de cada usuario
+ * 
+ * Seguridad:
+ * - Verificación de token JWT y rol de administrador
+ * - Confirmaciones para acciones destructivas
+ * - Validación de permisos en cada operación
+ */
+
 import React, { useRef, useEffect, useState } from "react";
 import "../estilos/GestionUsuarios.css";
+// Importa recursos gráficos para la interfaz administrativa
 import LogFondo from "../recursos/MenuAdm/LogFondo.png";
 import LogGestionUsuario from "../recursos/MenuAdm/LogGestionUsuario.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-// Componente principal de gestión de usuarios
+/**
+ * DEFINICIÓN DEL COMPONENTE GESTIÓN USUARIOS
+ * Maneja todas las operaciones administrativas sobre usuarios
+ */
 const GestionUsuarios = () => {
-  // Estados del componente
-  const [mensaje, setMensaje] = useState("");
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
-  const [menuAbierto, setMenuAbierto] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  /**
+   * ESTADOS DEL COMPONENTE
+   * Control de la interfaz y datos de usuarios
+   */
+  const [mensaje, setMensaje] = useState("");                    // Mensajes de feedback
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null); // Usuario seleccionado para acciones
+  const [menuAbierto, setMenuAbierto] = useState(false);         // Estado del menú desplegable
+  const [users, setUsers] = useState([]);                       // Lista de todos los usuarios
+  const [currentUser, setCurrentUser] = useState(null);         // Usuario administrador actual
   const [loading, setLoading] = useState(true);
   
   // Referencias y hooks

@@ -1,27 +1,46 @@
+/**
+ * COMPONENTE DE INFORMACIÓN Y EDICIÓN DE USUARIO PARA ADMINISTRADORES
+ * 
+ * Este componente permite a los administradores visualizar y editar su propia información personal
+ * con funcionalidades similares al componente de usuario regular pero con características administrativas.
+ * Incluye autenticación específica para administradores y un formulario completo de edición.
+ * 
+ * Funcionalidades principales:
+ * - Verificación de autenticación de administrador
+ * - Carga automática de datos del administrador actual
+ * - Formulario de edición con validaciones
+ * - Cambio de contraseña con modal específico
+ * - Actualización de información en base de datos
+ * - Navegación de regreso al menú de administración
+ * - Manejo de estados de carga y errores
+ * 
+ * @returns {JSX.Element} Componente de información y edición para administradores
+ */
+
 // Importa React y el hook useState para manejar el estado local
 import React, { useState, useEffect } from "react";
-// Importa los estilos CSS específicos para este componente
+// Importa los estilos CSS específicos para este componente de administrador
 import "../estilos/InformacionUsuarioAdm.css";
 // Importa los hooks de navegación y localización de rutas de React Router
 import { useNavigate, useLocation } from "react-router-dom";
-// Importa axios para hacer peticiones HTTP
+// Importa axios para hacer peticiones HTTP al backend
 import axios from "axios";
 
-// Exporta el componente funcional InformacionUsuario para admin
+// Exporta el componente funcional InformacionUsuarioAdm para administradores
 export default function InformacionUsuarioAdm() {
-  // Inicializa el hook de navegación
+  // Inicializa el hook de navegación para redirigir entre componentes
   const navigate = useNavigate();
 
-  // ✅ Estados para el usuario actual
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // ✅ Estados para el usuario administrador actual
+  const [currentUser, setCurrentUser] = useState(null); // Datos del administrador logueado
+  const [loading, setLoading] = useState(true); // Estado de carga inicial
 
-  // ✅ URL base del backend
+  // ✅ URL base del backend para las peticiones HTTP
   const baseURL = "http://localhost:8000/";
 
-  // Estado para controlar si los campos están en modo edición
+  // Estado para controlar si los campos del formulario están en modo edición o solo lectura
   const [edit, setEdit] = useState(false);
-  // Estado para mostrar mensajes temporales
+  // Estado para mostrar mensajes temporales de éxito o error
   const [mensaje, setMensaje] = useState("");
 
   // ✅ NUEVO: Estados para el modal de cambio de contraseña

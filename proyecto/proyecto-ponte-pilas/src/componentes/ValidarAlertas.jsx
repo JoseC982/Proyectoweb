@@ -1,18 +1,50 @@
+/**
+ * COMPONENTE VALIDAR ALERTAS - MODERACIÓN DE REPORTES
+ * Sistema administrativo para validar y moderar reportes ciudadanos
+ * 
+ * Funcionalidades principales:
+ * - Revisión individual de reportes pendientes de validación
+ * - Aprobación o rechazo de reportes con justificación
+ * - Navegación secuencial entre reportes no validados
+ * - Visualización completa de información del reporte
+ * - Actualización de estado de reportes (nuevo, validado, rechazado)
+ * - Protección de rutas (solo administradores)
+ * 
+ * Proceso de validación:
+ * 1. Mostrar reporte con todos sus detalles
+ * 2. Administrador revisa información y ubicación
+ * 3. Decide aprobar o rechazar el reporte
+ * 4. Guarda la decisión y pasa al siguiente reporte
+ * 
+ * Estados de reportes:
+ * - nuevo: Recién creado, pendiente de revisión
+ * - validado: Aprobado por administrador
+ * - rechazado: Rechazado por información incorrecta/falsa
+ */
+
 import React, { useState, useRef, useEffect } from "react";
 import "../estilos/ValidarAlertas.css";
+// Recursos gráficos para la interfaz de validación
 import LogFondo from "../recursos/MenuAdm/LogFondo.png";
 import LogValidarAlerta from "../recursos/MenuAdm/LogValidarAlerta.png";
 import LogMegafono from "../recursos/MenuAdm/LogMegafono.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+/**
+ * DEFINICIÓN DEL COMPONENTE VALIDAR ALERTAS
+ * Maneja el proceso de moderación y validación de reportes
+ */
 const ValidarAlertas = () => {
-  // Estados del componente
-  const [menuAbierto, setMenuAbierto] = useState(false);
-  const [mensaje, setMensaje] = useState("");
-  const [index, setIndex] = useState(0);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  /**
+   * ESTADOS DEL COMPONENTE
+   * Control de la interfaz y proceso de validación
+   */
+  const [menuAbierto, setMenuAbierto] = useState(false);       // Estado del menú desplegable
+  const [mensaje, setMensaje] = useState("");                  // Mensajes de feedback
+  const [index, setIndex] = useState(0);                       // Índice del reporte actual en revisión
+  const [currentUser, setCurrentUser] = useState(null);       // Usuario administrador actual
+  const [loading, setLoading] = useState(true);               // Estado de carga de datos
   
   // Estados para los datos
   const [reports, setReports] = useState([]);
