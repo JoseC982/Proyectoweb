@@ -1,31 +1,50 @@
+/**
+ * COMPONENTE HOME - PÁGINA DE INICIO
+ * Landing page principal del sistema "Ponte Pilas"
+ * 
+ * Esta es la primera página que ven los usuarios al acceder al sistema.
+ * Presenta información sobre la aplicación, sus características principales
+ * y opciones para registrarse o acceder como administrador.
+ * 
+ * Funcionalidades:
+ * - Presentación de la aplicación y sus beneficios
+ * - Navegación hacia registro de usuario
+ * - Acceso directo a login de administrador
+ * - Links a tiendas de aplicaciones móviles
+ * - Información de contacto y características del sistema
+ */
+
 // Importa React para poder usar JSX y componentes funcionales
 import React from 'react';
 // Importa los estilos CSS específicos para la página Home
-import '../estilos/Home.css'; // Para los estilos de la página
-// Importa la imagen del logo de Quito
-import quitologo from '../recursos/quito-logo.png'; // Importa la imagen del logo
-// Importa la imagen del logo de Google Play (nota: el nombre del archivo parece tener un error tipográfico)
-import playstorelogo from '../recursos/gplya-logo.png'; // Importa la imagen del logo
-// Importa la imagen del logo de App Store
-import App_Store_logo from '../recursos/appstore-logo.png'; // Importa la imagen del logo
-// Importa la imagen del logo de usuario
-import user_logo from '../recursos/user-logo.png'; // Importa la imagen del logo
-// Importa el componente Link de react-router-dom para navegación interna
+import '../estilos/Home.css';
+// Importa recursos gráficos necesarios para la interfaz
+import quitologo from '../recursos/quito-logo.png';        // Logo del Municipio de Quito
+import playstorelogo from '../recursos/gplya-logo.png';    // Logo de Google Play Store
+import App_Store_logo from '../recursos/appstore-logo.png'; // Logo de Apple App Store
+import user_logo from '../recursos/user-logo.png';         // Icono genérico de usuario
+// Importa el componente Link para navegación sin recarga de página
 import { Link } from 'react-router-dom';
 
-// Define el componente funcional Home
+/**
+ * DEFINICIÓN DEL COMPONENTE HOME
+ * Componente funcional que renderiza la página de inicio
+ */
 const Home = () => {
-  // Devuelve el JSX que representa la estructura de la página
+  /**
+   * ESTRUCTURA JSX DE LA PÁGINA DE INICIO
+   * Incluye header, sección principal, características y footer
+   */
   return (
-    // Contenedor principal con clase para estilos
+    // Contenedor principal de toda la página
     <div className="home-container">
-      {/* Título de la página (esto no tiene efecto aquí, debería ir en el <head>) */}
+      {/* NOTA: El elemento <title> no funciona aquí, debería manejarse con React Helmet */}
       <title>Ponte Once</title>
-      {/* Encabezado de la página */}
+      
+      {/* ========== ENCABEZADO DE LA PÁGINA ========== */}
       <header className="header">
-        {/* Sección izquierda del encabezado */}
+        {/* Sección izquierda: Logo institucional */}
         <div className="header-left">
-          {/* Logo de Quito */}
           <img
             src={quitologo}
             alt="Distrito Metropolitano de Quito"

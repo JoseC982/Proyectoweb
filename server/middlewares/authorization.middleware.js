@@ -1,76 +1,104 @@
-//aqui se va a implementar un middleware de proteccion, control de acceso binario (si tienes el token autorizo, si no mando mensaje: no estas autorizado, si es que si le doy acceso a los endpoints)
+/**
+ * MIDDLEWARE DE AUTORIZACIÓN Y AUTENTICACIÓN
+ * Sistema de protección de rutas usando JSON Web Tokens (JWT)
+ * 
+ * Este archivo implementa la seguridad del backend:
+ * - Verificación de tokens JWT válidos
+ * - Control de acceso basado en roles (admin/user)
+ * - Protección de recursos propios del usuario
+ * - Validación de permisos para operaciones específicas
+ * 
+ * Los middlewares se ejecutan antes de los controladores principales
+ * para garantizar que solo usuarios autorizados accedan a los recursos
+ */
 
+// next es un método que permite continuar al siguiente middleware/controlador
+// Los tokens JWT siguen el formato "Bearer <token>" en el header Authorization
 
-//next es un metodo, cuando lo invocamos, decimos continua a ejecutar el siguiente controlador 
+/**
+ * CONFIGURACIÓN E IMPORTACIONES
+ */
+require("dotenv").config();                     // Cargar variables de entorno
+const jwt = require('jsonwebtoken');            // Librería para manejo de JWT
+const User = require('../models/users.models'); // Modelo de usuarios
+const Report = require('../models/reports.models'); // Modelo de reportes
 
-// si inicia con bearer es un token al portador
-
-// ver si la cabecera tiene una cabecera de autorizacion con un token
-// luego ver si la cabecera tiene el formato bearer token
-
-require("dotenv").config();
-const jwt = require('jsonwebtoken');
-const User = require('../models/users.models');
-const Report = require('../models/reports.models');
-
-
+/**
+ * MIDDLEWARE PRINCIPAL DE PROTECCIÓN
+ * Verifica que el usuario tenga un token JWT válido
+ * Extrae la información del usuario y la adjunta a la request
+ */
 module.exports.protect = async (req, res, next) => {
     console.log('🔍 MIDDLEWARE PROTECT - INICIANDO');
     console.log('Headers de authorization:', req.headers.authorization);
     
     let token;
+    // Verificar si existe el header Authorization y si empieza con "Bearer"
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
-            //se obtiene el token
+            // Extraer el token del header (formato: "Bearer <token>")
             token = req.headers.authorization;
             console.log('Token recibido-con Bearer: ', token);
-            token = token.split(' ')[1];
+            token = token.split(' ')[1]; // Obtener solo la parte del token
             console.log('Token extraído: ', token);
-            //se verifica el token
+            
+            // Verificar y decodificar el token usando la clave secreta
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            //agregamos a cada petición información del usuario
+            
+            // Buscar el usuario en la BD usando el ID del token decodificado
             req.user = await User.findOne({
                 where: { id: decoded.id },
-                attributes: { exclude: ['pass'] }
+                attributes: { exclude: ['pass'] } // Excluir la contraseña por seguridad
             });
             console.log('Usuario encontrado:', req.user?.id, req.user?.role);
             
-            // Solo verificar que el usuario existe, no el rol
+            // Verificar que el usuario existe en la base de datos
             if (req.user) {
                 console.log('✅ MIDDLEWARE PROTECT - USUARIO VÁLIDO, CONTINUANDO');
-                next(); // Continuar al siguiente middleware
+                next(); // Continuar al siguiente middleware/controlador
             } else {
                 console.log('❌ MIDDLEWARE PROTECT - USUARIO NO ENCONTRADO');
                 res.status(401).json({ message: 'User not found!' });
             }
             
         } catch (error) {
+            // Error al verificar el token (token inválido, expirado, etc.)
             console.log('❌ MIDDLEWARE PROTECT - ERROR:', error.message);
             res.status(401).json({ message: 'Not authorized!' });
         }
     } else {
+        // No se proporcionó token de autorización
         console.log('❌ MIDDLEWARE PROTECT - SIN TOKEN');
         res.status(401).json({ message: 'Not authorized, missed token!' });
     }
 }
 
-// Crear middleware específico para admins
+/**
+ * MIDDLEWARE PARA RUTAS EXCLUSIVAS DE ADMINISTRADORES
+ * Verifica que el usuario autenticado tenga rol de 'admin'
+ * Debe usarse DESPUÉS del middleware 'protect'
+ */
 module.exports.adminOnly = (req, res, next) => {
+    // req.user ya está disponible gracias al middleware 'protect'
     if (req.user && req.user.role === 'admin') {
-        next();
+        next(); // Usuario es admin, continuar
     } else {
         res.status(403).json({ message: 'Requiere acceso de administrador!' });
     }
 };
 
-// Middleware para validar que el usuario solo edite su propia información
+/**
+ * MIDDLEWARE PARA VALIDAR ACCESO A RECURSOS PROPIOS
+ * Permite que usuarios editen solo su propia información
+ * Los administradores pueden editar cualquier usuario
+ */
 module.exports.validateOwnResource = (req, res, next) => {
     try {
-        // El usuario ya está en req.user (viene del middleware protect)
-        const userIdFromToken = req.user.id;
-        const userIdFromParams = parseInt(req.params.id);
+        // Extraer IDs para comparación
+        const userIdFromToken = req.user.id;           // ID del token JWT
+        const userIdFromParams = parseInt(req.params.id); // ID de los parámetros de URL
 
-        // Verificar si el usuario es admin (puede editar cualquier usuario)
+        // Los administradores tienen acceso total
         if (req.user.role === 'admin') {
             return next();
         }
@@ -80,7 +108,7 @@ module.exports.validateOwnResource = (req, res, next) => {
             return next();
         }
 
-        // Si no coinciden, denegar acceso
+        // Denegar acceso si los IDs no coinciden
         return res.status(403).json({
             error: "Al parecer la información que usted desea editar no le pertenece"
         });
@@ -93,42 +121,49 @@ module.exports.validateOwnResource = (req, res, next) => {
 };
 
 
+/**
+ * MIDDLEWARES DE PROTECCIÓN PARA REPORTES
+ * Controlan el acceso a operaciones sobre reportes según la propiedad
+ */
 
-/*  Proteccion de los reportes  */
-// Middleware para validar que el usuario solo elimine sus propios reportes
+/**
+ * MIDDLEWARE PARA VALIDAR ACCESO A REPORTES PROPIOS
+ * Permite que usuarios eliminen solo sus propios reportes
+ * Los administradores pueden eliminar cualquier reporte
+ */
 module.exports.validateOwnReport = async (req, res, next) => {
     try {
-        // El usuario ya está en req.user (viene del middleware protect)
+        // Extraer información necesaria
         const userIdFromToken = req.user.id;
         const reportId = parseInt(req.params.id);
         console.log('ID del reporte a eliminar: ', reportId);
         console.log('ID del usuario del token: ', userIdFromToken);
 
-        // Verificar si el usuario es admin (puede eliminar cualquier reporte)
+        // Los administradores tienen acceso total a todos los reportes
         if (req.user.role === 'admin') {
             return next();
         }
 
-        // Buscar el reporte y verificar si pertenece al usuario
+        // Buscar el reporte en la base de datos
         const report = await Report.findOne({
             where: { id: reportId }
-            
         });
 
         console.log(report);
 
+        // Verificar que el reporte existe
         if (!report) {
             return res.status(404).json({
                 error: "Reporte no encontrado"
             });
         }
 
-        // Verificar si el reporte pertenece al usuario
+        // Verificar si el reporte pertenece al usuario autenticado
         if (report.userId === userIdFromToken) {
-            return next();
+            return next(); // El usuario es propietario, permitir acceso
         }
 
-        // Si no coinciden, denegar acceso
+        // Denegar acceso si el reporte no pertenece al usuario
         return res.status(403).json({
             error: "No autorizado, al parecer el reporte que tratas de eliminar no te pertenece"
         });
@@ -140,26 +175,34 @@ module.exports.validateOwnReport = async (req, res, next) => {
     }
 };
 
-
+/**
+ * MIDDLEWARE PARA VALIDAR ACCESO A REPORTES POR USUARIO
+ * Controla que usuarios solo puedan ver sus propios reportes
+ * Los administradores pueden ver reportes de cualquier usuario
+ */
 module.exports.validateOwnUserReports = (req, res, next) => {
     console.log('🔍 MIDDLEWARE validateOwnUserReports - INICIANDO');
     try {
+        // Extraer IDs para comparación
         const userIdFromToken = req.user.id;
         const userIdFromParams = parseInt(req.params.userId);
         
         console.log('ID del usuario del token: ', userIdFromToken);
         console.log('ID del usuario de los parámetros: ', userIdFromParams);
 
+        // Los administradores pueden ver reportes de cualquier usuario
         if (req.user.role === 'admin') {
             console.log('✅ ES ADMIN - PERMITIENDO ACCESO');
             return next();
         }
 
+        // Verificar que el usuario solicita sus propios reportes
         if (userIdFromToken === userIdFromParams) {
             console.log('✅ IDs COINCIDEN - PERMITIENDO ACCESO');
             return next();
         }
 
+        // Denegar acceso si los IDs no coinciden
         console.log('❌ IDs NO COINCIDEN - DENEGANDO ACCESO');
         return res.status(403).json({
             error: "No autorizado, solo puedes obtener tus propios reportes"

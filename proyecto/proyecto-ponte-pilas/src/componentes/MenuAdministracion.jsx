@@ -1,23 +1,59 @@
+/**
+ * COMPONENTE MENU ADMINISTRACIÓN - DASHBOARD ADMINISTRATIVO
+ * Panel principal para administradores del sistema "Ponte Pilas"
+ * 
+ * Funcionalidades principales:
+ * - Dashboard central para administradores autenticados
+ * - Navegación a módulos administrativos principales
+ * - Protección de rutas con validación de rol admin
+ * - Interfaz visual con iconos representativos
+ * - Gestión de sesión y logout
+ * 
+ * Módulos administrativos disponibles:
+ * - Gestión de usuarios (CRUD, silenciar, eliminar)
+ * - Notificaciones y alertas (dashboard de reportes)
+ * - Validación de alertas (moderación de reportes)
+ * - Información de usuario administrador (perfil)
+ * 
+ * Seguridad:
+ * - Verificación de token JWT válido
+ * - Validación de rol de administrador
+ * - Redirección automática si no hay autorización
+ */
+
 import React, { useState, useRef, useEffect } from "react";
 import "../estilos/MenuAdministracion.css";
+// Importa iconos específicos para el menú administrativo
 import LogFondo from "../recursos/MenuAdm/LogFondo.png";
 import LogGestionUsuario from "../recursos/MenuAdm/LogGestionUsuario.png";
 import LogNotiAlerta from "../recursos/MenuAdm/LogNotiAlerta.png";
 import LogValidarAlerta from "../recursos/MenuAdm/LogValidarAlerta.png";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * DEFINICIÓN DEL COMPONENTE MENU ADMINISTRACIÓN
+ * @param {Object} users - Usuario administrador autenticado
+ */
 const MenuAdministracion = ({users}) => {
   console.log(users);
+  // Hook de navegación para cambiar de rutas
   const navigate = useNavigate();
-  const [menuAbierto, setMenuAbierto] = useState(false);
-  const [mensaje, setMensaje] = useState("");
-  const menuRef = useRef(null);
+  
+  /**
+   * ESTADOS DEL COMPONENTE
+   */
+  const [menuAbierto, setMenuAbierto] = useState(false);    // Estado del menú desplegable
+  const [mensaje, setMensaje] = useState("");               // Mensajes de feedback al usuario
+  const menuRef = useRef(null);                             // Referencia para el menú desplegable
 
-  // ✅ Validar que el usuario sea admin y esté autenticado
+  /**
+   * EFFECT PARA VALIDACIÓN DE AUTORIZACIÓN
+   * Verifica que el usuario sea administrador y tenga token válido
+   */
   useEffect(() => {
     const token = localStorage.getItem('token');
     
-    // Verificar que hay token
+    // Verificar que hay token válido
     if (!token) {
       setMensaje("⚠️ Sesión expirada");
       setTimeout(() => {

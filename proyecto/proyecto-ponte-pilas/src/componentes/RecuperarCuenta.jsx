@@ -1,23 +1,67 @@
+/**
+ * COMPONENTE DE RECUPERACIÓN DE CUENTA
+ * 
+ * Este componente maneja el proceso completo de recuperación de contraseña para usuarios
+ * que han olvidado sus credenciales de acceso. Implementa un flujo de dos pasos:
+ * 1. Solicitud de código de verificación por email
+ * 2. Validación del código y establecimiento de nueva contraseña
+ * 
+ * Funcionalidades principales:
+ * - Envío de código de verificación por email
+ * - Validación de código de recuperación
+ * - Establecimiento de nueva contraseña
+ * - Interfaz paso a paso con validaciones
+ * - Manejo de estados de carga y errores
+ * - Navegación de regreso al login
+ * 
+ * Seguridad:
+ * - Códigos de verificación temporales
+ * - Validación de formato de email
+ * - Confirmación de nueva contraseña
+ * 
+ * @returns {JSX.Element} Componente de recuperación de cuenta
+ */
+
+// Importa React y hooks necesarios para el manejo de estado
 import React, { useState } from "react";
+// Importa hooks de navegación y Link de React Router
 import { useNavigate, Link } from "react-router-dom";
+// Importa axios para peticiones HTTP al backend
 import axios from "axios";
+// Importa estilos CSS reutilizando los del login de admin
 import '../estilos/LoginAdmin.css';
+// Importa imágenes necesarias para la interfaz
 import policia from '../recursos/policia-logo.png';
 import user_logo from '../recursos/user-logo.png';
 
+// Componente funcional para la recuperación de cuenta
 const RecuperarCuenta = () => {
+    // Hook de navegación para redirigir entre componentes
     const navigate = useNavigate();
-    const [step, setStep] = useState(1); // 1: email, 2: código y nueva contraseña
+    
+    // Estado para controlar el paso actual del proceso (1: email, 2: código y nueva contraseña)
+    const [step, setStep] = useState(1);
+    // Estado para almacenar el email del usuario
     const [email, setEmail] = useState('');
+    // Estado para almacenar el código de verificación recibido
     const [code, setCode] = useState('');
+    // Estado para almacenar la nueva contraseña
     const [newPassword, setNewPassword] = useState('');
+    // Estado para controlar la visibilidad de la contraseña
     const [showPassword, setShowPassword] = useState(false);
+    // Estado para manejar estados de carga durante las peticiones
     const [isLoading, setIsLoading] = useState(false);
+    // Estado para mostrar mensajes de éxito o error al usuario
     const [message, setMessage] = useState('');
 
+<<<<<<< HEAD
     const baseURL = "http://172.29.41.39:8000/";
+=======
+    // URL base del backend para las peticiones HTTP
+    const baseURL = "http://localhost:8000/";
+>>>>>>> 6f2ea83fab62dd932f825e707e0dc769784a7766
 
-    // Paso 1: Enviar código al email
+    // Función para el Paso 1: Envía el código de verificación al email del usuario
     const handleEnviarCodigo = () => {
         if (!email.trim()) {
             setMessage("Por favor ingrese su email");

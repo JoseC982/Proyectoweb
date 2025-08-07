@@ -1,9 +1,28 @@
+/**
+ * CONTROLADOR DE TIPOS DE INCIDENTES
+ * Maneja el catálogo de tipos de incidentes disponibles en el sistema
+ * 
+ * Los tipos de incidentes definen las categorías que pueden reportar los usuarios:
+ * - Robos, asaltos, accidentes de tránsito
+ * - Personas extraviadas, riñas, eventos médicos
+ * - Alteraciones del orden, enfrentamientos
+ * - Personas sospechosas, violencia contra la mujer
+ * 
+ * Cada tipo incluye un nombre, ícono visual y color para la interfaz
+ * Solo los administradores pueden gestionar estos tipos de incidentes
+ */
+
 const Incidente = require('../models/incidents.models');
 const Report = require('../models/reports.models');
 
-//Se obtiene todos los Incidentes  (user o admin cualquiera)
+/**
+ * CONTROLADOR PARA OBTENER TODOS LOS TIPOS DE INCIDENTES
+ * Devuelve el catálogo completo disponible para crear reportes
+ * Disponible para todos los usuarios (sin autenticación requerida)
+ */
 module.exports.getAllIncidentes = async (req, res) => {
     try {
+        // Obtener todos los tipos de incidentes disponibles
         const incidentes = await Incidente.findAll();
         res.status(200).json(incidentes);
     } catch (error) {
@@ -12,23 +31,28 @@ module.exports.getAllIncidentes = async (req, res) => {
     }
 }
 
-// Crear un nuevo incidente (solo admin)
+/**
+ * CONTROLADOR PARA CREAR NUEVO TIPO DE INCIDENTE
+ * Permite a los administradores agregar nuevas categorías al catálogo
+ * Requiere autenticación y permisos de administrador
+ */
 module.exports.createIncidente = async (req, res) => {
     const { type, icon, color } = req.body;
 
-    // Validar datos incompletos
+    // Validar que todos los campos obligatorios estén presentes
     if (!type || !icon || !color) {
         return res.status(400).json({ error: "Datos incompletos" });
     }
 
     try {
-        // Crear incidente
+        // Crear nuevo tipo de incidente en la base de datos
         const newIncidente = await Incidente.create({
-            type,
-            icon,
-            color
+            type,   // Nombre descriptivo del tipo de incidente
+            icon,   // Archivo de ícono para la interfaz
+            color   // Color en formato hexadecimal para identificación visual
         });
 
+        // Responder con los datos del nuevo tipo creado
         res.status(201).json({
             id: newIncidente.id.toString(),
             type: newIncidente.type,

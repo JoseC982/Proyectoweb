@@ -1,3 +1,23 @@
+/**
+ * COMPONENTE DE INFORMACIÓN Y EDICIÓN DE USUARIO
+ * 
+ * Este componente permite a los usuarios visualizar y editar su información personal
+ * incluyendo datos básicos como nombre, apellido, email, teléfono, dirección, etc.
+ * Incluye un formulario completo de edición con validaciones y actualización en tiempo real.
+ * 
+ * Funcionalidades principales:
+ * - Visualización de datos del usuario actual
+ * - Formulario de edición con campos completos
+ * - Validación de formato de email y teléfono
+ * - Actualización de información en base de datos
+ * - Navegación de regreso al menú principal
+ * - Manejo de estados de carga y errores
+ * 
+ * @param {Object} users - Objeto con la información del usuario actual
+ * @param {Function} setUsers - Función para actualizar el estado global del usuario
+ * @returns {JSX.Element} Componente de información y edición de usuario
+ */
+
 // Importa React y el hook useState para manejar el estado local
 import React, { useState, useEffect } from "react";
 // Importa los estilos CSS específicos para este componente
@@ -10,41 +30,47 @@ import axios from "axios";
 // Exporta el componente funcional InformacionUsuario, recibe el usuario y el setter global como props
 export default function InformacionUsuario({ users, setUsers }) {
   // Muestra el usuario recibido en consola (para depuración)
+  // Muestra el usuario recibido en consola (para depuración)
   console.log(users);
-  // Inicializa el hook de navegación
+  // Inicializa el hook de navegación para redirigir entre componentes
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   // ✅ URL base del backend
   const baseURL = "http://172.29.41.39:8000/";
+=======
+  // ✅ URL base del backend para las peticiones HTTP
+  const baseURL = "http://localhost:8000/";
+>>>>>>> 6f2ea83fab62dd932f825e707e0dc769784a7766
 
-  // Estado para controlar si los campos están en modo edición
+  // Estado para controlar si los campos del formulario están en modo edición o solo lectura
   const [edit, setEdit] = useState(false);
-  // Estado para mostrar mensajes temporales (ej: "Información Actualizada")
+  // Estado para mostrar mensajes temporales de éxito o error (ej: "Información Actualizada")
   const [mensaje, setMensaje] = useState("");
 
-  // ✅ NUEVO: Estados para verificación de autenticación
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
+  // ✅ Estados para verificación de autenticación y seguridad
+  const [loading, setLoading] = useState(true); // Controla el estado de carga inicial
+  const [authenticated, setAuthenticated] = useState(false); // Verifica si el usuario está autenticado
 
-  // ✅ NUEVO: Estados para el modal de cambio de contraseña
-  const [modalPasswordOpen, setModalPasswordOpen] = useState(false);
+  // ✅ Estados para el modal de cambio de contraseña
+  const [modalPasswordOpen, setModalPasswordOpen] = useState(false); // Controla la visibilidad del modal
   const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
+    currentPassword: "", // Contraseña actual del usuario
+    newPassword: "", // Nueva contraseña deseada
+    confirmPassword: "" // Confirmación de la nueva contraseña
   });
-  const [passwordError, setPasswordError] = useState("");
+  const [passwordError, setPasswordError] = useState(""); // Mensajes de error para el cambio de contraseña
 
-  // Estado para almacenar los datos del usuario (rellena con los datos actuales)
+  // Estado para almacenar los datos del formulario del usuario (se inicializa con los datos actuales)
   const [datos, setDatos] = useState({
-    name: users?.name || "",
-    username: users?.username || "",
-    email: users?.email || "",
-    bio: users?.bio || "",
-    fechaNacimiento: users?.fechaNacimiento ? users.fechaNacimiento.split('T')[0] : ""
+    name: users?.name || "", // Nombre completo del usuario
+    username: users?.username || "", // Nombre de usuario único
+    email: users?.email || "", // Correo electrónico
+    bio: users?.bio || "", // Biografía o descripción personal
+    fechaNacimiento: users?.fechaNacimiento ? users.fechaNacimiento.split('T')[0] : "" // Fecha de nacimiento en formato YYYY-MM-DD
   });
 
-  // ✅ Función para obtener el token
+  // ✅ Función utilitaria para obtener el token JWT del localStorage
   const getToken = () => {
     return localStorage.getItem('token');
   };

@@ -1,29 +1,53 @@
+/**
+ * COMPONENTE DE VISUALIZACIÓN DETALLADA DE REPORTES
+ * 
+ * Este componente muestra los detalles completos de un reporte específico seleccionado
+ * desde otros componentes del sistema. Proporciona una vista detallada con toda la
+ * información relevante del incidente reportado.
+ * 
+ * Funcionalidades principales:
+ * - Visualización de detalles completos del reporte
+ * - Información del usuario que reportó
+ * - Datos de ubicación y tiempo del incidente
+ * - Descripción detallada del evento
+ * - Navegación de regreso al componente anterior
+ * - Validación de existencia de reporte seleccionado
+ * 
+ * Navegación:
+ * - Recibe datos del reporte a través del estado de navegación (location.state)
+ * - Redirige automáticamente si no hay reporte seleccionado
+ * - Botón de regreso al menú o lista de reportes
+ * 
+ * @returns {JSX.Element} Componente de visualización de reporte detallado
+ */
+
+// Importa React sin hooks adicionales (componente de solo lectura)
 import React from "react";
-// Importa los estilos CSS para este componente
+// Importa los estilos CSS específicos para este componente
 import "../estilos/VisualizarReportes.css";
 // Importa los hooks de React Router para navegación y para obtener el estado enviado por la ruta
 import { useLocation, useNavigate } from "react-router-dom";
-// Importa el logo de la aplicación
+// Importa el logo de la aplicación para la interfaz
 import LogoAlertaContigo from "../recursos/menuUser/LogoAlertaContigo.png";
 
-// Componente principal para visualizar reportes registrados
+// Componente principal para visualizar reportes registrados en detalle
 export default function VisualizarReportes() {
-  // Obtiene la información pasada por navegación (el reporte seleccionado)
+  // Obtiene la información pasada por navegación (el reporte seleccionado desde otro componente)
   const location = useLocation();
-  // Hook para navegar entre páginas
+  // Hook para navegar entre páginas del sistema
   const navigate = useNavigate();
-  // Extrae el reporte seleccionado del estado de navegación
+  // Extrae el reporte seleccionado del estado de navegación enviado por el componente anterior
   const reporte = location.state?.reporte;
 
   // Simulación de datos de un reporte registrado (en un caso real, estos vendrían de una base de datos o API)
   const datosReporte = {
-    descripcion: "Se produjo un accidente de tránsito entre 2 vehículos y hay un tráfico horrible.",
-    ubicacion: "Avenida 12 de octubre y Ejido",
-    hora: "09:00",
-    usuario: "cesmorO2"
+    descripcion: "Se produjo un accidente de tránsito entre 2 vehículos y hay un tráfico horrible.", // Descripción del incidente
+    ubicacion: "Avenida 12 de octubre y Ejido", // Ubicación específica del evento
+    hora: "09:00", // Hora en que ocurrió el incidente
+    usuario: "cesmorO2" // Usuario que reportó el incidente
   };
 
-  // Si no hay reporte seleccionado (por ejemplo, si se accede directamente a la ruta), regresa al menú principal
+  // Si no hay reporte seleccionado (acceso directo a la ruta), regresa al menú principal para evitar errores
   if (!reporte) {
     navigate("/");
     return null;

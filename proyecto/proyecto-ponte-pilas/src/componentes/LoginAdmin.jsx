@@ -1,23 +1,43 @@
-// Importa React para poder usar JSX y componentes funcionales
+/**
+ * COMPONENTE LOGIN ADMIN - AUTENTICACIÓN DE USUARIOS
+ * Formulario de login para administradores y usuarios regulares
+ * 
+ * Funcionalidades principales:
+ * - Autenticación con email y contraseña
+ * - Manejo de tokens JWT para sesiones seguras
+ * - Redirección automática según rol (admin/usuario)
+ * - Persistencia de sesión en localStorage
+ * - Validación de credenciales con feedback visual
+ * - Enlaces a registro y recuperación de contraseña
+ * 
+ * Flujo de autenticación:
+ * 1. Usuario ingresa credenciales
+ * 2. Se valida contra el backend
+ * 3. Se guarda token y datos de usuario
+ * 4. Redirección según rol del usuario
+ */
+
+// Importa React para componentes funcionales
 import React from "react";
-// Importa el hook useNavigate para navegar entre rutas
+// Importa herramientas de navegación de React Router
 import { useNavigate } from "react-router-dom";
-// Importa Link para navegación declarativa entre rutas
 import { Link } from "react-router-dom";
-// Importa los estilos CSS específicos para la página de login
-import '../estilos/LoginAdmin.css'; // Para los estilos de la página
-// Importa el hook useState para manejar el estado local del componente
+// Importa estilos específicos del componente
+import '../estilos/LoginAdmin.css';
+// Importa hooks para manejo de estado y efectos
 import { useState, useEffect } from "react";
-// Importa la imagen del logo de la policía
-import policia from '../recursos/policia-logo.png'; // Importa la imagen del logo
-// Importa la imagen del logo de usuario
-import user_logo from '../recursos/user-logo.png'; // Importa la imagen del logo
-// Importa axios para hacer peticiones HTTP
+// Importa recursos gráficos para la interfaz
+import policia from '../recursos/policia-logo.png';    // Logo institucional
+import user_logo from '../recursos/user-logo.png';     // Icono de usuario
+// Importa axios para comunicación con el backend
 import axios from "axios";
 
-// Define el componente funcional LoginAdmin, recibe setUsers como prop para actualizar el usuario global
+/**
+ * DEFINICIÓN DEL COMPONENTE LOGIN ADMIN
+ * @param {Function} setUsers - Función para actualizar el estado global del usuario autenticado
+ */
 const LoginAdmin = ({ setUsers }) => {
-    // Inicializa el hook de navegación
+    // Hook de navegación para redireccionar después del login
     const navigate = useNavigate();
     // Estado para mostrar/ocultar la contraseña
     const [showPassword, setShowPassword] = useState(false);

@@ -1,33 +1,51 @@
-// Importa React y el hook useState para manejar el estado local
-import React, { useState } from "react";
-// Importa useNavigate y Link de react-router-dom para navegación
+/**
+ * COMPONENTE CREAR CUENTA - REGISTRO DE USUARIOS
+ * Formulario completo para el registro de nuevos usuarios en el sistema
+ * 
+ * Funcionalidades principales:
+ * - Registro de usuarios con validación de campos
+ * - Detección automática de primer usuario (se convierte en admin)
+ * - Validación de email único y contraseñas seguras
+ * - Interfaz responsive con toggle de visibilidad de contraseña
+ * - Navegación automática después del registro exitoso
+ * 
+ * Campos del formulario:
+ * - Información personal: nombre, email, fecha de nacimiento
+ * - Credenciales: nombre de usuario, contraseña
+ * - Biografía opcional del usuario
+ */
+
+// Importa React y hooks necesarios para estado y efectos
+import React, { useState, useEffect } from "react";
+// Importa herramientas de navegación de React Router
 import { useNavigate, Link } from "react-router-dom";
-// Importa los estilos CSS para el formulario de registro
+// Importa estilos compartidos con el componente de login
 import '../estilos/LoginAdmin.css';
-// Importa la imagen del logo de la policía
-import policia from '../recursos/policia-logo.png';
-// Importa la imagen del logo de usuario
-import user_logo from '../recursos/user-logo.png';
-// Importa axios para hacer peticiones HTTP
+// Importa recursos gráficos para la interfaz
+import policia from '../recursos/policia-logo.png';    // Logo institucional de la policía
+import user_logo from '../recursos/user-logo.png';     // Icono genérico de usuario
+// Importa axios para comunicación con el backend
 import axios from "axios";
 
-// Define el componente funcional CrearCuenta
+/**
+ * DEFINICIÓN DEL COMPONENTE CREAR CUENTA
+ * Maneja todo el flujo de registro de nuevos usuarios
+ */
 const CrearCuenta = () => {
-    // Hook para navegar entre rutas
+    // Hook de navegación para redireccionar después del registro
     const navigate = useNavigate();
-    // Estado para mostrar/ocultar la contraseña
-    const [showPassword, setShowPassword] = useState(false);
-    // Estado para el campo de email
-    const [email, setEmail] = useState('');
-    // Estado para el campo de contraseña
-    const [password, setPassword] = useState('');
-    // Estado para el campo de nombre
-    const [name, setName] = useState('');
-    // Estado para el campo de fecha de nacimiento
-    const [fecha, setFecha] = useState('');
-    // Estado para el campo de nombre de usuario
-    const [username, setUsername] = useState('');
-    // Estado para el campo de biografía
+    
+    /**
+     * ESTADOS DEL FORMULARIO
+     * Cada campo del formulario tiene su propio estado para un control granular
+     */
+    const [showPassword, setShowPassword] = useState(false);  // Mostrar/ocultar contraseña
+    const [email, setEmail] = useState('');                   // Email del usuario
+    const [password, setPassword] = useState('');             // Contraseña
+    const [name, setName] = useState('');                     // Nombre completo
+    const [fecha, setFecha] = useState('');                   // Fecha de nacimiento
+    const [username, setUsername] = useState('');             // Nombre de usuario único
+    const [bio, setBio] = useState('');                       // Biografía opcional
     const [bio, setBio] = useState('');
 
     // ✅ Estados para modal y manejo de errores
@@ -35,8 +53,34 @@ const CrearCuenta = () => {
     const [modalMessage, setModalMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    // ✅ NUEVO: Estados para primer usuario
+    const [isFirstUser, setIsFirstUser] = useState(false);
+    const [checkingDatabase, setCheckingDatabase] = useState(true);
+
     // ✅ URL base del backend
     const baseURL = "http://172.29.41.39:8000/";
+
+    // ✅ NUEVO: Verificar si la base de datos está vacía al cargar el componente
+    useEffect(() => {
+        const checkIfFirstUser = async () => {
+            try {
+                const response = await axios.get(`${baseURL}users`);
+                const users = response.data;
+                
+                // Si no hay usuarios, este será el primero
+                setIsFirstUser(users.length === 0);
+                
+            } catch (error) {
+                console.error('Error verificando usuarios:', error);
+                // Si hay error, asumir que es el primer usuario
+                setIsFirstUser(true);
+            } finally {
+                setCheckingDatabase(false);
+            }
+        };
+
+        checkIfFirstUser();
+    }, []);
 
     const handleRegister = () => {
         // ✅ Validación mejorada
@@ -63,12 +107,15 @@ const CrearCuenta = () => {
 
         setIsLoading(true);
 
-        // ✅ Petición POST directa al backend (el backend ya valida emails duplicados)
+        // ✅ MODIFICADO: Asignar rol según si es el primer usuario
+        const roleToAssign = isFirstUser ? "admin" : "user";
+
+        // ✅ Petición POST directa al backend
         axios.post(`${baseURL}users`, {
             name: name.trim(),
             email: email.trim(),
             pass: password,
-            role: "user",
+            role: roleToAssign,
             estado: "Activo",
             fechaNacimiento: fecha,
             username: username.trim(),
@@ -76,14 +123,32 @@ const CrearCuenta = () => {
         })
         .then(response => {
             console.log('Usuario creado:', response.data);
-            setModalMessage("¡Usuario creado exitosamente! Bienvenido");
+            
+            // ✅ NUEVO: Mensaje especial para el primer usuario (admin)
+            let mensaje;
+            if (isFirstUser) {
+                mensaje = "🎉 ¡Bienvenido a Ponte Once!\n\n" +
+                         "Felicidades, eres el primer usuario registrado en esta app.\n" +
+                         "Se te asignará como administrador por defecto.\n\n" +
+                         "Los siguientes usuarios registrados tendrán rol de usuario " +
+                         "y solo accederán a las rutas habilitadas para su rol.\n\n" +
+                         "¡Disfruta administrando la plataforma! 🚀";
+            } else {
+                mensaje = "¡Usuario creado exitosamente! Bienvenido";
+            }
+            
+            setModalMessage(mensaje);
             setShowModal(true);
             
-            // Redirigir al login después de 2 segundos
+            // ✅ MODIFICADO: Redirigir según el rol asignado
             setTimeout(() => {
                 setShowModal(false);
-                navigate("/loginAdmin");
-            }, 2000);
+                if (isFirstUser) {
+                    navigate("/loginAdmin"); // Admin va al login de admin
+                } else {
+                    navigate("/loginAdmin"); // Usuario normal va al login de usuarios
+                }
+            }, isFirstUser ? 4000 : 2000); // Más tiempo para leer el mensaje del primer usuario
         })
         .catch(error => {
             console.error('Error al crear usuario:', error);
@@ -127,6 +192,30 @@ const CrearCuenta = () => {
         }
     };
 
+    // ✅ NUEVO: Mostrar loading mientras verifica la base de datos
+    if (checkingDatabase) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <div style={{
+                    textAlign: 'center',
+                    padding: '2rem',
+                    backgroundColor: 'white',
+                    borderRadius: '10px',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                }}>
+                    <h2>🔄 Preparando registro...</h2>
+                    <p>Verificando estado de la aplicación</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="login-admin-container">
             <title>Registrate</title>
@@ -148,6 +237,28 @@ const CrearCuenta = () => {
                         />
                         <h1>Registrate</h1>
                     </div>
+                    
+                    {/* ✅ NUEVO: Mensaje especial para el primer usuario */}
+                    {isFirstUser && (
+                        <div style={{
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            color: "white",
+                            border: "2px solid #4f46e5",
+                            borderRadius: "10px",
+                            padding: "15px",
+                            margin: "15px 0",
+                            textAlign: "center",
+                            boxShadow: "0 4px 15px rgba(79, 70, 229, 0.3)"
+                        }}>
+                            <h3 style={{ margin: "0 0 10px 0", fontSize: "16px" }}>
+                                🎉 ¡Primer Usuario Detectado!
+                            </h3>
+                            <p style={{ margin: "0", fontSize: "14px", lineHeight: "1.4" }}>
+                                Serás registrado como <strong>Administrador</strong> de la plataforma.
+                                Tendrás acceso completo a todas las funcionalidades.
+                            </p>
+                        </div>
+                    )}
                     
                     {/* Campo de nombre */}
                     <div className="email-container">
@@ -254,8 +365,15 @@ const CrearCuenta = () => {
                             className="button" 
                             onClick={handleRegister}
                             disabled={isLoading}
+                            style={{
+                                background: isFirstUser ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "",
+                                borderColor: isFirstUser ? "#4f46e5" : ""
+                            }}
                         >
-                            {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
+                            {isLoading 
+                                ? (isFirstUser ? "Creando administrador..." : "Creando cuenta...") 
+                                : (isFirstUser ? "Crear Administrador" : "Crear Cuenta")
+                            }
                         </button>
                         <Link to="/loginAdmin">
                             <button className="button" disabled={isLoading}>
@@ -266,7 +384,7 @@ const CrearCuenta = () => {
                 </section>
             </div>
 
-            {/* ✅ Modal de mensajes */}
+            {/* ✅ MODIFICADO: Modal de mensajes con estilo especial para primer usuario */}
             {showModal && (
                 <div style={{
                     position: "fixed",
@@ -281,26 +399,44 @@ const CrearCuenta = () => {
                     zIndex: 1000
                 }}>
                     <div style={{
-                        background: "#fff",
-                        padding: "2rem",
-                        borderRadius: "10px",
-                        minWidth: "320px",
+                        background: isFirstUser && modalMessage.includes("Bienvenido a Ponte Once") 
+                            ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" 
+                            : "#fff",
+                        color: isFirstUser && modalMessage.includes("Bienvenido a Ponte Once") 
+                            ? "white" 
+                            : "black",
+                        padding: "2.5rem",
+                        borderRadius: "15px",
+                        minWidth: "400px",
                         maxWidth: "90vw",
-                        boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
-                        textAlign: "center"
+                        boxShadow: isFirstUser && modalMessage.includes("Bienvenido a Ponte Once")
+                            ? "0 10px 30px rgba(79, 70, 229, 0.4)"
+                            : "0 2px 16px rgba(0,0,0,0.2)",
+                        textAlign: "center",
+                        border: isFirstUser && modalMessage.includes("Bienvenido a Ponte Once")
+                            ? "2px solid #4f46e5"
+                            : "none"
                     }}>
-                        <h2>{modalMessage}</h2>
-                        {!modalMessage.includes("exitosamente") && (
+                        <div style={{ 
+                            whiteSpace: "pre-line", 
+                            lineHeight: "1.6",
+                            fontSize: isFirstUser && modalMessage.includes("Bienvenido a Ponte Once") ? "16px" : "14px"
+                        }}>
+                            {modalMessage}
+                        </div>
+                        {!modalMessage.includes("exitosamente") && !modalMessage.includes("Bienvenido a Ponte Once") && (
                             <button 
                                 onClick={() => setShowModal(false)}
                                 style={{
-                                    marginTop: "15px",
-                                    padding: "10px 20px",
+                                    marginTop: "20px",
+                                    padding: "12px 24px",
                                     background: "#007bff",
                                     color: "white",
                                     border: "none",
-                                    borderRadius: "5px",
-                                    cursor: "pointer"
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                    fontSize: "14px",
+                                    fontWeight: "500"
                                 }}
                             >
                                 Cerrar

@@ -1,23 +1,52 @@
-// Importa los hooks de React y utilidades de React Router
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps/api";
-import "../estilos/MenuUsuario.css"; // Importa los estilos
+/**
+ * COMPONENTE MENU USUARIO - DASHBOARD PRINCIPAL DEL USUARIO
+ * Interfaz principal para usuarios autenticados del sistema "Ponte Pilas"
+ * 
+ * Funcionalidades principales:
+ * - Mapa interactivo con Google Maps para visualizar reportes
+ * - Creación y edición de reportes de incidentes
+ * - Filtrado de reportes propios vs todos los reportes
+ * - Gestión completa de reportes del usuario
+ * - Navegación a otras secciones del sistema
+ * - Logout y gestión de sesión
+ * 
+ * Características del mapa:
+ * - Visualización de ubicaciones de reportes con marcadores
+ * - Información detallada en ventanas emergentes
+ * - Diferentes colores de marcadores según tipo de incidente
+ * - Interacción para crear reportes desde el mapa
+ */
 
-// Componente principal
+// Importa hooks de React para estado, efectos y referencias
+import React, { useState, useEffect, useRef } from "react";
+// Importa navegación de React Router
+import { useNavigate } from "react-router-dom";
+// Importa axios para peticiones HTTP al backend
+import axios from "axios";
+// Importa componentes de Google Maps para React
+import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps/api";
+// Importa estilos específicos del componente
+import "../estilos/MenuUsuario.css";
+
+/**
+ * COMPONENTE PRINCIPAL MENU USUARIO
+ * @param {Object} users - Usuario autenticado actual
+ * @param {Function} fetchAllData - Función para recargar datos desde el backend
+ */
 export default function MenuUsuario({ users, fetchAllData }) {
-  const navigate = useNavigate(); // Hook para navegar entre rutas
-  // Estado para la lista de incidentes (se carga desde la API/db.json)
-  const [incidentes, setIncidentes] = useState([]);
-  const [reportes, setReportes] = useState([]);
-  const [filtro, setFiltro] = useState("todos"); // "todos" | "mios"
-  // Estado para el incidente seleccionado en el combo
-  const [incidenteSeleccionado, setIncidenteSeleccionado] = useState("");
-  // Estado para mostrar/ocultar el modal de crear/editar reporte
-  const [modalOpen, setModalOpen] = useState(false);
-  // Estado para saber si se está editando un reporte (guarda el id del reporte)
-  const [editando, setEditando] = useState(null);
+  // Hook de navegación para cambiar de rutas
+  const navigate = useNavigate();
+  
+  /**
+   * ESTADOS DEL COMPONENTE
+   * Manejo de datos y estado de la interfaz
+   */
+  const [incidentes, setIncidentes] = useState([]);           // Catálogo de tipos de incidentes
+  const [reportes, setReportes] = useState([]);               // Lista de reportes a mostrar
+  const [filtro, setFiltro] = useState("todos");             // Filtro: "todos" o "mios"
+  const [incidenteSeleccionado, setIncidenteSeleccionado] = useState(""); // Tipo seleccionado en combo
+  const [modalOpen, setModalOpen] = useState(false);         // Estado del modal de crear/editar
+  const [editando, setEditando] = useState(null);            // ID del reporte en edición (null = nuevo)
   // Estado para el marcador seleccionado (para mostrar en el mapa y en el tooltip)
   const [markerSeleccionado, setMarkerSeleccionado] = useState(null);
   // Estado para centrar el mapa

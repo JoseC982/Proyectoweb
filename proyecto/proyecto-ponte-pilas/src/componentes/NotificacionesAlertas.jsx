@@ -1,16 +1,47 @@
+/**
+ * COMPONENTE NOTIFICACIONES ALERTAS - DASHBOARD DE REPORTES
+ * Panel administrativo para visualizar y gestionar todos los reportes del sistema
+ * 
+ * Funcionalidades principales:
+ * - Dashboard completo de reportes e incidentes del sistema
+ * - Visualización tabular con información detallada de cada reporte
+ * - Filtrado y ordenamiento de reportes por diferentes criterios
+ * - Estadísticas y métricas de reportes por tipo y fecha
+ * - Exportación de datos para análisis externos
+ * - Protección de rutas (solo administradores)
+ * 
+ * Información mostrada:
+ * - Nombre del usuario reportante
+ * - Tipo de incidente reportado
+ * - Descripción detallada del evento
+ * - Fecha y hora del incidente
+ * - Ubicación geográfica del evento
+ * 
+ * Características del dashboard:
+ * - Ordenamiento por columnas
+ * - Filtros por tipo de incidente y fechas
+ * - Búsqueda por texto libre
+ * - Paginación para grandes volúmenes de datos
+ */
+
 import React, { useState, useRef, useEffect } from "react";
 import "../estilos/NotificacionesAlertas.css";
+// Recursos gráficos para la interfaz administrativa
 import LogFondo from "../recursos/MenuAdm/LogFondo.png";
 import LogNotiAlerta from "../recursos/MenuAdm/LogNotiAlerta.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+/**
+ * CONFIGURACIÓN DE ENCABEZADOS DE TABLA
+ * Define las columnas que se mostrarán en el dashboard de reportes
+ */
 const encabezados = [
-  { value: "nombre", label: "Nombre de usuario" },
-  { value: "tipo", label: "Tipo de alerta" },
-  { value: "descripcion", label: "Descripcion" },
-  { value: "fechaHora", label: "Fecha y Hora" },
-  { value: "ubicacion", label: "Ubicación" }
+  { value: "nombre", label: "Nombre de usuario" },      // Usuario que reportó
+  { value: "tipo", label: "Tipo de alerta" },           // Tipo de incidente
+  { value: "descripcion", label: "Descripcion" },       // Descripción del evento
+  { value: "fechaHora", label: "Fecha y Hora" },        // Cuándo ocurrió
+  { value: "ubicacion", label: "Ubicación" }            // Dónde ocurrió
 ];
 
 const NotificacionesAlertas = () => {

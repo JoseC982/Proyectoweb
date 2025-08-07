@@ -1,42 +1,75 @@
-const { response } = require("express");
-const User = require("../models/users.models");
-const Report = require("../models/reports.models"); 
-require("dotenv").config();             // Importa el módulo dotenv para cargar variables de entorno
-const jwt = require("jsonwebtoken");    // Importa la biblioteca jwt para generar tokens
-const bcrypt = require("bcryptjs");     // Importa la biblioteca bcrypt para encriptar contraseñas
-const { transporter } = require('../config/emailConfig');
-// ✅ Almacén de códigos de verificación en memoria
-const verifyCodes = new Map(); // { email: { code, expires, userId } }
+/**
+ * CONTROLADOR DE USUARIOS
+ * Maneja todas las operaciones relacionadas con los usuarios del sistema
+ * 
+ * Funcionalidades implementadas:
+ * - Registro y autenticación de usuarios
+ * - Gestión CRUD de usuarios (crear, leer, actualizar, eliminar)
+ * - Sistema de recuperación de contraseñas por email
+ * - Generación y validación de tokens JWT
+ * - Encriptación de contraseñas con bcrypt
+ * - Validación de primer usuario como administrador
+ */
 
+const { response } = require("express");          // Utilidades de Express
+const User = require("../models/users.models");  // Modelo de usuarios Sequelize
+const Report = require("../models/reports.models"); // Modelo de reportes
+require("dotenv").config();                       // Cargar variables de entorno
+const jwt = require("jsonwebtoken");              // Librería para generar tokens JWT
+const bcrypt = require("bcryptjs");               // Librería para encriptar contraseñas
+const { transporter } = require('../config/emailConfig'); // Configuración de email
 
-// Aqui se crea el token
-const generateToken = (id, role) => {      // Al token se le puede enviar los atributos que creamos necesarios
-    return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '30d' })
-}   //aqui se añade el tiempo de expiracion
+/**
+ * ALMACÉN TEMPORAL DE CÓDIGOS DE VERIFICACIÓN
+ * Guarda códigos de recuperación de contraseñas en memoria
+ * Estructura: { email: { code, expires, userId } }
+ */
+const verifyCodes = new Map();
 
-// Crear un usuario
+/**
+ * FUNCIÓN PARA GENERAR TOKENS JWT
+ * Crea un token de autenticación con información del usuario
+ * @param {number} id - ID del usuario
+ * @param {string} role - Rol del usuario ('admin' o 'user')
+ * @returns {string} Token JWT firmado
+ */
+const generateToken = (id, role) => {
+    return jwt.sign(
+        { id, role },                    // Payload del token
+        process.env.JWT_SECRET,          // Clave secreta para firmar
+        { expiresIn: '30d' }            // Token válido por 30 días
+    )
+}
+
+/**
+ * CONTROLADOR PARA CREAR NUEVO USUARIO
+ * Maneja el registro de nuevos usuarios en el sistema
+ * Incluye validaciones, encriptación de contraseñas y verificación de duplicados
+ */
 module.exports.createUser = async (req, res) => {
+    // Extraer datos del cuerpo de la petición
     const { name, email, pass, role, estado, fechaNacimiento, bio, username } = req.body;
 
-    // Validar datos incompletos (bio puede ser opcional)
+    // Validar que todos los campos obligatorios estén presentes (bio es opcional)
     if (!name || !email || !pass || !role || !estado || !fechaNacimiento || !username) {
         console.log(req.body);
         return res.status(400).json({ error: "Datos incompletos" });
     } else {
-
-        // Verificar si el correo ya existe
+        // Verificar si el correo electrónico ya está registrado
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ error: "Correo ya registrado" });
         } else {
-            const salt = await bcrypt.genSalt(10);      //aunque las contraseñas sean iguales, el hash es distinto, añadiendo asi una capa mas de seguridad
-            const hashedPassword = await bcrypt.hash(pass, salt);
+            // Encriptar la contraseña antes de guardarla
+            const salt = await bcrypt.genSalt(10);          // Generar salt para mayor seguridad
+            const hashedPassword = await bcrypt.hash(pass, salt); // Hash de la contraseña
+            
             try {
-                // Crear usuario
+                // Crear el nuevo usuario en la base de datos
                 const newUser = await User.create({
                     name,
                     email,
-                    pass: hashedPassword,
+                    pass: hashedPassword,    // Guardar contraseña encriptada
                     role,
                     estado,
                     fechaNacimiento,
@@ -44,11 +77,11 @@ module.exports.createUser = async (req, res) => {
                     username
                 });
 
+                // Responder con los datos del usuario creado (sin la contraseña)
                 res.status(201).json({
                     id: newUser.id.toString(),
                     name: newUser.name,
                     email: newUser.email,
-                    pass: newUser.pass,
                     role: newUser.role,
                     estado: newUser.estado,
                     fechaNacimiento: newUser.fechaNacimiento ? newUser.fechaNacimiento.toISOString().split('T')[0] : "",
@@ -57,6 +90,7 @@ module.exports.createUser = async (req, res) => {
                 });
 
             } catch (err) {
+                // Manejo de errores durante la creación del usuario
                 res.status(400).json({ error: "Error al crear usuario" });
             }
         }
@@ -64,25 +98,31 @@ module.exports.createUser = async (req, res) => {
 };
 
 
-// Login de usuario
+/**
+ * CONTROLADOR PARA LOGIN DE USUARIO
+ * Autentica las credenciales del usuario y genera un token JWT
+ * Valida email y contraseña contra la base de datos
+ */
 module.exports.loginUser = async (req, res) => {
     const { email, pass } = req.body;
     
     try {
+        // Buscar usuario por email en la base de datos
         const userFound = await User.findOne({ where: { email: email }});
         
+        // Verificar que el usuario existe y la contraseña es correcta
         if (userFound && (await bcrypt.compare(pass, userFound.pass))) {
             console.log('Login exitoso para:', userFound.email);
             
-            // ✅ Generar el token
+            // Generar token JWT para el usuario autenticado
             const token = generateToken(userFound.id, userFound.role);
             
-            // ✅ IMPRIMIR TOKEN EN CONSOLA DEL SERVIDOR
+            // Logs para debugging del token generado
             console.log('🔑 Token generado para:', userFound.email);
             console.log('🔑 Token completo:', token);
             console.log('🔑 Primeros 20 caracteres del token:', token.substring(0, 20) + '...');
             
-            // ✅ CORREGIR: Devolver user y token como espera el frontend
+            // Responder con información del usuario y token (sin contraseña)
             res.json({ 
                 user: {
                     id: userFound.id,
@@ -94,9 +134,10 @@ module.exports.loginUser = async (req, res) => {
                     bio: userFound.bio,
                     username: userFound.username
                 },
-                token: token
+                token: token  // Token para autenticación en futuras peticiones
             });
         } else {
+            // Credenciales incorrectas
             res.status(401).json({ message: 'Credenciales incorrectas' });
         }
     } catch (error) {
@@ -105,25 +146,36 @@ module.exports.loginUser = async (req, res) => {
     }
 }
 
-// Obtener todos los usuarios (excluyendo las contraseñas)
+/**
+ * CONTROLADOR PARA OBTENER TODOS LOS USUARIOS
+ * Devuelve una lista de todos los usuarios registrados
+ * Excluye las contraseñas por seguridad
+ */
 module.exports.getAllUsers = async (_, res) => {
     try {
+        // Obtener todos los usuarios excluyendo el campo 'pass'
         const users = await User.findAll({
-            attributes: { exclude: ['pass'] }
+            attributes: { exclude: ['pass'] }  // No incluir contraseñas en la respuesta
         });
         console.log(users.length)
         res.status(200).json(users);
     } catch (err) {
+        // Manejo de errores al obtener usuarios
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
 
-/// Obtener un usuario por id se excluye la contraseña
+/**
+ * CONTROLADOR PARA OBTENER USUARIO POR ID
+ * Busca y devuelve un usuario específico por su ID
+ * Excluye la contraseña por seguridad
+ */
 module.exports.getUserXId = async (req, res) => {
     try {
+        // Buscar usuario por ID sin incluir la contraseña
         const user = await User.findOne({ 
             where: { id: req.params.id },
-            attributes: { exclude: ['pass'] } // ✅ Excluir contraseña de la respuesta
+            attributes: { exclude: ['pass'] }
         });
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado" });
@@ -134,8 +186,11 @@ module.exports.getUserXId = async (req, res) => {
     }
 }
 
-
-// actualizar (parcialmente: estado) un usuario por id
+/**
+ * CONTROLADOR PARA ACTUALIZAR ESTADO DE USUARIO
+ * Permite cambiar el estado de un usuario (Activo/Silenciado)
+ * Utilizado principalmente por administradores para moderar usuarios
+ */
 module.exports.updUserEstado = async (req, res) => {
     try {
         const { id } = req.params;
@@ -143,11 +198,13 @@ module.exports.updUserEstado = async (req, res) => {
         
         console.log('Actualizando estado del usuario:', id, 'a:', estado);
         
+        // Buscar usuario por ID
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
         
+        // Actualizar solo el campo estado
         await user.update({ estado });
         
         res.json({ 
@@ -165,12 +222,16 @@ module.exports.updUserEstado = async (req, res) => {
     }
 };
 
-// actualizar (parcialmente: info perfil usuario) un usuario por id
+/**
+ * CONTROLADOR PARA ACTUALIZAR PERFIL DE USUARIO
+ * Permite actualizar información del perfil incluyendo contraseña
+ * Encripta la nueva contraseña si se proporciona
+ */
 module.exports.updUserPerfil = async (req, res) => {
     try {
         let updateData = { ...req.body };
 
-        // ✅ Si se está actualizando la contraseña, cifrarla
+        // Si se está actualizando la contraseña, encriptarla antes de guardar
         if (updateData.pass) {
             console.log('Cifrando nueva contraseña...');
             const salt = await bcrypt.genSalt(10);
@@ -178,17 +239,17 @@ module.exports.updUserPerfil = async (req, res) => {
             console.log('Contraseña cifrada correctamente');
         }
 
-        // Se actualiza el usuario
+        // Actualizar los datos del usuario en la base de datos
         const [updatedRowCount] = await User.update(updateData, {
             where: { id: req.params.id }
         });
         console.log('Filas actualizadas:', updatedRowCount);
 
-        // Se verifica si se ha actualizado algún registro
+        // Verificar si se actualizó algún registro
         if (updatedRowCount) {
             console.log("Usuario actualizado exitosamente");
 
-            // Recupera la información actualizada del usuario (sin la contraseña)
+            // Recuperar la información actualizada del usuario (sin contraseña)
             const updatedUser = await User.findOne({ 
                 where: { id: req.params.id },
                 attributes: { exclude: ['pass'] } // ✅ Excluir contraseña de la respuesta
@@ -243,6 +304,11 @@ module.exports.delUserXId = async (req, res) => {
     }
 }
 
+/**
+ * CÓDIGO COMENTADO - FUNCIÓN DE LOGIN ANTERIOR
+ * Esta función estaba implementada pero se mantiene comentada
+ * como referencia de una implementación alternativa usando axios
+ */
 /*
 // Función para realizar el login del usuario
 const loginUsuario = async (email, password) => {
@@ -275,20 +341,24 @@ const loginUsuario = async (email, password) => {
     }
 };*/
 
-// ✅ NUEVO: Cambiar contraseña del usuario
+/**
+ * CONTROLADOR PARA CAMBIAR CONTRASEÑA
+ * Permite a un usuario cambiar su contraseña actual por una nueva
+ * Valida la contraseña actual antes de permitir el cambio
+ */
 module.exports.cambiarPassword = async (req, res) => {
     const { id } = req.params;
     const { currentPassword, newPassword } = req.body;
     
     try {
-        // Buscar el usuario
+        // Buscar el usuario en la base de datos
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
         console.log('Usuario encontrado:', user.email);
         
-        // Verificar la contraseña actual
+        // Verificar que la contraseña actual sea correcta
         const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.pass);
         if (!isCurrentPasswordValid) {
             return res.status(400).json({ message: 'Contraseña actual incorrecta' });
