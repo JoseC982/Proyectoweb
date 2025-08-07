@@ -44,7 +44,7 @@ const encabezados = [
   { value: "ubicacion", label: "Ubicación" }            // Dónde ocurrió
 ];
 
-const NotificacionesAlertas = () => {
+const NotificacionesAlertas = ({ baseURL }) => {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
@@ -82,10 +82,6 @@ const NotificacionesAlertas = () => {
     color: "#000000",
     icon: ""
   });
-
-  // ✅ URL del backend
-  const baseURL = "http://172.29.41.39:8000/";
-
   // ✅ Función para obtener el token
   const getToken = () => {
     return localStorage.getItem('token');
@@ -101,7 +97,7 @@ const NotificacionesAlertas = () => {
     const config = {
       method,
       url: `${baseURL}${url}`,
-      headers: { 
+      headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
@@ -116,7 +112,7 @@ const NotificacionesAlertas = () => {
   const verifyAdminAuth = () => {
     const token = getToken();
     const userData = localStorage.getItem('usuario');
-    
+
     if (!token) {
       setMensaje("⚠️ Sesión expirada");
       setTimeout(() => navigate('/loginAdmin'), 2000);
@@ -204,7 +200,7 @@ const NotificacionesAlertas = () => {
       const notificacionesData = reportsData.map(report => {
         const user = usersData.find(u => u.id === report.userId);
         const incident = incidentsData.find(i => i.id === report.incidentTypeId);
-        
+
         return {
           id: report.id,
           nombre: user ? user.name : 'Usuario desconocido',
@@ -251,10 +247,10 @@ const NotificacionesAlertas = () => {
       setNuevoTipoNombre("");
       setNuevoTipoColor("#000000");
       setNuevoTipoIcon("");
-      
+
       setMensaje("✅ Tipo de incidente creado exitosamente");
       setTimeout(() => setMensaje(""), 3000);
-      
+
       // Recargar datos
       await loadAllData();
 
@@ -294,10 +290,10 @@ const NotificacionesAlertas = () => {
         color: "#000000",
         icon: ""
       });
-      
+
       setMensaje("✅ Tipo de incidente actualizado exitosamente");
       setTimeout(() => setMensaje(""), 3000);
-      
+
       // Recargar datos
       await loadAllData();
 
@@ -319,10 +315,10 @@ const NotificacionesAlertas = () => {
 
     try {
       await authenticatedRequest('DELETE', `incidents/${incidente.id}/delete`);
-      
+
       setMensaje("✅ Tipo de incidente eliminado exitosamente");
       setTimeout(() => setMensaje(""), 3000);
-      
+
       // Recargar datos
       await loadAllData();
 
@@ -358,7 +354,7 @@ const NotificacionesAlertas = () => {
       setModalEditar(false);
       setMensaje("✅ Tipo de reporte actualizado exitosamente");
       setTimeout(() => setMensaje(""), 3000);
-      
+
       // Recargar datos
       await loadAllData();
 
@@ -400,12 +396,12 @@ const NotificacionesAlertas = () => {
   useEffect(() => {
     const initializeComponent = async () => {
       setLoading(true);
-      
+
       const isAuthenticated = verifyAdminAuth();
       if (isAuthenticated) {
         await loadAllData();
       }
-      
+
       setLoading(false);
     };
 
@@ -493,7 +489,7 @@ const NotificacionesAlertas = () => {
       )}
 
       <img src={LogNotiAlerta} alt="Fondo" className="notificaciones-alertas-bg" />
-      
+
       <header className="menu-admin-header">
         <div className="menu-admin-logo">
           <img src={LogFondo} alt="Logo Quito" className="logo-quito" />
@@ -501,7 +497,7 @@ const NotificacionesAlertas = () => {
             <span className="ponte">¡PONTE</span> <span className="once">ONCE!</span>
           </span>
         </div>
-        
+
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
           <span className="nombre-usuario">
@@ -510,7 +506,7 @@ const NotificacionesAlertas = () => {
               (Admin)
             </span>
           </span>
-          
+
           <button
             className="icono-desplegar-btn"
             onClick={() => setMenuAbierto((v) => !v)}
@@ -521,17 +517,17 @@ const NotificacionesAlertas = () => {
 
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
-              <button 
-                className="menu-item" 
-                onClick={() => { 
-                  setMenuAbierto(false); 
-                  navigateWithAuth('/informacion-usuarioAdm'); 
+              <button
+                className="menu-item"
+                onClick={() => {
+                  setMenuAbierto(false);
+                  navigateWithAuth('/informacion-usuarioAdm');
                 }}
               >
                 Mi cuenta
               </button>
-              <button 
-                className="menu-item" 
+              <button
+                className="menu-item"
                 onClick={() => {
                   setMenuAbierto(false);
                   logout();
@@ -546,7 +542,7 @@ const NotificacionesAlertas = () => {
 
       <main className="notificaciones-alertas-main">
         <h1 className="notificaciones-alertas-titulo">Notificaciones de Alertas</h1>
-        
+
         {/* ✅ NUEVO: Botón para alternar entre vista de reportes e incidentes */}
         <div style={{ margin: "1rem 0", display: "flex", gap: "1rem", alignItems: "center" }}>
           <button
@@ -585,11 +581,11 @@ const NotificacionesAlertas = () => {
         {!mostrarIncidentes && (
           <>
             {/* ✅ CORREGIDO: Filtros en línea horizontal con estilos más específicos */}
-            <div style={{ 
-              margin: "1rem 0", 
-              display: "flex", 
+            <div style={{
+              margin: "1rem 0",
+              display: "flex",
               flexDirection: "row",
-              gap: "1rem", 
+              gap: "1rem",
               justifyContent: "center",
               alignItems: "center",
               flexWrap: "wrap",
@@ -600,7 +596,7 @@ const NotificacionesAlertas = () => {
                 className="combo-filtro-notificaciones"
                 value={columnaFiltro}
                 onChange={e => setColumnaFiltro(e.target.value)}
-                style={{ 
+                style={{
                   minWidth: "200px",
                   maxWidth: "250px",
                   display: "inline-block",
@@ -619,7 +615,7 @@ const NotificacionesAlertas = () => {
                   className="combo-filtro-notificaciones"
                   value={valorFiltro}
                   onChange={e => setValorFiltro(e.target.value)}
-                  style={{ 
+                  style={{
                     minWidth: "200px",
                     maxWidth: "250px",
                     display: "inline-block",
@@ -639,13 +635,13 @@ const NotificacionesAlertas = () => {
 
         {/* ✅ MODIFICADO: Botones condicionales según la vista */}
         <div style={{ display: "flex", gap: "1rem", margin: "1rem 0" }}>
-          <button 
-            className="btn-regresar" 
+          <button
+            className="btn-regresar"
             onClick={() => navigateWithAuth("/menu-administracion")}
           >
             REGRESAR
           </button>
-          
+
           {/* ✅ NUEVO: Botón solo visible en vista de tipos de incidentes */}
           {mostrarIncidentes && (
             <button
@@ -857,7 +853,7 @@ const NotificacionesAlertas = () => {
                   <input
                     type="text"
                     value={editarIncidenteData.type}
-                    onChange={e => setEditarIncidenteData({...editarIncidenteData, type: e.target.value})}
+                    onChange={e => setEditarIncidenteData({ ...editarIncidenteData, type: e.target.value })}
                     required
                     style={{ width: "100%", padding: "0.5rem", marginTop: "0.3rem" }}
                   />
@@ -867,7 +863,7 @@ const NotificacionesAlertas = () => {
                   <input
                     type="color"
                     value={editarIncidenteData.color}
-                    onChange={e => setEditarIncidenteData({...editarIncidenteData, color: e.target.value})}
+                    onChange={e => setEditarIncidenteData({ ...editarIncidenteData, color: e.target.value })}
                     style={{ marginLeft: "1rem" }}
                   />
                 </div>
@@ -876,7 +872,7 @@ const NotificacionesAlertas = () => {
                   <input
                     type="text"
                     value={editarIncidenteData.icon}
-                    onChange={e => setEditarIncidenteData({...editarIncidenteData, icon: e.target.value})}
+                    onChange={e => setEditarIncidenteData({ ...editarIncidenteData, icon: e.target.value })}
                     style={{ width: "100%", padding: "0.5rem", marginTop: "0.3rem" }}
                   />
                 </div>
@@ -884,13 +880,13 @@ const NotificacionesAlertas = () => {
                   <button type="submit" className="btn-editar-reporte">
                     Guardar Cambios
                   </button>
-                  <button 
-                    type="button" 
-                    className="btn-editar-reporte" 
+                  <button
+                    type="button"
+                    className="btn-editar-reporte"
                     onClick={() => {
                       setModalEditarIncidente(false);
                       setIncidenteEditar(null);
-                      setEditarIncidenteData({type: "", color: "#000000", icon: ""});
+                      setEditarIncidenteData({ type: "", color: "#000000", icon: "" });
                     }}
                   >
                     Cancelar

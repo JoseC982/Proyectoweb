@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom";
  * @param {Object} users - Usuario administrador autenticado
  */
 const MenuAdministracion = ({users}) => {
-  console.log(users);
+  //console.log(users);
   // Hook de navegación para cambiar de rutas
   const navigate = useNavigate();
   

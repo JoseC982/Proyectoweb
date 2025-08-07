@@ -28,21 +28,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 // Exporta el componente funcional InformacionUsuario, recibe el usuario y el setter global como props
-export default function InformacionUsuario({ users, setUsers }) {
+export default function InformacionUsuario({ users, setUsers, baseURL }) {
   // Muestra el usuario recibido en consola (para depuración)
   // Muestra el usuario recibido en consola (para depuración)
-  console.log(users);
+  //console.log(users);
   // Inicializa el hook de navegación para redirigir entre componentes
   const navigate = useNavigate();
-
-<<<<<<< HEAD
-  // ✅ URL base del backend
-  const baseURL = "http://172.29.41.39:8000/";
-=======
-  // ✅ URL base del backend para las peticiones HTTP
-  const baseURL = "http://localhost:8000/";
->>>>>>> 6f2ea83fab62dd932f825e707e0dc769784a7766
-
   // Estado para controlar si los campos del formulario están en modo edición o solo lectura
   const [edit, setEdit] = useState(false);
   // Estado para mostrar mensajes temporales de éxito o error (ej: "Información Actualizada")
@@ -223,7 +214,7 @@ export default function InformacionUsuario({ users, setUsers }) {
       // ✅ Petición autenticada al endpoint correcto del backend
       const response = await authenticatedRequest('PATCH', `users/${users.id}/infoPerfil`, datosActualizados);
       
-      console.log('Usuario actualizado:', response.data);
+      //console.log('Usuario actualizado:', response.data);
       
       // Actualizar estado global con los datos devueltos por el backend
       const usuarioActualizado = {
@@ -324,7 +315,7 @@ export default function InformacionUsuario({ users, setUsers }) {
         newPassword: passwordData.newPassword
       });
       
-      console.log('Contraseña actualizada:', response.data);
+      //console.log('Contraseña actualizada:', response.data);
       
       setModalPasswordOpen(false);
       setPasswordData({

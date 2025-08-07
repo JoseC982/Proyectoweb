@@ -33,7 +33,7 @@ import axios from "axios";
  * DEFINICIÓN DEL COMPONENTE GESTIÓN USUARIOS
  * Maneja todas las operaciones administrativas sobre usuarios
  */
-const GestionUsuarios = () => {
+const GestionUsuarios = ({baseURL}) => {
   /**
    * ESTADOS DEL COMPONENTE
    * Control de la interfaz y datos de usuarios
@@ -49,9 +49,6 @@ const GestionUsuarios = () => {
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // ✅ URL del backend
-  const baseURL = "http://172.29.41.39:8000/";
 
   // ✅ Función para obtener el token
   const getToken = () => {

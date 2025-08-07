@@ -30,7 +30,7 @@ import axios from "axios";
  * DEFINICIÓN DEL COMPONENTE GENERAR REPORTE
  * Maneja la creación de nuevos reportes de incidentes
  */
-export default function GenerarReporte() {
+export default function GenerarReporte({ baseURL }) {
   // Obtiene información del estado de navegación (datos del reporte si viene de edición)
   const location = useLocation();
   // Hook para navegación programática
@@ -54,10 +54,6 @@ export default function GenerarReporte() {
 
   // ✅ NUEVO: Estados para integración con backend
   const [enviandoReporte, setEnviandoReporte] = useState(false);
-
-  // ✅ URL base del backend
-  const baseURL = "http://172.29.41.39:8000/";
-
   // ✅ Función para obtener el token
   const getToken = () => {
     return localStorage.getItem('token');
@@ -73,7 +69,7 @@ export default function GenerarReporte() {
     const config = {
       method,
       url: `${baseURL}${url}`,
-      headers: { 
+      headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
@@ -97,7 +93,7 @@ export default function GenerarReporte() {
   const verifyUserAuth = () => {
     const token = getToken();
     const userData = localStorage.getItem('usuario');
-    
+
     if (!token) {
       setMensaje("⚠️ Sesión expirada - Debe iniciar sesión");
       setTimeout(() => navigate('/login'), 2000);
@@ -140,10 +136,10 @@ export default function GenerarReporte() {
   useEffect(() => {
     const checkAuth = () => {
       setLoading(true);
-      
+
       const isAuthenticated = verifyUserAuth();
       setAuthenticated(isAuthenticated);
-      
+
       setLoading(false);
     };
 
@@ -183,20 +179,20 @@ export default function GenerarReporte() {
         status: 'nuevo'
       };
 
-      console.log('Enviando reporte:', datosReporte);
+      //console.log('Enviando reporte:', datosReporte);
 
       // ✅ Enviar reporte al backend
       const response = await authenticatedRequest('POST', 'reports/create', datosReporte);
-      
-      console.log('Reporte creado:', response.data);
+
+      //console.log('Reporte creado:', response.data);
 
       setMensaje("✅ Reporte Generado Exitosamente");
-      
+
       // Limpiar formulario
       setDescripcion("");
       setUbicacion("");
       setHora("");
-      
+
       // Regresar al menú después de 2 segundos
       setTimeout(() => {
         setMensaje("");
@@ -205,13 +201,13 @@ export default function GenerarReporte() {
 
     } catch (error) {
       console.error('Error al generar reporte:', error);
-      
+
       let mensajeError = "❌ Error al generar reporte";
-      
+
       if (error.response) {
         const status = error.response.status;
         const message = error.response.data?.message || error.response.data?.error;
-        
+
         if (status === 401) {
           mensajeError = "⚠️ Sesión expirada";
           setTimeout(() => logout(), 2000);
@@ -225,7 +221,7 @@ export default function GenerarReporte() {
       } else if (error.request) {
         mensajeError = "❌ Error de conexión con el servidor";
       }
-      
+
       setMensaje(mensajeError);
       setTimeout(() => setMensaje(""), 3000);
     } finally {
@@ -373,16 +369,16 @@ export default function GenerarReporte() {
             />
             {/* Botones para generar o cancelar el reporte */}
             <div className="botones-reporte">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn-generar"
                 disabled={!formularioValido || enviandoReporte}
               >
                 {enviandoReporte ? "ENVIANDO..." : "GENERAR"}
               </button>
-              <button 
-                type="button" 
-                className="btn-cancelar" 
+              <button
+                type="button"
+                className="btn-cancelar"
                 onClick={handleCancelar}
                 disabled={enviandoReporte}
               >
@@ -390,7 +386,7 @@ export default function GenerarReporte() {
               </button>
             </div>
           </form>
-          
+
           {/* ✅ Validación visual */}
           {!formularioValido && (
             <div style={{ color: "red", textAlign: "center", marginTop: "10px", fontSize: "0.9em" }}>

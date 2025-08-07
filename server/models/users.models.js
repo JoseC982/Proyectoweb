@@ -10,7 +10,7 @@
  */
 
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/sequelize.config'); // Importar la configuración de BD
+const { sequelize } = require('../config/sequelize.config');
 
 /**
  * DEFINICIÓN DEL MODELO USER

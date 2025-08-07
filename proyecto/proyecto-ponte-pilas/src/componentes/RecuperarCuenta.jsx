@@ -35,10 +35,10 @@ import policia from '../recursos/policia-logo.png';
 import user_logo from '../recursos/user-logo.png';
 
 // Componente funcional para la recuperación de cuenta
-const RecuperarCuenta = () => {
+const RecuperarCuenta = ({ baseURL }) => {
     // Hook de navegación para redirigir entre componentes
     const navigate = useNavigate();
-    
+
     // Estado para controlar el paso actual del proceso (1: email, 2: código y nueva contraseña)
     const [step, setStep] = useState(1);
     // Estado para almacenar el email del usuario
@@ -53,14 +53,6 @@ const RecuperarCuenta = () => {
     const [isLoading, setIsLoading] = useState(false);
     // Estado para mostrar mensajes de éxito o error al usuario
     const [message, setMessage] = useState('');
-
-<<<<<<< HEAD
-    const baseURL = "http://172.29.41.39:8000/";
-=======
-    // URL base del backend para las peticiones HTTP
-    const baseURL = "http://localhost:8000/";
->>>>>>> 6f2ea83fab62dd932f825e707e0dc769784a7766
-
     // Función para el Paso 1: Envía el código de verificación al email del usuario
     const handleEnviarCodigo = () => {
         if (!email.trim()) {
@@ -76,22 +68,22 @@ const RecuperarCuenta = () => {
 
         setIsLoading(true);
         setMessage('');
-        
-        axios.post(`${baseURL}users/enviar-codigo-recuperacion`, { 
-            email: email.trim() 
+
+        axios.post(`${baseURL}users/enviar-codigo-recuperacion`, {
+            email: email.trim()
         })
-        .then(response => {
-            setMessage("✅ Revisa tu email, te hemos enviado un código de 6 dígitos");
-            setStep(2);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            const errorMsg = error.response?.data?.message || "Error al enviar el código";
-            setMessage("❌ " + errorMsg);
-        })
-        .finally(() => {
-            setIsLoading(false);
-        });
+            .then(response => {
+                setMessage("✅ Revisa tu email, te hemos enviado un código de 6 dígitos");
+                setStep(2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorMsg = error.response?.data?.message || "Error al enviar el código";
+                setMessage("❌ " + errorMsg);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     // Paso 2: Verificar código y cambiar contraseña
@@ -113,26 +105,26 @@ const RecuperarCuenta = () => {
 
         setIsLoading(true);
         setMessage('');
-        
+
         axios.post(`${baseURL}users/verificar-codigo-cambiar-password`, {
             email: email.trim(),
             code: code.trim(),
             newPassword
         })
-        .then(response => {
-            setMessage("✅ ¡Contraseña actualizada exitosamente!");
-            setTimeout(() => {
-                navigate("/loginAdmin");
-            }, 2000);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            const errorMsg = error.response?.data?.message || "Error al cambiar contraseña";
-            setMessage("❌ " + errorMsg);
-        })
-        .finally(() => {
-            setIsLoading(false);
-        });
+            .then(response => {
+                setMessage("✅ ¡Contraseña actualizada exitosamente!");
+                setTimeout(() => {
+                    navigate("/loginAdmin");
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorMsg = error.response?.data?.message || "Error al cambiar contraseña";
+                setMessage("❌ " + errorMsg);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     return (
@@ -213,9 +205,9 @@ const RecuperarCuenta = () => {
                     )}
 
                     {message && (
-                        <div style={{ 
-                            color: message.includes("✅") ? "green" : "red", 
-                            textAlign: "center", 
+                        <div style={{
+                            color: message.includes("✅") ? "green" : "red",
+                            textAlign: "center",
                             margin: "15px 0",
                             padding: "10px",
                             backgroundColor: message.includes("✅") ? "#d4edda" : "#f8d7da",
@@ -226,14 +218,14 @@ const RecuperarCuenta = () => {
                     )}
 
                     <div className="button-container">
-                        <button 
-                            className="button" 
+                        <button
+                            className="button"
                             onClick={step === 1 ? handleEnviarCodigo : handleCambiarPassword}
                             disabled={isLoading}
                         >
                             {isLoading ? "Procesando..." : (step === 1 ? "Recuperar Cuenta" : "Cambiar Contraseña")}
                         </button>
-                        
+
                         <Link to="/loginAdmin">
                             <button className="button" disabled={isLoading}>
                                 Volver a Inicio

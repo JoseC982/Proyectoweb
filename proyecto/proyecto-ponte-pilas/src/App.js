@@ -54,7 +54,7 @@ function App() {
    * ESTADOS GLOBALES DE LA APLICACIÓN
    * Estos estados son compartidos entre componentes para mantener consistencia
    */
-  
+
   // Estado para almacenar la lista completa de usuarios del sistema
   const [usersList, setUsersList] = useState([]);
   // Estado para almacenar los tipos de incidentes disponibles (catálogo)
@@ -64,19 +64,8 @@ function App() {
   // Estado para almacenar notificaciones procesadas para la vista admin
   const [notificaciones, setNotificaciones] = useState([]);
 
-<<<<<<< HEAD
-  const baseURL = "http://172.29.41.39:8000/";
+  const baseURL = "http://192.168.100.29:8000/";
   // ✅ CORREGIR: Estado global para el usuario autenticado con validación
-=======
-  // URL base del servidor backend
-  const baseURL = "http://localhost:8000/";
-  
-  /**
-   * ESTADO DEL USUARIO AUTENTICADO
-   * Inicializa desde localStorage para persistir la sesión entre recargas
-   * Incluye validación para evitar datos corruptos
-   */
->>>>>>> 6f2ea83fab62dd932f825e707e0dc769784a7766
   const [users, setUsers] = useState(() => {
     const usuarioGuardado = localStorage.getItem("usuario");
     // Validar que no sea null, undefined o "undefined"
@@ -102,7 +91,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const usuario = localStorage.getItem("usuario");
-    
+
     // Limpiar datos corruptos
     if (token === "undefined" || token === "null") {
       localStorage.removeItem("token");
@@ -149,11 +138,11 @@ function App() {
     }
   }, [users]); // Se ejecuta cuando cambia el usuario
 
-   /**
-   * FUNCIÓN PARA OBTENER TODOS LOS DATOS DEL BACKEND
-   * Realiza peticiones simultáneas para cargar usuarios, incidentes y reportes
-   * Incluye manejo de errores y limpieza de sesión en caso de token inválido
-   */
+  /**
+  * FUNCIÓN PARA OBTENER TODOS LOS DATOS DEL BACKEND
+  * Realiza peticiones simultáneas para cargar usuarios, incidentes y reportes
+  * Incluye manejo de errores y limpieza de sesión en caso de token inválido
+  */
   const fetchAllData = () => {
     // Solo hacer peticiones si hay usuario autenticado
     if (!users) return;
@@ -166,13 +155,13 @@ function App() {
     ])
       .then(([usersRes, incidentsRes, reportsRes]) => {
         // Actualizar estados con los datos obtenidos
-        setUsersList(usersRes.data);         
-        setIncidents(incidentsRes.data);     
-        setReports(reportsRes.data);         
+        setUsersList(usersRes.data);
+        setIncidents(incidentsRes.data);
+        setReports(reportsRes.data);
       })
       .catch((err) => {
         console.error('Error al obtener datos:', err);
-        
+
         // Si es error 401 (no autorizado), limpiar sesión completamente
         if (err.response && err.response.status === 401) {
           localStorage.removeItem("token");
@@ -276,51 +265,51 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* ========== RUTAS PARA USUARIOS REGULARES ========== */}
-        
+
         {/* Menú principal del usuario autenticado */}
         <Route path="/menuUsuario" element={
-          <MenuUsuario users={users} fetchAllData={fetchAllData} />
+          <MenuUsuario users={users} fetchAllData={fetchAllData} baseURL={baseURL} />
         } />
-        
-        {/* Página de información/perfil del usuario */}
-        <Route path="/informacion" element={<InformacionUsuario users={users} setUsers={setUsers} />} />
-        
-        {/* Formulario para crear nuevos reportes de incidentes */}
-        <Route path="/generar-reporte" element={<GenerarReporte />} />
 
-        {/* Visualización de reportes propios del usuario */}
-        <Route path="/visualizar-reportes" element={<VisualizarReportes />} />
+        {/* Página de información/perfil del usuario */}
+        <Route path="/informacion" element={<InformacionUsuario users={users} setUsers={setUsers} baseURL={baseURL} />} />
+
+        {/* Formulario para crear nuevos reportes de incidentes */}
+        <Route path="/generar-reporte" element={<GenerarReporte baseURL={baseURL}/>} />
+
+        {/* Visualización de reportes propios del usuario
+        <Route path="/visualizar-reportes" element={<VisualizarReportes baseURL={baseURL}/>} /> */}
 
         {/* ========== RUTAS PÚBLICAS ========== */}
-        
+
         {/* Página de inicio/landing page */}
-        <Route path="/" element={<Home />} />
-        
+        <Route path="/" element={<Home baseURL={baseURL}/>} />
+
         {/* Formulario de login para administradores */}
-        <Route path="/loginAdmin" element={<LoginAdmin setUsers={setUsers} />} />
-        
+        <Route path="/loginAdmin" element={<LoginAdmin setUsers={setUsers} baseURL={baseURL}/>} />
+
         {/* Formulario de registro de nuevos usuarios */}
-        <Route path="/crearCuenta" element={<CrearCuenta />} />
-        
+        <Route path="/crearCuenta" element={<CrearCuenta baseURL={baseURL}/>} />
+
         {/* Sistema de recuperación de contraseñas */}
-        <Route path="/recuperarCuenta" element={<RecuperarCuenta />} />
-        
+        <Route path="/recuperarCuenta" element={<RecuperarCuenta baseURL={baseURL}/>} />
+
         {/* ========== RUTAS ADMINISTRATIVAS ========== */}
-        
+
         {/* Menú principal para administradores */}
-        <Route path="/menu-administracion" element={<MenuAdministracion users={users} />} />
-        
+        <Route path="/menu-administracion" element={<MenuAdministracion users={users}/>} />
+
         {/* Gestión completa de usuarios (CRUD) */}
-        <Route path="/gestion-usuarios" element={<GestionUsuarios users={usersList} silenciarUsuario={silenciarUsuario} borrarUsuario={borrarUsuario} />} />
-        
+        <Route path="/gestion-usuarios" element={<GestionUsuarios users={usersList} silenciarUsuario={silenciarUsuario} borrarUsuario={borrarUsuario} baseURL={baseURL}/>} />
+
         {/* Dashboard de notificaciones y reportes */}
-        <Route path="/notificaciones-alertas" element={<NotificacionesAlertas users={users} notificaciones={notificaciones} />} />
-        
+        <Route path="/notificaciones-alertas" element={<NotificacionesAlertas users={users} notificaciones={notificaciones} baseURL={baseURL}/>} />
+
         {/* Sistema de validación y moderación de reportes */}
-        <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={users} usersList={usersList} incidents={incidents} borrarReporte={borrarReporte} />} />
-        
+        <Route path="/validar-alertas" element={<ValidarAlertas reports={reports} users={users} usersList={usersList} incidents={incidents} borrarReporte={borrarReporte} baseURL={baseURL}/>} />
+
         {/* Perfil de usuario desde vista administrativa */}
-        <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm users={users} setUsers={setUsers} />} />
+        <Route path="/informacion-usuarioAdm" element={<InformacionUsuarioAdm users={users} setUsers={setUsers} baseURL={baseURL}/>} />
 
       </Routes>
     </BrowserRouter>

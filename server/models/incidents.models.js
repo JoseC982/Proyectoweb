@@ -12,7 +12,7 @@
  */
 
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config//sequelize.config'); // Importar configuración de BD
+const { sequelize } = require('../config/sequelize.config');
 
 /**
  * DEFINICIÓN DEL MODELO INCIDENTS

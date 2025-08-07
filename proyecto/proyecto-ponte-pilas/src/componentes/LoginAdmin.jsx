@@ -36,7 +36,7 @@ import axios from "axios";
  * DEFINICIÓN DEL COMPONENTE LOGIN ADMIN
  * @param {Function} setUsers - Función para actualizar el estado global del usuario autenticado
  */
-const LoginAdmin = ({ setUsers }) => {
+const LoginAdmin = ({ setUsers, baseURL }) => {
     // Hook de navegación para redireccionar después del login
     const navigate = useNavigate();
     // Estado para mostrar/ocultar la contraseña
@@ -48,10 +48,6 @@ const LoginAdmin = ({ setUsers }) => {
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-
-    // ✅ URL base del backend
-    const baseURL = "http://172.29.41.39:8000/";
-
     // Función que maneja el inicio de sesión
     const handleLogin = () => {
         // Validar que los campos no estén vacíos
@@ -92,7 +88,7 @@ const LoginAdmin = ({ setUsers }) => {
                         setShowModal(false);
                         navigate("/menu-administracion");
                     }, 1500);
-                    console.log("Usuario admin logueado:", user);
+                    //console.log("Usuario admin logueado:", user);
                 } else {
                     setModalMessage("Bienvenido a Ponte Pilas");
                     setShowModal(true);
@@ -100,7 +96,7 @@ const LoginAdmin = ({ setUsers }) => {
                         setShowModal(false);
                         navigate("/menuUsuario");
                     }, 1500);
-                    console.log("Usuario normal logueado:", user);
+                    //console.log("Usuario normal logueado:", user);
                 }
             })
             .catch(error => {

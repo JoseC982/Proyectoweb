@@ -27,22 +27,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 // Exporta el componente funcional InformacionUsuarioAdm para administradores
-export default function InformacionUsuarioAdm() {
+export default function InformacionUsuarioAdm({baseURL}) {
   // Inicializa el hook de navegación para redirigir entre componentes
   const navigate = useNavigate();
 
   // ✅ Estados para el usuario administrador actual
   const [currentUser, setCurrentUser] = useState(null); // Datos del administrador logueado
   const [loading, setLoading] = useState(true); // Estado de carga inicial
-
-<<<<<<< HEAD
-  // ✅ URL base del backend
-  const baseURL = "http://172.29.41.39:8000/";
-=======
-  // ✅ URL base del backend para las peticiones HTTP
-  const baseURL = "http://localhost:8000/";
->>>>>>> 6f2ea83fab62dd932f825e707e0dc769784a7766
-
   // Estado para controlar si los campos del formulario están en modo edición o solo lectura
   const [edit, setEdit] = useState(false);
   // Estado para mostrar mensajes temporales de éxito o error
@@ -178,7 +169,7 @@ export default function InformacionUsuarioAdm() {
       // ✅ Petición PATCH al endpoint correcto del backend
       const response = await authenticatedRequest('PATCH', `users/${currentUser.id}/infoPerfil`, datosActualizados);
       
-      console.log('Usuario actualizado:', response.data);
+      //console.log('Usuario actualizado:', response.data);
       
       // Actualizar estado local con los datos devueltos por el backend
       const usuarioActualizado = {
@@ -278,7 +269,7 @@ export default function InformacionUsuarioAdm() {
         newPassword: passwordData.newPassword
       });
       
-      console.log('Contraseña actualizada:', response.data);
+      //console.log('Contraseña actualizada:', response.data);
       
       setModalPasswordOpen(false);
       setPasswordData({

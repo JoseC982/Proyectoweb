@@ -35,7 +35,7 @@ import axios from "axios";
  * DEFINICIÓN DEL COMPONENTE VALIDAR ALERTAS
  * Maneja el proceso de moderación y validación de reportes
  */
-const ValidarAlertas = () => {
+const ValidarAlertas = ({ baseURL }) => {
   /**
    * ESTADOS DEL COMPONENTE
    * Control de la interfaz y proceso de validación
@@ -45,19 +45,15 @@ const ValidarAlertas = () => {
   const [index, setIndex] = useState(0);                       // Índice del reporte actual en revisión
   const [currentUser, setCurrentUser] = useState(null);       // Usuario administrador actual
   const [loading, setLoading] = useState(true);               // Estado de carga de datos
-  
+
   // Estados para los datos
   const [reports, setReports] = useState([]);
   const [users, setUsers] = useState([]);
   const [incidents, setIncidents] = useState([]);
-  
+
   // Referencias y hooks
   const menuRef = useRef(null);
   const navigate = useNavigate();
-
-  // ✅ URL del backend
-  const baseURL = "http://172.29.41.39:8000/";
-
   // ✅ Función para obtener el token
   const getToken = () => {
     return localStorage.getItem('token');
@@ -73,7 +69,7 @@ const ValidarAlertas = () => {
     const config = {
       method,
       url: `${baseURL}${url}`,
-      headers: { 
+      headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
@@ -88,7 +84,7 @@ const ValidarAlertas = () => {
   const verifyAdminAuth = () => {
     const token = getToken();
     const userData = localStorage.getItem('usuario');
-    
+
     if (!token) {
       setMensaje("⚠️ Sesión expirada");
       setTimeout(() => navigate('/loginAdmin'), 2000);
@@ -193,7 +189,7 @@ const ValidarAlertas = () => {
   const borrarReporte = async (reportId) => {
     try {
       await authenticatedRequest('DELETE', `reports/${reportId}`);
-      
+
       // Actualizar la lista local de reportes
       const nuevosReportes = reports.filter(r => r.id !== reportId);
       setReports(nuevosReportes);
@@ -243,10 +239,10 @@ const ValidarAlertas = () => {
 
   // Obtiene el reporte actual a mostrar según el índice
   const reporteActual = reports && reports.length > 0 ? reports[index] : null;
-  
+
   // Variables para guardar el usuario y el incidente del reporte actual
   let usuario = null, incidente = null;
-  
+
   if (reporteActual) {
     usuario = users.find((u) => String(u.id) === String(reporteActual.userId));
     incidente = incidents.find(
@@ -258,12 +254,12 @@ const ValidarAlertas = () => {
   useEffect(() => {
     const initializeComponent = async () => {
       setLoading(true);
-      
+
       const isAuthenticated = verifyAdminAuth();
       if (isAuthenticated) {
         await loadAllData();
       }
-      
+
       setLoading(false);
     };
 
@@ -298,7 +294,7 @@ const ValidarAlertas = () => {
   // ✅ Función para rechazar el reporte actual (mejorada)
   const handleRechazar = async () => {
     if (!reporteActual) return;
-    
+
     // Confirmar antes de eliminar
     if (!window.confirm(`¿Estás seguro de que quieres rechazar esta alerta?`)) {
       return;
@@ -361,7 +357,7 @@ const ValidarAlertas = () => {
       )}
 
       <img src={LogValidarAlerta} alt="Fondo" className="validar-alertas-bg" />
-      
+
       <header className="menu-admin-header">
         <div className="menu-admin-logo">
           <img src={LogFondo} alt="Logo Quito" className="logo-quito" />
@@ -369,7 +365,7 @@ const ValidarAlertas = () => {
             <span className="ponte">¡PONTE</span> <span className="once">ONCE!</span>
           </span>
         </div>
-        
+
         <div className="menu-admin-user" ref={menuRef}>
           <span className="icono-engranaje">⚙️</span>
           <span className="nombre-usuario">
@@ -378,7 +374,7 @@ const ValidarAlertas = () => {
               (Admin)
             </span>
           </span>
-          
+
           <button
             className="icono-desplegar-btn"
             onClick={() => setMenuAbierto((v) => !v)}
@@ -389,17 +385,17 @@ const ValidarAlertas = () => {
 
           {menuAbierto && (
             <div className="menu-desplegable-usuario">
-              <button 
-                className="menu-item" 
-                onClick={() => { 
-                  setMenuAbierto(false); 
-                  navigateWithAuth('/informacion-usuarioAdm'); 
+              <button
+                className="menu-item"
+                onClick={() => {
+                  setMenuAbierto(false);
+                  navigateWithAuth('/informacion-usuarioAdm');
                 }}
               >
                 Mi cuenta
               </button>
-              <button 
-                className="menu-item" 
+              <button
+                className="menu-item"
                 onClick={() => {
                   setMenuAbierto(false);
                   logout();
@@ -417,7 +413,7 @@ const ValidarAlertas = () => {
           <img src={LogMegafono} alt="Megáfono" className="validar-alertas-megafono" />
           <h1 className="validar-alertas-titulo">Validación de alertas</h1>
         </div>
-        
+
         {reporteActual ? (
           <div className="validar-alertas-card">
             <button
@@ -427,7 +423,7 @@ const ValidarAlertas = () => {
             >
               &#9664;
             </button>
-            
+
             <div className="validar-alertas-info">
               <div>
                 <b>Nombre de usuario:</b> {usuario ? usuario.name : "Desconocido"}
@@ -445,7 +441,7 @@ const ValidarAlertas = () => {
                 <b>Ubicación:</b> {reporteActual.location}
               </div>
               <div>
-                <b>Estado:</b> 
+                <b>Estado:</b>
                 <span style={{
                   color: reporteActual.status === 'nuevo' ? '#dc3545' : '#28a745',
                   fontWeight: 'bold',
@@ -455,7 +451,7 @@ const ValidarAlertas = () => {
                 </span>
               </div>
             </div>
-            
+
             <button
               className="validar-alertas-arrow right"
               onClick={handleNext}
@@ -469,7 +465,7 @@ const ValidarAlertas = () => {
             No hay alertas para validar
           </div>
         )}
-        
+
         <div className="validar-alertas-botones">
           <button
             className="btn-rechazar"
@@ -479,7 +475,7 @@ const ValidarAlertas = () => {
             Rechazar <span className="icon-cross">❌</span>
           </button>
         </div>
-        
+
         <button
           className="btn-regresar"
           onClick={() => navigateWithAuth("/menu-administracion")}

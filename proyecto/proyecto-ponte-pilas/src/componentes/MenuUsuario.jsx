@@ -33,10 +33,10 @@ import "../estilos/MenuUsuario.css";
  * @param {Object} users - Usuario autenticado actual
  * @param {Function} fetchAllData - Función para recargar datos desde el backend
  */
-export default function MenuUsuario({ users, fetchAllData }) {
+export default function MenuUsuario({ users, fetchAllData, baseURL }) {
   // Hook de navegación para cambiar de rutas
   const navigate = useNavigate();
-  
+
   /**
    * ESTADOS DEL COMPONENTE
    * Manejo de datos y estado de la interfaz
@@ -59,18 +59,15 @@ export default function MenuUsuario({ users, fetchAllData }) {
   // ✅ NUEVO: Estado para el modal de confirmación de eliminación
   const [modalEliminarOpen, setModalEliminarOpen] = useState(false);
   const [reporteAEliminar, setReporteAEliminar] = useState(null);
-
-  // ✅ URL base del backend
-  const baseURL = "http://172.29.41.39:8000/";
-// ✅ NUEVO: Función para hacer scroll hasta la tabla de reportes
+  // ✅ NUEVO: Función para hacer scroll hasta la tabla de reportes
   const scrollToReportes = () => {
     // Buscar el elemento de la tabla de reportes y hacer scroll suave
     setTimeout(() => {
       const tablaElement = document.querySelector('.tabla-reportes');
       if (tablaElement) {
-        tablaElement.scrollIntoView({ 
+        tablaElement.scrollIntoView({
           behavior: 'smooth',
-          block: 'start' 
+          block: 'start'
         });
       }
     }, 100); // Pequeño delay para asegurar que el DOM se actualice

@@ -1,143 +1,158 @@
-// Importa la librería Sequelize para el manejo de la base de datos MySQL
 const { Sequelize } = require('sequelize');
-<<<<<<< HEAD
 const username = 'root';
 const password = '090802';
-const bdd_name = 'PonteOnceBDDv3';
-const hostName = 'localhost'; // Cambia esto si es necesario
-// Conexión inicial sin especificar la base de datos
-const initialSequelize = new Sequelize(`mysql://${username}:${password}@localhost`);
-initialSequelize.query(`CREATE DATABASE IF NOT EXISTS ${bdd_name};`)
-    .then(() => console.log('BDD creada o ya existía'))
-    .catch((error) => {
-        console.error('Error al crear la BDD', error);
-        process.exit(1); // Termina el proceso si hay un error
-    });
-=======
->>>>>>> 6f2ea83fab62dd932f825e707e0dc769784a7766
+const bdd_name = 'PonteOnceBDDv8Vacia';
+const hostName = 'localhost';
 
-// Configuración de credenciales y parámetros de conexión a la base de datos
-const username = 'root';          // Usuario de MySQL
-const password = '090802';        // Contraseña del usuario MySQL
-const bdd_name = 'PonteOnceBDDv4Vacia';  // Nombre de la base de datos
-const hostName = 'localhost';     // Servidor donde está alojada la BD (local)
+// ✅ NUEVO: Datos por defecto para tipos de incidentes
+const defaultIncidents = [
+    { type: 'Robo', color: '#ff4444', icon: 'https://media.elcomercio.com/wp-content/uploads/2024/10/robo-a-personas.jpg'},
+    { type: 'Asalto', color: '#ff8800', icon: 'https://random.imagecdn.app/100/100?1' },
+    { type: 'Accidente de Tránsito', color: '#ffcc00', icon: 'https://random.imagecdn.app/100/100?2' },
+    { type: 'Riña', color: '#cc00ff', icon: 'https://random.imagecdn.app/100/100?3' },
+    { type: 'Actividad Sospechosa', color: '#0088ff', icon: 'https://random.imagecdn.app/100/100?4' },
+    { type: 'Vandalismo', color: '#ff0080', icon: 'https://random.imagecdn.app/100/100?5' },
+    { type: 'Venta de Drogas', color: '#800000', icon: 'https://random.imagecdn.app/100/100?6' },
+    { type: 'Violencia Doméstica', color: '#ff6600', icon: 'https://random.imagecdn.app/100/100?7' },
+    { type: 'Alumbrado Público Dañado', color: '#666666', icon: 'https://random.imagecdn.app/100/100?8' },
+    { type: 'Otro', color: '#888888', icon: 'https://random.imagecdn.app/100/100?9' }
+];
 
 // ✅ MEJORADO: Conexión inicial con mejor manejo de errores
-/**
- * Función asíncrona para crear la base de datos si no existe
- * Utiliza una conexión temporal para ejecutar el comando CREATE DATABASE
- * @returns {Promise<void>} - Promesa que se resuelve cuando la BD está creada
- */
 const createDatabase = async () => {
-    // Crear una instancia temporal de Sequelize para conectarse al servidor MySQL
-    // sin especificar una base de datos particular
+    console.log("🔄 Creando base de datos si no existe...");
     const initialSequelize = new Sequelize(`mysql://${username}:${password}@${hostName}`, {
-        logging: false // Silenciar logs de SQL durante la creación para evitar spam en consola
+        logging: false
     });
-    
+    console.log('🔄 Intentando crear la base de datos...');
     try {
-        // Ejecutar la query SQL para crear la base de datos si no existe
+        console.log('🔄 Ejecutando consulta para crear la base de datos...', bdd_name);
         await initialSequelize.query(`CREATE DATABASE IF NOT EXISTS ${bdd_name};`);
         console.log('✅ Base de datos creada o ya existía');
-        
-        // Cerrar la conexión temporal para liberar recursos
         await initialSequelize.close();
     } catch (error) {
         console.error('❌ Error al crear la BDD:', error);
-        throw error; // Re-lanzar el error para que sea manejado por el llamador
+        throw error;
     }
 };
 
-/**
- * Configuración e inicialización de Sequelize
- * Crea la instancia principal de Sequelize para interactuar con la base de datos MySQL
- * Incluye configuración de pool de conexiones y manejo de errores de conexión
- */
+// ✅ MEJORADO: Conectar a la base de datos específica
 const sequelize = new Sequelize(bdd_name, username, password, {
-    host: hostName,          // Servidor donde está alojada la base de datos
-    dialect: 'mysql',        // Especifica que usaremos MySQL como sistema de BD
-    logging: false,          // Silenciar logs SQL (cambiar a console.log para debugging)
-    
-    // Configuración del pool de conexiones para optimizar el rendimiento
+    host: hostName,
+    dialect: 'mysql',
+    logging: false,
     pool: {
-        max: 5,             // Máximo número de conexiones simultáneas al pool
-        min: 0,             // Mínimo número de conexiones mantenidas en el pool
-        acquire: 30000,     // Tiempo máximo (30s) para obtener una conexión del pool
-        idle: 10000         // Tiempo máximo (10s) que una conexión puede estar inactiva
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
     },
-    
-    // Configuración de reintentos automáticos para diferentes tipos de errores de red
     retry: {
-        // Lista de errores que activarán el mecanismo de reintento automático
         match: [
-            /ETIMEDOUT/,        // Error de timeout de conexión
-            /EHOSTUNREACH/,     // Host no alcanzable
-            /ECONNRESET/,       // Conexión reseteada por el servidor
-            /ECONNREFUSED/,     // Conexión rechazada por el servidor
-            /ETIMEDOUT/,        // Timeout general
-            /ESOCKETTIMEDOUT/,  // Timeout de socket
-            /EHOSTUNREACH/,     // Host inalcanzable
-            /EPIPE/,            // Error de pipe roto
-            /EAI_AGAIN/,        // Error de DNS temporal
-            /ER_CON_COUNT_ERROR/, // Demasiadas conexiones en MySQL
-            /ECONNREFUSED/      // Conexión rechazada
+            /ETIMEDOUT/,
+            /EHOSTUNREACH/,
+            /ECONNRESET/,
+            /ECONNREFUSED/,
+            /ETIMEDOUT/,
+            /ESOCKETTIMEDOUT/,
+            /EHOSTUNREACH/,
+            /EPIPE/,
+            /EAI_AGAIN/,
+            /ER_CON_COUNT_ERROR/,
+            /ECONNREFUSED/
         ],
-        max: 3              // Máximo 3 intentos de reconexión automática
+        max: 3
     }
 });
 
-// ✅ NUEVO: Función para inicializar la base de datos
-/**
- * Función principal para inicializar la base de datos
- * Se encarga de crear la BD y establecer la conexión inicial con Sequelize
- * @returns {Promise<Sequelize>} - Retorna la instancia de Sequelize configurada
- */
+// ✅ CORREGIDA: Función para insertar datos por defecto
+const insertDefaultData = async () => {
+    try {
+        console.log('🔄 Insertando datos por defecto...');
+        
+        // ✅ OPCIÓN 1: Usar consulta SQL directa (más confiable)
+        const [results] = await sequelize.query('SELECT COUNT(*) as count FROM incidents');
+        const incidentCount = results[0].count;
+        
+        if (incidentCount === 0) {
+            console.log('🔄 Insertando tipos de incidentes por defecto...');
+            
+            // Preparar la consulta de inserción
+            const values = defaultIncidents.map(incident => 
+                `('${incident.type}', '${incident.color}', '${incident.icon || ''}', NOW(), NOW())`
+            ).join(', ');
+            
+            const query = `INSERT INTO incidents (type, color, icon, createdAt, updatedAt) VALUES ${values}`;
+            
+            await sequelize.query(query);
+            
+            console.log(`✅ ${defaultIncidents.length} tipos de incidentes insertados exitosamente`);
+            console.log('📋 Tipos disponibles: ' + defaultIncidents.map(i => i.type).join(', '));
+        } else {
+            console.log('ℹ️ Ya existen tipos de incidentes en la base de datos (' + incidentCount + ' registros)');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error insertando datos por defecto:', error);
+        
+        // ✅ OPCIÓN 2: Intentar con el modelo si la consulta directa falla
+        try {
+            console.log('🔄 Intentando con el modelo Sequelize...');
+            const Incident = sequelize.models.incidents || sequelize.models.Incident;
+            
+            if (Incident) {
+                const existingIncidents = await Incident.findAll();
+                
+                if (existingIncidents.length === 0) {
+                    await Incident.bulkCreate(defaultIncidents);
+                    console.log(`✅ ${defaultIncidents.length} tipos de incidentes insertados con modelo Sequelize`);
+                }
+            } else {
+                console.log('⚠️ Modelo Incident no disponible, datos no insertados');
+            }
+        } catch (modelError) {
+            console.error('❌ Error con modelo Sequelize:', modelError);
+            console.log('ℹ️ Los datos por defecto se pueden insertar manualmente después');
+        }
+    }
+};
+
+// ✅ MEJORADO: Función para inicializar la base de datos
 const initializeDatabase = async () => {
     try {
-        // Crear la base de datos si no existe utilizando conexión temporal
         await createDatabase();
         
-        // Establecer y probar la conexión principal con la base de datos específica
+        // Probar la conexión
         await sequelize.authenticate();
         console.log('✅ Conexión a MySQL establecida exitosamente');
         
-        // Retornar la instancia configurada de Sequelize para uso en la aplicación
         return sequelize;
     } catch (error) {
         console.error('❌ Error al inicializar la base de datos:', error);
-        throw error; // Propagar el error para manejo en niveles superiores
+        throw error;
     }
 };
 
-/**
- * Sobrescribir el método sync de Sequelize para añadir logging personalizado
- * Este método se encarga de sincronizar los modelos de Sequelize con las tablas de la BD
- * Añade mensajes informativos sobre el proceso de sincronización
- */
-sequelize.sync = async (options = {}) => {
+// ✅ MEJORADO: Sincronizar e insertar datos por defecto
+const syncDatabase = async (options = {}) => {
     try {
-        // Llamar al método sync original de Sequelize con las opciones proporcionadas
-        await Sequelize.prototype.sync.call(sequelize, options);
+        await sequelize.sync(options);
         console.log('✅ Modelos sincronizados con la base de datos');
+        
+        // ✅ IMPORTANTE: Esperar un poco para que los modelos estén completamente cargados
+        setTimeout(async () => {
+            await insertDefaultData();
+        }, 1000);
+        
     } catch (error) {
         console.error('❌ Error al sincronizar modelos:', error);
-        throw error; // Re-lanzar el error para que pueda ser manejado externamente
+        throw error;
     }
 };
 
-/**
- * Inicialización automática de la base de datos al cargar el módulo
- * Esta llamada se ejecuta tan pronto como se importa este archivo
- * Si hay algún error durante la inicialización, el proceso se detiene
- */
-initializeDatabase().catch(err => {
-    console.error('❌ Error fatal en la inicialización:', err);
-    process.exit(1); // Terminar el proceso con código de error si falla la inicialización
-});
-
-/**
- * Exportar la instancia configurada de Sequelize
- * Esta instancia será utilizada por todos los modelos y controladores
- * de la aplicación para interactuar con la base de datos
- */
-module.exports = sequelize;
+// ✅ CORREGIDO: Exportar todas las funciones necesarias
+module.exports = {
+    sequelize,
+    initializeDatabase,
+    syncDatabase
+};

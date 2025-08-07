@@ -118,9 +118,9 @@ module.exports.loginUser = async (req, res) => {
             const token = generateToken(userFound.id, userFound.role);
             
             // Logs para debugging del token generado
-            console.log('🔑 Token generado para:', userFound.email);
-            console.log('🔑 Token completo:', token);
-            console.log('🔑 Primeros 20 caracteres del token:', token.substring(0, 20) + '...');
+            //console.log('🔑 Token generado para:', userFound.email);
+            //console.log('🔑 Token completo:', token);
+            //console.log('🔑 Primeros 20 caracteres del token:', token.substring(0, 20) + '...');
             
             // Responder con información del usuario y token (sin contraseña)
             res.json({ 
@@ -303,43 +303,6 @@ module.exports.delUserXId = async (req, res) => {
         res.status(500).json({ message: "No se pudo eliminar el usuario" });
     }
 }
-
-/**
- * CÓDIGO COMENTADO - FUNCIÓN DE LOGIN ANTERIOR
- * Esta función estaba implementada pero se mantiene comentada
- * como referencia de una implementación alternativa usando axios
- */
-/*
-// Función para realizar el login del usuario
-const loginUsuario = async (email, password) => {
-    try {
-        // Realiza la solicitud GET al endpoint de login
-        const response = await axios.get(`http://localhost:8000/api/v1/auth/login`, {
-            params: {
-                email,
-                password,
-            }
-        });
-
-        if (response.status === 200) {
-            // Si el login es exitoso, guarda los datos del usuario en el localStorage
-            const usuario = response.data[0];  // Asumiendo que la respuesta es un arreglo con un único objeto
-            localStorage.setItem("usuario", JSON.stringify(usuario)); // Guarda los datos en el localStorage
-
-            // Devuelve el usuario para usar en otros componentes
-            return usuario;
-        }
-    } catch (error) {
-        if (error.response) {
-            // Si la respuesta del servidor contiene un error
-            const errorMessage = error.response.data.error || 'Error desconocido';
-            throw new Error(errorMessage);
-        } else {
-            // Si no hay respuesta, es un error en la conexión
-            throw new Error('Error al intentar conectar con el servidor');
-        }
-    }
-};*/
 
 /**
  * CONTROLADOR PARA CAMBIAR CONTRASEÑA

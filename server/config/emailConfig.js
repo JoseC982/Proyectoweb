@@ -29,7 +29,7 @@ if (!nodemailer || typeof nodemailer.createTransport !== 'function') {
  * 2. Seguridad > Verificación en 2 pasos
  * 3. Contraseñas de aplicaciones > Generar nueva
  */
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     service: 'gmail',                    // Usar el servicio predefinido de Gmail
     auth: {
         user: 'jcondor292@gmail.com',   // Email desde el cual se enviarán los correos
