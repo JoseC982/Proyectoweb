@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 const username = 'root';
 const password = '090802';
-const bdd_name = 'PonteOnceBDDv8Vacia';
+const bdd_name = 'PonteOnceBDD';
 const hostName = 'localhost';
 
 // ✅ NUEVO: Datos por defecto para tipos de incidentes

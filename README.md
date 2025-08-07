@@ -356,7 +356,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 ## 👥 Equipo de Desarrollo
 
-- **Desarrollador Principal**: JoseC982
+- **Desarrolladores**: Jose Condor, Cesar Morocho, Daniel Neacato
 - **Frontend**: React.js con componentes funcionales
 - **Backend**: Node.js con arquitectura MVC
 - **Base de Datos**: MySQL con Sequelize ORM
