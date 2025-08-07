@@ -15,7 +15,7 @@ export default function InformacionUsuario({ users, setUsers }) {
   const navigate = useNavigate();
 
   // ✅ URL base del backend
-  const baseURL = "http://localhost:8000/";
+  const baseURL = "http://172.29.41.39:8000/";
 
   // Estado para controlar si los campos están en modo edición
   const [edit, setEdit] = useState(false);

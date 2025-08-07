@@ -33,7 +33,7 @@ export default function GenerarReporte() {
   const [enviandoReporte, setEnviandoReporte] = useState(false);
 
   // ✅ URL base del backend
-  const baseURL = "http://localhost:8000/";
+  const baseURL = "http://172.29.41.39:8000/";
 
   // ✅ Función para obtener el token
   const getToken = () => {

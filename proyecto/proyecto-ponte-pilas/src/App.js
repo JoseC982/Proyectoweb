@@ -32,7 +32,7 @@ function App() {
   // Estado para almacenar la lista de notificaciones procesadas
   const [notificaciones, setNotificaciones] = useState([]);
 
-  const baseURL = "http://localhost:8000/";
+  const baseURL = "http://172.29.41.39:8000/";
   // ✅ CORREGIR: Estado global para el usuario autenticado con validación
   const [users, setUsers] = useState(() => {
     const usuarioGuardado = localStorage.getItem("usuario");

@@ -36,7 +36,7 @@ const CrearCuenta = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     // ✅ URL base del backend
-    const baseURL = "http://localhost:8000/";
+    const baseURL = "http://172.29.41.39:8000/";
 
     const handleRegister = () => {
         // ✅ Validación mejorada
@@ -162,7 +162,7 @@ const CrearCuenta = () => {
                             required
                         />
                     </div>
-                    
+                    <br />
                     {/* Campo de nombre de usuario */}
                     <div className="email-container">
                         <input
@@ -176,7 +176,8 @@ const CrearCuenta = () => {
                             required
                         />
                     </div>
-                    
+                                        <br />
+
                     {/* Campo de email */}
                     <div className="email-container">
                         <input
@@ -190,7 +191,8 @@ const CrearCuenta = () => {
                             required
                         />
                     </div>
-                    
+                                        <br />
+
                     {/* Campo de contraseña */}
                     <div className="password-container">
                         <input
@@ -213,7 +215,8 @@ const CrearCuenta = () => {
                             {showPassword ? "🙈" : "👁️"}
                         </button>
                     </div>
-                    
+                                        <br />
+
                     {/* Campo de fecha de nacimiento */}
                     <div className="date-born-container">
                         <input
@@ -226,7 +229,8 @@ const CrearCuenta = () => {
                             required
                         />
                     </div>
-                    
+                                        <br />
+
                     {/* Campo de biografía */}
                     <div className="email-container">
                         <textarea

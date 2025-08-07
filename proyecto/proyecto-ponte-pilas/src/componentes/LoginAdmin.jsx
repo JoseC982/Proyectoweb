@@ -30,7 +30,7 @@ const LoginAdmin = ({ setUsers }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     // ✅ URL base del backend
-    const baseURL = "http://localhost:8000/";
+    const baseURL = "http://172.29.41.39:8000/";
 
     // Función que maneja el inicio de sesión
     const handleLogin = () => {

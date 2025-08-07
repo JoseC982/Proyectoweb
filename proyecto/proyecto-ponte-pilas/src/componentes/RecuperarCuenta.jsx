@@ -15,7 +15,7 @@ const RecuperarCuenta = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
 
-    const baseURL = "http://localhost:8000/";
+    const baseURL = "http://172.29.41.39:8000/";
 
     // Paso 1: Enviar código al email
     const handleEnviarCodigo = () => {

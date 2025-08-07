@@ -32,8 +32,26 @@ export default function MenuUsuario({ users, fetchAllData }) {
   const [reporteAEliminar, setReporteAEliminar] = useState(null);
 
   // ✅ URL base del backend
-  const baseURL = "http://localhost:8000/";
+  const baseURL = "http://172.29.41.39:8000/";
+// ✅ NUEVO: Función para hacer scroll hasta la tabla de reportes
+  const scrollToReportes = () => {
+    // Buscar el elemento de la tabla de reportes y hacer scroll suave
+    setTimeout(() => {
+      const tablaElement = document.querySelector('.tabla-reportes');
+      if (tablaElement) {
+        tablaElement.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start' 
+        });
+      }
+    }, 100); // Pequeño delay para asegurar que el DOM se actualice
+  };
 
+  // ✅ MODIFICADO: Función para manejar el filtro "mis reportes" con scroll
+  const handleMisReportes = () => {
+    setFiltro("mios");
+    scrollToReportes();
+  };
   // Para el formulario de crear/editar reporte
   const [form, setForm] = useState({
     incidentTypeId: "",
@@ -370,7 +388,8 @@ export default function MenuUsuario({ users, fetchAllData }) {
             )}
           </div>
           <div className="mu-btn-filtro">
-            <button className="btn-panel" onClick={() => setFiltro("mios")}>Mis reportes</button>
+            {/* ✅ MODIFICADO: Cambiar onClick para incluir scroll */}
+            <button className="btn-panel" onClick={handleMisReportes}>Mis reportes</button>
             <button className="btn-panel" onClick={() => { setFiltro("todos"); setIncidenteSeleccionado(""); }}>Todos los reportes</button>
           </div>
 
@@ -468,7 +487,7 @@ export default function MenuUsuario({ users, fetchAllData }) {
             />
             <input
               className="input-text"
-              placeholder="Ubicación (opcional)"
+              placeholder="Indique una referencia "
               value={form.location}
               onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
             />

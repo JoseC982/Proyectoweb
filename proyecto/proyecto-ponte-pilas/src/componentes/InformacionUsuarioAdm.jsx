@@ -17,7 +17,7 @@ export default function InformacionUsuarioAdm() {
   const [loading, setLoading] = useState(true);
 
   // ✅ URL base del backend
-  const baseURL = "http://localhost:8000/";
+  const baseURL = "http://172.29.41.39:8000/";
 
   // Estado para controlar si los campos están en modo edición
   const [edit, setEdit] = useState(false);

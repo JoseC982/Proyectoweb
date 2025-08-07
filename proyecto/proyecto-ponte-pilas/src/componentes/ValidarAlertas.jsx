@@ -24,7 +24,7 @@ const ValidarAlertas = () => {
   const navigate = useNavigate();
 
   // ✅ URL del backend
-  const baseURL = "http://localhost:8000/";
+  const baseURL = "http://172.29.41.39:8000/";
 
   // ✅ Función para obtener el token
   const getToken = () => {

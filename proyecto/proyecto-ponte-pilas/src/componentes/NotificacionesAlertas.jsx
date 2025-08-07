@@ -53,7 +53,7 @@ const NotificacionesAlertas = () => {
   });
 
   // ✅ URL del backend
-  const baseURL = "http://localhost:8000/";
+  const baseURL = "http://172.29.41.39:8000/";
 
   // ✅ Función para obtener el token
   const getToken = () => {
@@ -788,7 +788,7 @@ const NotificacionesAlertas = () => {
                     style={{ marginLeft: "1rem" }}
                   />
                 </div>
-                <div style={{ marginBottom: "1rem" }}>
+                {/* <div style={{ marginBottom: "1rem" }}>
                   <label>Icono (URL o nombre de archivo):</label>
                   <input
                     type="text"
@@ -796,7 +796,7 @@ const NotificacionesAlertas = () => {
                     onChange={e => setNuevoTipoIcon(e.target.value)}
                     style={{ width: "100%", padding: "0.5rem", marginTop: "0.3rem" }}
                   />
-                </div>
+                </div> */}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
                   <button type="submit" className="btn-editar-reporte">
                     Guardar

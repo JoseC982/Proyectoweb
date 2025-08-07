@@ -2,7 +2,7 @@ const { Sequelize } = require('sequelize');
 const username = 'root';
 const password = '090802';
 const bdd_name = 'PonteOnceBDDv3';
-const hostName = 'localhost';
+const hostName = 'localhost'; // Cambia esto si es necesario
 // Conexión inicial sin especificar la base de datos
 const initialSequelize = new Sequelize(`mysql://${username}:${password}@localhost`);
 initialSequelize.query(`CREATE DATABASE IF NOT EXISTS ${bdd_name};`)
