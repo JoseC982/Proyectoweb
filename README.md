@@ -179,10 +179,17 @@ cd Proyectoweb
 
 ```bash
 # Navegar a la carpeta del servidor
-cd server
+cd server.js
 
 # Instalar dependencias
-npm install
+npm init -y
+npm install sequelize
+npm install mysql2
+npm i nodemon
+npm install express
+npm i bcryptjs
+npm i jsonwebtoken
+npm i dotenv
 
 # Crear archivo de configuración
 cp .env.example .env
